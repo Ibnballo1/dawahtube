@@ -3,6 +3,7 @@
     --secondary-color: #ffb600;
     --tertiary-color: #0049ff;
     --paddings: 1rem;
+    --border: 2px solid red;
 }
 
 * {
@@ -11,8 +12,18 @@
     box-sizing: border-box;
 }
 
+body {
+    color: var(--secondary-color);
+}
+
 #header {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     padding: var(--paddings);
+}
+
+.logo-container {
+    display: flex;
+    justify-content: flex-start;
+    column-gap: 0.625rem; /*10px*/
 }
