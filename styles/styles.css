@@ -2,6 +2,8 @@
     --primary-color: #141824;
     --secondary-color: #ffb600;
     --tertiary-color: #0049ff;
+    --linear-gradients: linear-gradient(to right, #141824, #0049ff);
+    --primary-font-family: 'Poppins', sans-serif;
     --paddings: 1rem;
     --border: 2px solid red;
 }
@@ -14,6 +16,7 @@
 
 body {
     color: var(--secondary-color);
+    font-family: var(--primary-font-family);
 }
 
 #header {
@@ -21,7 +24,7 @@ body {
     grid-template-columns: repeat(2, 1fr);
     padding: var(--paddings);
     border: var(--border);
-    background-color: var(--primary-color);
+    background: var(--linear-gradients);
 }
 
 .logo-container {
@@ -31,7 +34,6 @@ body {
 }
 
 .image {
-    border: var(--border);
     height: 10vh;
 }
 
@@ -40,6 +42,12 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.site-name {
+    border: var(--border);
+    display: flex;
+    align-items: flex-end;
 }
 
 .site-nav {
