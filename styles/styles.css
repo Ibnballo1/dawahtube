@@ -84,3 +84,18 @@ body {
     color: var(--secondary-color);
     padding: 3px;
 }
+
+/* Slide Show */
+
+.slide-show {
+    height: 50vh;
+    border: var(--border);
+    background-color: var(--primary-color);
+}
+
+.slides {
+    width: 80vw;
+    height: 50vh;
+    margin: 0 auto;
+    border: 2px solid green;
+}
