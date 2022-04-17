@@ -3,7 +3,8 @@
     --secondary-color: #ffb600;
     --tertiary-color: #0049ff;
     --linear-gradients: linear-gradient(to right, #141824, #0049ff);
-    --primary-font-family: 'Poppins', sans-serif;
+    --font-family1: 'Poppins', sans-serif;
+    --font-family2: 'Lato', sans-serif;
     --paddings: 1rem;
     --border: 2px solid red;
 }
@@ -16,7 +17,6 @@
 
 body {
     color: var(--secondary-color);
-    font-family: var(--primary-font-family);
 }
 
 #header {
@@ -45,18 +45,33 @@ body {
 }
 
 .site-name {
-    border: var(--border);
     display: flex;
     align-items: flex-end;
 }
 
+.site-name h1 {
+    font-family: var(--font-family2);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 2.1875rem; /*35px*/
+}
+
 .site-nav {
     border: var(--border);
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #navi-list-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     list-style-type: none;
+}
+
+#navi-list-container a {
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-family: var(--font-family2);
+    font-size: 1.5rem; /*24px*/
 }
