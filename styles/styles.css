@@ -5,6 +5,7 @@
     --linear-gradients: linear-gradient(to right, #141824, #0049ff);
     --font-family1: 'Poppins', sans-serif;
     --font-family2: 'Lato', sans-serif;
+    --font-family3: 'Akshar', sans-serif;
     --paddings: 1rem;
     --border: 2px solid red;
 }
@@ -23,7 +24,6 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     padding: var(--paddings);
-    border: var(--border);
     background: var(--linear-gradients);
 }
 
@@ -50,14 +50,13 @@ body {
 }
 
 .site-name h1 {
-    font-family: var(--font-family2);
+    font-family: var(--font-family1);
     font-style: normal;
     font-weight: 600;
     font-size: 2.1875rem; /*35px*/
 }
 
 .site-nav {
-    border: var(--border);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -71,7 +70,17 @@ body {
 
 #navi-list-container a {
     text-decoration: none;
+    color: #fff;
+    font-family: var(--font-family1);
+    font-family: 300;
+    font-size: 1.3rem; /*20.8px*/
+    letter-spacing: .1rem;
+}
+
+#navi-list-container a:hover {
+    background-color: var(--primary-color);
+    border: 1px solid #000;
+    border-radius: 7px;
     color: var(--secondary-color);
-    font-family: var(--font-family2);
-    font-size: 1.5rem; /*24px*/
+    padding: 3px;
 }
