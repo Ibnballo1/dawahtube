@@ -1,0 +1,18 @@
+:root {
+    --primary-color: #141824;
+    --secondary-color: #ffb600;
+    --tertiary-color: #0049ff;
+    --paddings: 1rem;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#header {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: var(--paddings);
+}
