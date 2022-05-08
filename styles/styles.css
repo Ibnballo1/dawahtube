@@ -18,6 +18,7 @@
 
 body {
     color: var(--secondary-color);
+    background-color: #fff;
 }
 
 #header {
@@ -30,11 +31,11 @@ body {
 .logo-container {
     display: flex;
     justify-content: flex-start;
-    column-gap: 0.625rem; /*10px*/
 }
 
 .image {
-    height: 8vh;
+    height: 60px;
+    width: 60px;
 }
 
 .image img {
@@ -44,58 +45,100 @@ body {
     object-fit: cover;
 }
 
-.site-name {
-    display: flex;
-    align-items: flex-end;
+/* Slideshow */
+.slide-show {
+    padding: 0.75rem;
+    border: 2px solid red;
+    height: 30vh;
 }
 
-.site-name h1 {
-    font-family: var(--font-family1);
-    font-style: normal;
-    font-weight: 600;
-    font-size: 2.1875rem; /*35px*/
+div[role='list'] {
+    background-color: var(--primary-color);
+    height: 26vh;
+    width: 100%;
 }
 
-.site-nav {
+main {
+    padding: 0 0.5rem;
+    border: 2px solid brown;
+}
+
+.dtube-reminder {
+    border: 2px solid green;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-#navi-list-container {
-    display: flex;
-    justify-content: space-around;
-    list-style-type: none;
+.dtube-reminder h2 {
+    font-family: var(--font-family1);
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    margin: 12px 0;
 }
 
-#navi-list-container a {
-    text-decoration: none;
+.dtube-reminder .details {
+    border: 2px solid fuchsia;
+}
+
+.details .whatsapp,
+.details .join-class {
+    color: #141824;
+    font-family: var(--font-family1);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.2rem;
+    margin-top: 12px;
+}
+
+button.whatsapp-group {
+    background-color: #0049ff;
+    height: 2.25rem;
+    border: none;
+    border-radius: 4px;
+    margin: 8px 0;
+    padding: 6px;
+}
+
+button.whatsapp-group a {
     color: #fff;
     font-family: var(--font-family1);
-    font-family: 300;
-    font-size: 1.3rem; /*20.8px*/
-    letter-spacing: .1rem;
+    font-weight: 400;
+    font-size: 1rem;
 }
 
-#navi-list-container a:hover {
+.notes {
+    border: 2px solid fuchsia;
+    margin-top: 12px;
+}
+
+.note {
     background-color: var(--primary-color);
-    border: 1px solid #000;
-    border-radius: 7px;
-    color: var(--secondary-color);
-    padding: 3px;
+    padding: 1rem 0.5rem;
+    color: #fff;
+    font-family: var(--font-family1);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    border-top-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
-/* Slide Show */
-
-.slide-show {
-    height: 50vh;
-    border: var(--border);
-    background-color: var(--primary-color);
+span.nb {
+    font-family: var(--font-family2);
+    font-style: normal;
+    font-weight: 700;
+    font-size: 2rem;
+    color: #ffb600;
 }
 
-.slides {
-    width: 80vw;
-    height: 50vh;
-    margin: 0 auto;
-    border: 2px solid green;
+/* Frameworks */
+a {
+    text-decoration: none;
+    color: #ffb600;
 }
