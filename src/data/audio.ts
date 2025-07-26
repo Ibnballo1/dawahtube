@@ -24,7 +24,7 @@ export const audioLectures: AudioLecture[] = [
     duration: "45:32",
     category: "seerah",
     publishedAt: "2024-01-20",
-    audioUrl: "/images/dawahtube-logo.png",
+    audioUrl: "/audio/night-journey.mp3",
     downloadUrl: "/downloads/night-journey.mp3",
     image: "/images/dawahtube-logo.png",
     tags: ["prophet", "miracle", "journey", "seerah"],
