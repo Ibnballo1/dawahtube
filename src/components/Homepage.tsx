@@ -212,10 +212,12 @@ export default function HomePage() {
                 <CardHeader>
                   <div className="flex items-center gap-4 mb-4">
                     <div className="relative">
-                      <img
+                      <Image
                         src={lecture.image || "/placeholder.svg"}
                         alt={lecture.speaker}
                         className="w-16 h-16 rounded-full object-cover"
+                        width={64}
+                        height={64}
                       />
                       <div className="absolute inset-0 bg-primary/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Play className="h-6 w-6 text-primary" />
@@ -285,10 +287,12 @@ export default function HomePage() {
                 className="group hover:shadow-lg transition-shadow duration-300 overflow-hidden"
               >
                 <div className="aspect-video bg-gradient-to-br from-primary-light to-primary overflow-hidden">
-                  <img
+                  <Image
                     src={news.image || "/placeholder.svg"}
                     alt={news.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    width={300}
+                    height={360}
                   />
                 </div>
                 <CardHeader>
