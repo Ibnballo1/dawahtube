@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Facebook, Twitter, Youtube, Instagram, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
 
 export default function Footer() {
   const quickLinks = [
@@ -27,8 +28,8 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="relative w-10 h-10">
-                <img src="/images/dawahtube-logo.jpg" alt="Da'wahTube Logo" className="h-full w-full object-contain" />
+              <div className="relative w-10 h-10 rounded-full">
+                <Image src='/images/dawahtube-logo.png' alt="Da'wahTube Logo" width={10} height={10} className="rounded-full w-full h-full object-contain" />
               </div>
               <div>
                 <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
@@ -105,7 +106,8 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © 2024 Da'wahTube. All rights reserved. Built with love for the Ummah.
+            {/* © {new Date().getFullYear()} */}
+            @ 2017 Da'wahTube. All rights reserved. Built with love for the Ummah.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link href="/privacy" className="text-gray-400 hover:text-primary text-sm transition-colors">

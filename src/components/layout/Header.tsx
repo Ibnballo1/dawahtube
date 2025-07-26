@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Menu, X, Search, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Image from "next/image"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -27,7 +28,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <img src="/images/dawahtube-logo.jpg" alt="Da'wahTube Logo" className="h-10 w-10 object-contain" />
+            <Image src='/images/dawahtube-logo.png' alt="Da'wahTube Logo" width={10} height={10} className="w-10 rounded-full h-10 object-contain" />
             <div className="hidden sm:block">
               <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                 Da'wah
