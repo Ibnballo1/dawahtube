@@ -1,13 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Menu, X, Search, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState } from "react";
+import Link from "next/link";
+import { Menu, X, Search, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -16,7 +17,7 @@ export default function Header() {
     { name: "News", href: "/news" },
     { name: "Q&A", href: "/qa" },
     { name: "About", href: "/about" },
-  ]
+  ];
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -27,12 +28,20 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <img src="/images/dawahtube-logo.jpg" alt="Da'wahTube Logo" className="h-10 w-10 object-contain" />
+            <Image
+              src="/images/dawahtube-logo.png"
+              alt="Da'wahTube Logo"
+              width={40}
+              height={40}
+              className="w-10 rounded-full h-10 object-contain"
+            />
             <div className="hidden sm:block">
               <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
                 Da'wah
               </span>
-              <span className="text-2xl font-bold text-primary-light">Tube</span>
+              <span className="text-2xl font-bold text-primary-light">
+                Tube
+              </span>
             </div>
           </Link>
 
@@ -73,8 +82,17 @@ export default function Header() {
           </div>
 
           {/* Mobile menu button */}
-          <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="lg:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </Button>
         </div>
 
@@ -119,5 +137,5 @@ export default function Header() {
         )}
       </div>
     </header>
-  )
+  );
 }
