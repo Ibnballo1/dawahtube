@@ -1,26 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Search, Filter, Clock, User, ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { articles, categories } from "@/data/articles"
+import { useState } from "react";
+import Link from "next/link";
+import { Search, Filter, Clock, User, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { articles, categories } from "@/data/articles";
+import Image from "next/image";
 
 export default function ArticlesPage() {
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredArticles = articles.filter((article) => {
-    const matchesCategory = selectedCategory === "all" || article.category === selectedCategory
+    const matchesCategory =
+      selectedCategory === "all" || article.category === selectedCategory;
     const matchesSearch =
       article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      article.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    return matchesCategory && matchesSearch
-  })
+      article.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -28,10 +32,12 @@ export default function ArticlesPage() {
       <section className="bg-gradient-to-r from-primary to-primary-dark text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Islamic Articles</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              Islamic Articles
+            </h1>
             <p className="text-xl text-blue-100 mb-8">
-              Explore a comprehensive collection of articles covering various aspects of Islamic knowledge and
-              contemporary issues.
+              Explore a comprehensive collection of articles covering various
+              aspects of Islamic knowledge and contemporary issues.
             </p>
 
             {/* Search Bar */}
@@ -66,12 +72,17 @@ export default function ArticlesPage() {
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
                       className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                        selectedCategory === category.id ? "bg-primary text-white" : "hover:bg-gray-100"
+                        selectedCategory === category.id
+                          ? "bg-primary text-white"
+                          : "hover:bg-gray-100"
                       }`}
                     >
                       <div className="flex justify-between items-center">
                         <span>{category.name}</span>
-                        <Badge variant="secondary" className="bg-gray-200 text-gray-700">
+                        <Badge
+                          variant="secondary"
+                          className="bg-gray-200 text-gray-700"
+                        >
                           {category.count}
                         </Badge>
                       </div>
@@ -86,47 +97,68 @@ export default function ArticlesPage() {
           <main className="lg:w-3/4">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {selectedCategory === "all" ? "All Articles" : categories.find((c) => c.id === selectedCategory)?.name}
+                {selectedCategory === "all"
+                  ? "All Articles"
+                  : categories.find((c) => c.id === selectedCategory)?.name}
               </h2>
               <p className="text-gray-600">
-                {filteredArticles.length} article{filteredArticles.length !== 1 ? "s" : ""} found
+                {filteredArticles.length} article
+                {filteredArticles.length !== 1 ? "s" : ""} found
               </p>
             </div>
 
             <div className="grid gap-8">
               {filteredArticles.map((article) => (
-                <Card key={article.id} className="group hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+                <Card
+                  key={article.id}
+                  className="group hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+                >
                   <div className="md:flex">
                     <div className="md:w-1/3">
                       <div className="aspect-video md:aspect-square bg-gradient-to-br from-primary-light to-primary overflow-hidden">
-                        <img
+                        <Image
                           src={article.image || "/placeholder.svg"}
                           alt={article.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          width={300}
+                          height={300}
                         />
                       </div>
                     </div>
                     <div className="md:w-2/3">
                       <CardHeader>
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          <Badge
+                            variant="secondary"
+                            className="bg-primary/10 text-primary"
+                          >
                             {article.category}
                           </Badge>
                           <div className="flex items-center text-sm text-gray-500">
                             <Clock className="h-4 w-4 mr-1" />
                             {article.readTime} min read
                           </div>
-                          {article.featured && <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>}
+                          {article.featured && (
+                            <Badge className="bg-yellow-100 text-yellow-800">
+                              Featured
+                            </Badge>
+                          )}
                         </div>
                         <CardTitle className="text-xl group-hover:text-primary transition-colors">
                           {article.title}
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-gray-600 mb-4 line-clamp-3">{article.excerpt}</p>
+                        <p className="text-gray-600 mb-4 line-clamp-3">
+                          {article.excerpt}
+                        </p>
                         <div className="flex flex-wrap gap-2 mb-4">
                           {article.tags.map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-xs">
+                            <Badge
+                              key={tag}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {tag}
                             </Badge>
                           ))}
@@ -139,7 +171,11 @@ export default function ArticlesPage() {
                             {new Date(article.publishedAt).toLocaleDateString()}
                           </div>
                           <Link href={`/articles/${article.id}`}>
-                            <Button variant="ghost" size="sm" className="text-primary hover:text-primary-dark">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-primary hover:text-primary-dark"
+                            >
                               Read More
                               <ArrowRight className="ml-1 h-4 w-4" />
                             </Button>
@@ -157,13 +193,17 @@ export default function ArticlesPage() {
                 <div className="text-gray-400 mb-4">
                   <Search className="h-16 w-16 mx-auto" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No articles found</h3>
-                <p className="text-gray-600">Try adjusting your search terms or category filter.</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  No articles found
+                </h3>
+                <p className="text-gray-600">
+                  Try adjusting your search terms or category filter.
+                </p>
               </div>
             )}
           </main>
         </div>
       </div>
     </div>
-  )
+  );
 }

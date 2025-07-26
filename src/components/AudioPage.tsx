@@ -1,83 +1,96 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Play, Pause, Download, Search, Filter, Clock, Heart, Share2, Volume2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Slider } from "@/components/ui/slider"
-import { audioLectures } from "@/data/audio"
+import { useState, useRef, useEffect } from "react";
+import {
+  Play,
+  Pause,
+  Download,
+  Search,
+  Filter,
+  Clock,
+  Heart,
+  Share2,
+  Volume2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
+import { audioLectures } from "@/data/audio";
+import Image from "next/image";
 
 interface AudioPlayerProps {
-  lecture: (typeof audioLectures)[0]
-  isPlaying: boolean
-  onPlayPause: () => void
+  lecture: (typeof audioLectures)[0];
+  isPlaying: boolean;
+  onPlayPause: () => void;
 }
 
 function AudioPlayer({ lecture, isPlaying, onPlayPause }: AudioPlayerProps) {
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(75)
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(75);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
+    const audio = audioRef.current;
+    if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime)
-    const updateDuration = () => setDuration(audio.duration)
+    const updateTime = () => setCurrentTime(audio.currentTime);
+    const updateDuration = () => setDuration(audio.duration);
 
-    audio.addEventListener("timeupdate", updateTime)
-    audio.addEventListener("loadedmetadata", updateDuration)
+    audio.addEventListener("timeupdate", updateTime);
+    audio.addEventListener("loadedmetadata", updateDuration);
 
     return () => {
-      audio.removeEventListener("timeupdate", updateTime)
-      audio.removeEventListener("loadedmetadata", updateDuration)
-    }
-  }, [])
+      audio.removeEventListener("timeupdate", updateTime);
+      audio.removeEventListener("loadedmetadata", updateDuration);
+    };
+  }, []);
 
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
+    const audio = audioRef.current;
+    if (!audio) return;
 
     if (isPlaying) {
-      audio.play()
+      audio.play();
     } else {
-      audio.pause()
+      audio.pause();
     }
-  }, [isPlaying])
+  }, [isPlaying]);
 
   const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60)
-    const seconds = Math.floor(time % 60)
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`
-  }
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   const handleSeek = (value: number[]) => {
-    const audio = audioRef.current
+    const audio = audioRef.current;
     if (audio) {
-      audio.currentTime = value[0]
-      setCurrentTime(value[0])
+      audio.currentTime = value[0];
+      setCurrentTime(value[0]);
     }
-  }
+  };
 
   const handleVolumeChange = (value: number[]) => {
-    const audio = audioRef.current
+    const audio = audioRef.current;
     if (audio) {
-      audio.volume = value[0] / 100
-      setVolume(value[0])
+      audio.volume = value[0] / 100;
+      setVolume(value[0]);
     }
-  }
+  };
 
   return (
     <Card className="sticky top-24 bg-gradient-to-r from-primary/5 to-primary-light/5 border-primary/20">
       <CardHeader>
         <div className="flex items-center gap-4">
-          <img
+          <Image
             src={lecture.image || "/placeholder.svg"}
             alt={lecture.speaker}
             className="w-16 h-16 rounded-full object-cover"
+            width={64}
+            height={64}
           />
           <div className="flex-1">
             <CardTitle className="text-lg">{lecture.title}</CardTitle>
@@ -90,7 +103,13 @@ function AudioPlayer({ lecture, isPlaying, onPlayPause }: AudioPlayerProps) {
 
         {/* Progress Bar */}
         <div className="space-y-2">
-          <Slider value={[currentTime]} max={duration || 100} step={1} onValueChange={handleSeek} className="w-full" />
+          <Slider
+            value={[currentTime]}
+            max={duration || 100}
+            step={1}
+            onValueChange={handleSeek}
+            className="w-full"
+          />
           <div className="flex justify-between text-xs text-gray-500">
             <span>{formatTime(currentTime)}</span>
             <span>{lecture.duration}</span>
@@ -100,8 +119,16 @@ function AudioPlayer({ lecture, isPlaying, onPlayPause }: AudioPlayerProps) {
         {/* Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button size="sm" onClick={onPlayPause} className="w-12 h-12 rounded-full">
-              {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+            <Button
+              size="sm"
+              onClick={onPlayPause}
+              className="w-12 h-12 rounded-full"
+            >
+              {isPlaying ? (
+                <Pause className="h-5 w-5" />
+              ) : (
+                <Play className="h-5 w-5" />
+              )}
             </Button>
             <Button size="sm" variant="outline">
               <Download className="h-4 w-4" />
@@ -110,7 +137,13 @@ function AudioPlayer({ lecture, isPlaying, onPlayPause }: AudioPlayerProps) {
 
           <div className="flex items-center gap-2 flex-1 max-w-32 ml-4">
             <Volume2 className="h-4 w-4 text-gray-500" />
-            <Slider value={[volume]} max={100} step={1} onValueChange={handleVolumeChange} className="flex-1" />
+            <Slider
+              value={[volume]}
+              max={100}
+              step={1}
+              onValueChange={handleVolumeChange}
+              className="flex-1"
+            />
           </div>
         </div>
 
@@ -127,46 +160,67 @@ function AudioPlayer({ lecture, isPlaying, onPlayPause }: AudioPlayerProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export default function AudioPage() {
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [currentLecture, setCurrentLecture] = useState(audioLectures[0])
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentLecture, setCurrentLecture] = useState(audioLectures[0]);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const categories = [
     { id: "all", name: "All Categories", count: audioLectures.length },
-    { id: "seerah", name: "Seerah", count: audioLectures.filter((l) => l.category === "seerah").length },
-    { id: "aqeedah", name: "Aqeedah", count: audioLectures.filter((l) => l.category === "aqeedah").length },
+    {
+      id: "seerah",
+      name: "Seerah",
+      count: audioLectures.filter((l) => l.category === "seerah").length,
+    },
+    {
+      id: "aqeedah",
+      name: "Aqeedah",
+      count: audioLectures.filter((l) => l.category === "aqeedah").length,
+    },
     {
       id: "spirituality",
       name: "Spirituality",
       count: audioLectures.filter((l) => l.category === "spirituality").length,
     },
-    { id: "education", name: "Education", count: audioLectures.filter((l) => l.category === "education").length },
-    { id: "worship", name: "Worship", count: audioLectures.filter((l) => l.category === "worship").length },
-    { id: "family", name: "Family", count: audioLectures.filter((l) => l.category === "family").length },
-  ]
+    {
+      id: "education",
+      name: "Education",
+      count: audioLectures.filter((l) => l.category === "education").length,
+    },
+    {
+      id: "worship",
+      name: "Worship",
+      count: audioLectures.filter((l) => l.category === "worship").length,
+    },
+    {
+      id: "family",
+      name: "Family",
+      count: audioLectures.filter((l) => l.category === "family").length,
+    },
+  ];
 
   const filteredLectures = audioLectures.filter((lecture) => {
-    const matchesCategory = selectedCategory === "all" || lecture.category === selectedCategory
+    const matchesCategory =
+      selectedCategory === "all" || lecture.category === selectedCategory;
     const matchesSearch =
       lecture.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lecture.speaker.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lecture.description.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
+      lecture.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const handlePlayPause = (lecture?: (typeof audioLectures)[0]) => {
     if (lecture && lecture.id !== currentLecture.id) {
-      setCurrentLecture(lecture)
-      setIsPlaying(true)
+      setCurrentLecture(lecture);
+      setIsPlaying(true);
     } else {
-      setIsPlaying(!isPlaying)
+      setIsPlaying(!isPlaying);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -174,9 +228,12 @@ export default function AudioPage() {
       <section className="bg-gradient-to-r from-primary to-primary-dark text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Audio Lectures</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              Audio Lectures
+            </h1>
             <p className="text-xl text-blue-100 mb-8">
-              Listen to inspiring lectures from renowned Islamic scholars and teachers from around the world.
+              Listen to inspiring lectures from renowned Islamic scholars and
+              teachers from around the world.
             </p>
 
             {/* Search Bar */}
@@ -198,7 +255,11 @@ export default function AudioPage() {
           {/* Sidebar */}
           <aside className="lg:w-1/4 space-y-6">
             {/* Audio Player */}
-            <AudioPlayer lecture={currentLecture} isPlaying={isPlaying} onPlayPause={() => handlePlayPause()} />
+            <AudioPlayer
+              lecture={currentLecture}
+              isPlaying={isPlaying}
+              onPlayPause={() => handlePlayPause()}
+            />
 
             {/* Categories */}
             <Card>
@@ -215,12 +276,17 @@ export default function AudioPage() {
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
                       className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                        selectedCategory === category.id ? "bg-primary text-white" : "hover:bg-gray-100"
+                        selectedCategory === category.id
+                          ? "bg-primary text-white"
+                          : "hover:bg-gray-100"
                       }`}
                     >
                       <div className="flex justify-between items-center">
                         <span>{category.name}</span>
-                        <Badge variant="secondary" className="bg-gray-200 text-gray-700">
+                        <Badge
+                          variant="secondary"
+                          className="bg-gray-200 text-gray-700"
+                        >
                           {category.count}
                         </Badge>
                       </div>
@@ -235,10 +301,13 @@ export default function AudioPage() {
           <main className="lg:w-3/4">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {selectedCategory === "all" ? "All Lectures" : categories.find((c) => c.id === selectedCategory)?.name}
+                {selectedCategory === "all"
+                  ? "All Lectures"
+                  : categories.find((c) => c.id === selectedCategory)?.name}
               </h2>
               <p className="text-gray-600">
-                {filteredLectures.length} lecture{filteredLectures.length !== 1 ? "s" : ""} found
+                {filteredLectures.length} lecture
+                {filteredLectures.length !== 1 ? "s" : ""} found
               </p>
             </div>
 
@@ -247,16 +316,20 @@ export default function AudioPage() {
                 <Card
                   key={lecture.id}
                   className={`group hover:shadow-lg transition-all duration-300 ${
-                    currentLecture.id === lecture.id ? "ring-2 ring-primary bg-primary/5" : ""
+                    currentLecture.id === lecture.id
+                      ? "ring-2 ring-primary bg-primary/5"
+                      : ""
                   }`}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
                       <div className="relative flex-shrink-0">
-                        <img
+                        <Image
                           src={lecture.image || "/placeholder.svg"}
                           alt={lecture.speaker}
                           className="w-20 h-20 rounded-full object-cover"
+                          width={64}
+                          height={64}
                         />
                         <button
                           onClick={() => handlePlayPause(lecture)}
@@ -276,17 +349,28 @@ export default function AudioPage() {
                             <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors">
                               {lecture.title}
                             </h3>
-                            <p className="text-primary font-medium">{lecture.speaker}</p>
+                            <p className="text-primary font-medium">
+                              {lecture.speaker}
+                            </p>
                           </div>
                           <div className="flex items-center gap-2 ml-4">
-                            <Badge variant="secondary" className="bg-primary/10 text-primary">
+                            <Badge
+                              variant="secondary"
+                              className="bg-primary/10 text-primary"
+                            >
                               {lecture.category}
                             </Badge>
-                            {lecture.featured && <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>}
+                            {lecture.featured && (
+                              <Badge className="bg-yellow-100 text-yellow-800">
+                                Featured
+                              </Badge>
+                            )}
                           </div>
                         </div>
 
-                        <p className="text-gray-600 mb-4 line-clamp-2">{lecture.description}</p>
+                        <p className="text-gray-600 mb-4 line-clamp-2">
+                          {lecture.description}
+                        </p>
 
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4 text-sm text-gray-500">
@@ -298,21 +382,31 @@ export default function AudioPage() {
                               <Play className="h-4 w-4 mr-1" />
                               {lecture.plays.toLocaleString()} plays
                             </div>
-                            <span>{new Date(lecture.publishedAt).toLocaleDateString()}</span>
+                            <span>
+                              {new Date(
+                                lecture.publishedAt
+                              ).toLocaleDateString()}
+                            </span>
                           </div>
 
                           <div className="flex gap-2">
                             <Button
                               size="sm"
                               onClick={() => handlePlayPause(lecture)}
-                              className={currentLecture.id === lecture.id && isPlaying ? "bg-primary-dark" : ""}
+                              className={
+                                currentLecture.id === lecture.id && isPlaying
+                                  ? "bg-primary-dark"
+                                  : ""
+                              }
                             >
                               {currentLecture.id === lecture.id && isPlaying ? (
                                 <Pause className="mr-2 h-4 w-4" />
                               ) : (
                                 <Play className="mr-2 h-4 w-4" />
                               )}
-                              {currentLecture.id === lecture.id && isPlaying ? "Pause" : "Play"}
+                              {currentLecture.id === lecture.id && isPlaying
+                                ? "Pause"
+                                : "Play"}
                             </Button>
                             <Button size="sm" variant="outline">
                               <Download className="h-4 w-4" />
@@ -322,7 +416,11 @@ export default function AudioPage() {
 
                         <div className="flex flex-wrap gap-2 mt-3">
                           {lecture.tags.map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-xs">
+                            <Badge
+                              key={tag}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {tag}
                             </Badge>
                           ))}
@@ -339,13 +437,17 @@ export default function AudioPage() {
                 <div className="text-gray-400 mb-4">
                   <Search className="h-16 w-16 mx-auto" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No lectures found</h3>
-                <p className="text-gray-600">Try adjusting your search terms or category filter.</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  No lectures found
+                </h3>
+                <p className="text-gray-600">
+                  Try adjusting your search terms or category filter.
+                </p>
               </div>
             )}
           </main>
         </div>
       </div>
     </div>
-  )
+  );
 }
