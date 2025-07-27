@@ -1,10 +1,10 @@
 import MainLayout from "@/components/layout/main-layout"
-import HomePage from "@/components/Homepage"
+import NewsPage from "@/components/NewsPage"
 
 export default function Page() {
   return (
     <MainLayout>
-      <HomePage />
+      <NewsPage />
     </MainLayout>
   )
 }

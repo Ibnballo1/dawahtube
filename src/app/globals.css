@@ -45,75 +45,107 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #F9FAFB; /* Neutral background */
-  --foreground: #1C6DAC; /* Text on light backgrounds */
-  --card: #FFFFFF; /* White backgrounds */
-  --card-foreground: #1C6DAC; /* Text on white backgrounds */
+  
+  /* Da'wahTube Brand Colors */
+  --background: #FFFFFF;
+  --foreground: #1C6DAC;
+  --card: #FFFFFF;
+  --card-foreground: #1C6DAC;
   --popover: #FFFFFF;
   --popover-foreground: #1C6DAC;
-  /* Your brand primary color for buttons and highlights */
+  
+  /* Primary Colors */
   --primary: #199ED8;
-  --primary-foreground: #FFFFFF; /* White text on primary */
-  --secondary: #1C6DAC; /* Secondary color for links and hover states */
-  --secondary-foreground: #FFFFFF; /* White text on secondary */
-  --muted: #DADADA; /* Soft, subtle areas */
-  --muted-foreground: #1C6DAC; /* Text on muted backgrounds */
-  --accent: #66C3E9; /* Accent/soft backgrounds */
-  --accent-foreground: #1C6DAC; /* Text on accent backgrounds */
+  --primary-foreground: #FFFFFF;
+  
+  /* Secondary Colors */
+  --secondary: #1C6DAC;
+  --secondary-foreground: #FFFFFF;
+  
+  /* Muted Colors */
+  --muted: #DADADA;
+  --muted-foreground: #1C6DAC;
+  
+  /* Accent Colors */
+  --accent: #66C3E9;
+  --accent-foreground: #1C6DAC;
+  
+  /* Destructive Colors */
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #DADADA; /* Neutral border color */
-  --input: #F9FAFB; /* Input background */
-  --ring: #199ED8; /* Focus ring color */
-  /* Your brand color palette for charts and data visualization */
-  --chart-1: #199ED8; /* Primary brand color */
-  --chart-2: #1C6DAC; /* Secondary brand color */
-  --chart-3: #66C3E9; /* Accent brand color */
-  --chart-4: #DADADA; /* Neutral brand color */
-  --chart-5: #F9FAFB; /* Light neutral brand color */
-  --sidebar: #F9FAFB; /* Neutral sidebar background */
-  --sidebar-foreground: #1C6DAC; /* Sidebar text */
-  --sidebar-primary: #199ED8; /* Sidebar primary highlights */
-  --sidebar-primary-foreground: #FFFFFF; /* White text on sidebar primary */
-  --sidebar-accent: #66C3E9; /* Sidebar accent */
-  --sidebar-accent-foreground: #1C6DAC; /* Text on sidebar accent */
-  --sidebar-border: #DADADA; /* Sidebar border */
-  --sidebar-ring: #199ED8; /* Sidebar focus ring */
+  --destructive-foreground: #FFFFFF;
+  
+  /* Border and Input Colors */
+  --border: #DADADA;
+  --input: #FFFFFF;
+  --ring: #199ED8;
+  
+  /* Chart Colors */
+  --chart-1: #199ED8;
+  --chart-2: #1C6DAC;
+  --chart-3: #66C3E9;
+  --chart-4: #DADADA;
+  --chart-5: #FFFFFF;
+  
+  /* Sidebar Colors */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1C6DAC;
+  --sidebar-primary: #199ED8;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #66C3E9;
+  --sidebar-accent-foreground: #1C6DAC;
+  --sidebar-border: #DADADA;
+  --sidebar-ring: #199ED8;
 }
 
 .dark {
-  --background: #1a1a1a; /* Dark background */
-  --foreground: #FFFFFF; /* White text on dark backgrounds */
-  --card: #2a2a2a; /* Dark card background */
-  --card-foreground: #FFFFFF; /* White text on dark cards */
+  --background: #1a1a1a;
+  --foreground: #FFFFFF;
+  --card: #2a2a2a;
+  --card-foreground: #FFFFFF;
   --popover: #2a2a2a;
   --popover-foreground: #FFFFFF;
-  /* Dark mode brand colors - lighter versions for better contrast */
-  --primary: #66C3E9; /* Lighter version of your primary for dark mode */
-  --primary-foreground: #1a1a1a; /* Dark text on light primary */
-  --secondary: #199ED8; /* Your primary as secondary in dark mode */
-  --secondary-foreground: #FFFFFF; /* White text on secondary */
-  --muted: #3a3a3a; /* Dark muted background */
-  --muted-foreground: #66C3E9; /* Light text on dark muted */
-  --accent: #1C6DAC; /* Your secondary as accent in dark mode */
-  --accent-foreground: #FFFFFF; /* White text on accent */
+  
+  /* Dark Mode Primary Colors */
+  --primary: #66C3E9;
+  --primary-foreground: #1a1a1a;
+  
+  /* Dark Mode Secondary Colors */
+  --secondary: #199ED8;
+  --secondary-foreground: #FFFFFF;
+  
+  /* Dark Mode Muted Colors */
+  --muted: #3a3a3a;
+  --muted-foreground: #66C3E9;
+  
+  /* Dark Mode Accent Colors */
+  --accent: #1C6DAC;
+  --accent-foreground: #FFFFFF;
+  
+  /* Dark Mode Destructive Colors */
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #3a3a3a; /* Dark border */
-  --input: #2a2a2a; /* Dark input background */
-  --ring: #66C3E9; /* Light focus ring for dark mode */
-  /* Dark mode brand accent colors - adjusted for dark theme */
-  --chart-1: #66C3E9; /* Light version of primary */
-  --chart-2: #199ED8; /* Your primary color */
-  --chart-3: #1C6DAC; /* Your secondary color */
-  --chart-4: #3a3a3a; /* Dark neutral */
-  --chart-5: #2a2a2a; /* Darker neutral */
-  --sidebar: #2a2a2a; /* Dark sidebar background */
-  --sidebar-foreground: #FFFFFF; /* White sidebar text */
-  --sidebar-primary: #66C3E9; /* Light primary for sidebar */
-  --sidebar-primary-foreground: #1a1a1a; /* Dark text on light sidebar primary */
-  --sidebar-accent: #1C6DAC; /* Secondary as sidebar accent */
-  --sidebar-accent-foreground: #FFFFFF; /* White text on sidebar accent */
-  --sidebar-border: #3a3a3a; /* Dark sidebar border */
-  --sidebar-ring: #66C3E9; /* Light sidebar focus ring */
+  --destructive-foreground: #FFFFFF;
+  
+  /* Dark Mode Border and Input Colors */
+  --border: #3a3a3a;
+  --input: #2a2a2a;
+  --ring: #66C3E9;
+  
+  /* Dark Mode Chart Colors */
+  --chart-1: #66C3E9;
+  --chart-2: #199ED8;
+  --chart-3: #1C6DAC;
+  --chart-4: #3a3a3a;
+  --chart-5: #2a2a2a;
+  
+  /* Dark Mode Sidebar Colors */
+  --sidebar: #2a2a2a;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #66C3E9;
+  --sidebar-primary-foreground: #1a1a1a;
+  --sidebar-accent: #1C6DAC;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #3a3a3a;
+  --sidebar-ring: #66C3E9;
 }
 
 @layer base {
@@ -123,4 +155,31 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Accordion animations */
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+.animate-accordion-down {
+  animation: accordion-down 0.2s ease-out;
+}
+
+.animate-accordion-up {
+  animation: accordion-up 0.2s ease-out;
 }
