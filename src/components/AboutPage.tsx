@@ -87,7 +87,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              About Da'wahTube
+              About Da&apos;wahTube
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed">
               Connecting hearts and minds to the beauty of Islam through
@@ -129,7 +129,7 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed text-lg">
-                  To become the world's most trusted platform for Islamic
+                  To become the world&apos;s most trusted platform for Islamic
                   education, where every Muslim can find reliable guidance,
                   connect with scholars, and grow in their faith journey. We
                   envision a world where Islamic knowledge is accessible to all,
@@ -186,8 +186,8 @@ export default function AboutPage() {
               Our Impact
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Through Allah's blessing, we've been able to serve the Muslim
-              community in meaningful ways.
+              Through Allah&apos;s blessing, we&apos;ve been able to serve the
+              Muslim community in meaningful ways.
             </p>
           </div>
 
@@ -273,8 +273,8 @@ export default function AboutPage() {
 
             <div className="prose prose-lg max-w-none text-gray-700">
               <p className="text-xl leading-relaxed mb-6">
-                Da'wahTube was born from a simple yet profound vision: to make
-                authentic Islamic knowledge accessible to every Muslim,
+                Da&apos;wahTube was born from a simple yet profound vision: to
+                make authentic Islamic knowledge accessible to every Muslim,
                 regardless of their location, background, or level of Islamic
                 education.
               </p>
@@ -298,7 +298,7 @@ export default function AboutPage() {
               </p>
 
               <p className="leading-relaxed mb-6">
-                Today, Da'wahTube serves Muslims in over 25 countries, with
+                Today, Da&apos;wahTube serves Muslims in over 25 countries, with
                 content available in multiple languages. We continue to expand
                 our offerings while maintaining our commitment to authentic,
                 scholarly-verified Islamic knowledge.
@@ -321,7 +321,7 @@ export default function AboutPage() {
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Get in Touch</h2>
           <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
             Have questions about our mission or want to contribute to our
-            platform? We'd love to hear from you.
+            platform? We&apos;d love to hear from you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a

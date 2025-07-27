@@ -37,7 +37,7 @@ export default function Header() {
             />
             <div className="hidden sm:block">
               <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                Da'wah
+                Da&apos;wah
               </span>
               <span className="text-2xl font-bold text-primary-light">
                 Tube
