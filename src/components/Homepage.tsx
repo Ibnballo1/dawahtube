@@ -41,7 +41,7 @@ export default function HomePage() {
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               Welcome to{" "}
               <span className="bg-gradient-to-r from-white to-primary-light bg-clip-text text-transparent">
-                Da'wahTube
+                Da&apos;wahTube
               </span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed">

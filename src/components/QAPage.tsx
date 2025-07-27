@@ -97,7 +97,7 @@ export default function QAPage() {
             </h1>
             <p className="text-xl text-blue-100 mb-8">
               Get authentic Islamic answers from qualified scholars and learn
-              from the community's questions.
+              from the community&apos;s questions.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
