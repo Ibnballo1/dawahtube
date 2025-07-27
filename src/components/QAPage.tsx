@@ -1,57 +1,90 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Search, Filter, MessageCircle, ThumbsUp, Share2, User, Calendar, Star, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
-import { qaItems } from "@/data/qa"
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Search,
+  Filter,
+  MessageCircle,
+  ThumbsUp,
+  Share2,
+  User,
+  Calendar,
+  Star,
+  Plus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { qaItems } from "@/data/qa";
 
 export default function QAPage() {
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showAskForm, setShowAskForm] = useState(false)
-  const [newQuestion, setNewQuestion] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showAskForm, setShowAskForm] = useState(false);
+  const [newQuestion, setNewQuestion] = useState("");
 
   const categories = [
     { id: "all", name: "All Questions", count: qaItems.length },
-    { id: "worship", name: "Worship & Prayer", count: qaItems.filter((q) => q.category === "worship").length },
+    {
+      id: "worship",
+      name: "Worship & Prayer",
+      count: qaItems.filter((q) => q.category === "worship").length,
+    },
     {
       id: "contemporary",
       name: "Contemporary Issues",
       count: qaItems.filter((q) => q.category === "contemporary").length,
     },
-    { id: "spirituality", name: "Spirituality", count: qaItems.filter((q) => q.category === "spirituality").length },
-    { id: "hajj", name: "Hajj & Umrah", count: qaItems.filter((q) => q.category === "hajj").length },
-    { id: "finance", name: "Islamic Finance", count: qaItems.filter((q) => q.category === "finance").length },
-    { id: "family", name: "Family & Marriage", count: qaItems.filter((q) => q.category === "family").length },
-  ]
+    {
+      id: "spirituality",
+      name: "Spirituality",
+      count: qaItems.filter((q) => q.category === "spirituality").length,
+    },
+    {
+      id: "hajj",
+      name: "Hajj & Umrah",
+      count: qaItems.filter((q) => q.category === "hajj").length,
+    },
+    {
+      id: "finance",
+      name: "Islamic Finance",
+      count: qaItems.filter((q) => q.category === "finance").length,
+    },
+    {
+      id: "family",
+      name: "Family & Marriage",
+      count: qaItems.filter((q) => q.category === "family").length,
+    },
+  ];
 
   const filteredQA = qaItems.filter((qa) => {
-    const matchesCategory = selectedCategory === "all" || qa.category === selectedCategory
+    const matchesCategory =
+      selectedCategory === "all" || qa.category === selectedCategory;
     const matchesSearch =
       qa.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       qa.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
       qa.scholar.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      qa.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    return matchesCategory && matchesSearch
-  })
+      qa.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    return matchesCategory && matchesSearch;
+  });
 
-  const featuredQA = qaItems.filter((qa) => qa.featured)
-  const popularQA = qaItems.sort((a, b) => b.likes - a.likes).slice(0, 5)
+  const featuredQA = qaItems.filter((qa) => qa.featured);
+  const popularQA = qaItems.sort((a, b) => b.likes - a.likes).slice(0, 5);
 
   const handleSubmitQuestion = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle question submission
-    console.log("New question:", newQuestion)
-    setNewQuestion("")
-    setShowAskForm(false)
-  }
+    console.log("New question:", newQuestion);
+    setNewQuestion("");
+    setShowAskForm(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -59,9 +92,12 @@ export default function QAPage() {
       <section className="bg-gradient-to-r from-primary to-primary-dark text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Questions & Answers</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              Questions & Answers
+            </h1>
             <p className="text-xl text-blue-100 mb-8">
-              Get authentic Islamic answers from qualified scholars and learn from the community's questions.
+              Get authentic Islamic answers from qualified scholars and learn
+              from the community's questions.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -111,12 +147,17 @@ export default function QAPage() {
                   <Button type="submit" disabled={!newQuestion.trim()}>
                     Submit Question
                   </Button>
-                  <Button type="button" variant="outline" onClick={() => setShowAskForm(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAskForm(false)}
+                  >
                     Cancel
                   </Button>
                 </div>
                 <p className="text-sm text-gray-600">
-                  Your question will be reviewed by our scholars and answered within 24-48 hours.
+                  Your question will be reviewed by our scholars and answered
+                  within 24-48 hours.
                 </p>
               </form>
             </CardContent>
@@ -126,10 +167,15 @@ export default function QAPage() {
         {/* Featured Q&A Section */}
         {selectedCategory === "all" && !searchTerm && (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Questions</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Featured Questions
+            </h2>
             <div className="grid md:grid-cols-2 gap-6">
               {featuredQA.slice(0, 2).map((qa) => (
-                <Card key={qa.id} className="group hover:shadow-lg transition-shadow duration-300 border-primary/20">
+                <Card
+                  key={qa.id}
+                  className="group hover:shadow-lg transition-shadow duration-300 border-primary/20"
+                >
                   <CardHeader>
                     <div className="flex items-start gap-3">
                       <MessageCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
@@ -139,7 +185,10 @@ export default function QAPage() {
                         </CardTitle>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span>Answered by {qa.scholar}</span>
-                          <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          <Badge
+                            variant="secondary"
+                            className="bg-primary/10 text-primary"
+                          >
                             {qa.category}
                           </Badge>
                         </div>
@@ -147,7 +196,9 @@ export default function QAPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 line-clamp-4 mb-4">{qa.answer}</p>
+                    <p className="text-gray-600 line-clamp-4 mb-4">
+                      {qa.answer}
+                    </p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center text-sm text-gray-500">
@@ -160,7 +211,11 @@ export default function QAPage() {
                         </div>
                       </div>
                       <Link href={`/qa/${qa.id}`}>
-                        <Button variant="ghost" size="sm" className="text-primary hover:text-primary-dark">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-primary hover:text-primary-dark"
+                        >
                           Read Full Answer
                         </Button>
                       </Link>
@@ -190,12 +245,17 @@ export default function QAPage() {
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
                       className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                        selectedCategory === category.id ? "bg-primary text-white" : "hover:bg-gray-100"
+                        selectedCategory === category.id
+                          ? "bg-primary text-white"
+                          : "hover:bg-gray-100"
                       }`}
                     >
                       <div className="flex justify-between items-center">
                         <span>{category.name}</span>
-                        <Badge variant="secondary" className="bg-gray-200 text-gray-700">
+                        <Badge
+                          variant="secondary"
+                          className="bg-gray-200 text-gray-700"
+                        >
                           {category.count}
                         </Badge>
                       </div>
@@ -216,7 +276,10 @@ export default function QAPage() {
               <CardContent>
                 <div className="space-y-4">
                   {popularQA.map((qa) => (
-                    <div key={qa.id} className="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
+                    <div
+                      key={qa.id}
+                      className="border-b border-gray-100 last:border-0 pb-3 last:pb-0"
+                    >
                       <Link href={`/qa/${qa.id}`}>
                         <h4 className="font-medium text-sm hover:text-primary transition-colors line-clamp-2 mb-1">
                           {qa.question}
@@ -240,16 +303,22 @@ export default function QAPage() {
           <main className="lg:w-3/4">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {selectedCategory === "all" ? "All Questions" : categories.find((c) => c.id === selectedCategory)?.name}
+                {selectedCategory === "all"
+                  ? "All Questions"
+                  : categories.find((c) => c.id === selectedCategory)?.name}
               </h2>
               <p className="text-gray-600">
-                {filteredQA.length} question{filteredQA.length !== 1 ? "s" : ""} found
+                {filteredQA.length} question{filteredQA.length !== 1 ? "s" : ""}{" "}
+                found
               </p>
             </div>
 
             <div className="space-y-6">
               {filteredQA.map((qa) => (
-                <Card key={qa.id} className="group hover:shadow-lg transition-shadow duration-300">
+                <Card
+                  key={qa.id}
+                  className="group hover:shadow-lg transition-shadow duration-300"
+                >
                   <CardHeader>
                     <div className="flex items-start gap-3">
                       <MessageCircle className="h-6 w-6 text-primary mt-1 flex-shrink-0" />
@@ -262,14 +331,21 @@ export default function QAPage() {
                             <User className="h-4 w-4 mr-1" />
                             Answered by {qa.scholar}
                           </div>
-                          <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          <Badge
+                            variant="secondary"
+                            className="bg-primary/10 text-primary"
+                          >
                             {qa.category}
                           </Badge>
                           <div className="flex items-center">
                             <Calendar className="h-4 w-4 mr-1" />
                             {new Date(qa.publishedAt).toLocaleDateString()}
                           </div>
-                          {qa.featured && <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>}
+                          {qa.featured && (
+                            <Badge className="bg-yellow-100 text-yellow-800">
+                              Featured
+                            </Badge>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -289,17 +365,29 @@ export default function QAPage() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" className="text-gray-600 hover:text-primary">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-gray-600 hover:text-primary"
+                        >
                           <ThumbsUp className="h-4 w-4 mr-1" />
                           {qa.likes}
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-gray-600 hover:text-primary">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-gray-600 hover:text-primary"
+                        >
                           <Share2 className="h-4 w-4 mr-1" />
                           Share
                         </Button>
                       </div>
                       <Link href={`/qa/${qa.id}`}>
-                        <Button variant="ghost" size="sm" className="text-primary hover:text-primary-dark">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-primary hover:text-primary-dark"
+                        >
                           Read Full Answer
                         </Button>
                       </Link>
@@ -314,13 +402,17 @@ export default function QAPage() {
                 <div className="text-gray-400 mb-4">
                   <MessageCircle className="h-16 w-16 mx-auto" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No questions found</h3>
-                <p className="text-gray-600">Try adjusting your search terms or category filter.</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  No questions found
+                </h3>
+                <p className="text-gray-600">
+                  Try adjusting your search terms or category filter.
+                </p>
               </div>
             )}
           </main>
         </div>
       </div>
     </div>
-  )
+  );
 }
