@@ -137,6 +137,8 @@ export default function HomePage() {
                     src={article.image || "/placeholder.svg"}
                     alt={article.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    width={640}
+                    height={360}
                   />
                 </div>
                 <CardHeader>

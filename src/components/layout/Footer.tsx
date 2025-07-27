@@ -40,8 +40,8 @@ export default function Footer() {
                 <Image
                   src="/images/dawahtube-logo.png"
                   alt="Da'wahTube Logo"
-                  width={10}
-                  height={10}
+                  width={40}
+                  height={40}
                   className="rounded-full w-full h-full object-contain"
                 />
               </div>

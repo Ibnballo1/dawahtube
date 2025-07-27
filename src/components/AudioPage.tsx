@@ -328,8 +328,8 @@ export default function AudioPage() {
                           src={lecture.image || "/placeholder.svg"}
                           alt={lecture.speaker}
                           className="w-20 h-20 rounded-full object-cover"
-                          width={64}
-                          height={64}
+                          width={80}
+                          height={80}
                         />
                         <button
                           onClick={() => handlePlayPause(lecture)}
