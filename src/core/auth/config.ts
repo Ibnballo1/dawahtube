@@ -39,4 +39,4 @@ const auth = betterAuth({
 export default auth;
 
 // src/core/auth/server.ts  — import this in Server Components and Actions
-// export const { getSession, signIn, signOut } = auth;
+export const { getSession, signInEmail, signOut } = auth.api;

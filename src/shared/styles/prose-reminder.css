@@ -1,0 +1,66 @@
+/* src/shared/styles/prose-reminder.css
+   Styles for MDX content rendered inside the dark Daily Reminder section.
+   Imported in globals.css via @import.
+   All colours use rgba(255,255,255,…) for dark-surface contrast.
+*/
+
+.prose-reminder {
+  color: rgba(255, 255, 255, 0.65);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--leading-loose);
+  max-width: 52ch;
+  margin-inline: auto;
+}
+
+.prose-reminder p {
+  margin-bottom: var(--space-4);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.prose-reminder p:last-child {
+  margin-bottom: 0;
+}
+
+.prose-reminder strong {
+  font-weight: var(--weight-semibold);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Arabic verse block inside reminder */
+.prose-reminder [dir="rtl"] p {
+  font-family: var(--font-arabic);
+  font-size: var(--text-arabic-xl);
+  line-height: var(--leading-arabic);
+  color: var(--color-accent-400);
+  text-align: right;
+  margin-bottom: var(--space-3);
+}
+
+/* Hadith blockquote inside reminder */
+.prose-reminder blockquote {
+  border-left: 2px solid rgba(212, 175, 55, 0.5);
+  padding-left: var(--space-6);
+  margin: var(--space-6) 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+/* Source line */
+.prose-reminder blockquote footer {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.35);
+  font-style: normal;
+}
+
+/* Benefit / callout box inside reminder */
+.prose-reminder aside {
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin: var(--space-6) 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: normal;
+}

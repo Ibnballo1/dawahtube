@@ -104,9 +104,11 @@ export async function generateUniqueSlug(opts: SlugOptions): Promise<string> {
     AND deleted_at IS NULL
   `);
 
-  if (rows.rows.length === 0) return base;
+  if (rows.length === 0) return base;
 
-  const suffixes = (rows.rows as Array<{ slug: string }>).map((r) => {
+  // db.execute returns a generic RowList type; cast via unknown to the specific
+  // shape we expect to satisfy TypeScript safely.
+  const suffixes = (rows as unknown as Array<{ slug: string }>).map((r) => {
     const match = r.slug.match(new RegExp(`^${base}-(\\d+)$`));
     return match ? parseInt(match[1]!, 10) : 0;
   });
