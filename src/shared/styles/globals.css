@@ -349,6 +349,58 @@
     @apply pl-6 my-8 italic text-muted-foreground;
   }
 
+  @layer components {
+    /* Heading anchor links — added by rehype-autolink-headings.
+     Hidden until the heading is hovered or focused, so the article
+     reads cleanly while still offering deep-linkable sections. */
+    .prose-islamic h2,
+    .prose-islamic h3 {
+      position: relative;
+      scroll-margin-top: 96px; /* offset for sticky nav when jumping via TOC */
+    }
+
+    .prose-islamic .heading-anchor {
+      display: inline-flex;
+      align-items: center;
+      margin-left: var(--space-2);
+      color: var(--color-border-emphasis);
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+      vertical-align: middle;
+    }
+
+    .prose-islamic h2:hover .heading-anchor,
+    .prose-islamic h3:hover .heading-anchor,
+    .prose-islamic .heading-anchor:focus-visible {
+      opacity: 1;
+      color: var(--color-primary-700);
+    }
+
+    .prose-islamic ul,
+    .prose-islamic ol {
+      margin: var(--space-4) 0;
+      padding-left: var(--space-6);
+      color: var(--color-text-secondary);
+    }
+
+    .prose-islamic li {
+      margin-bottom: var(--space-2);
+      line-height: var(--leading-relaxed);
+    }
+
+    .prose-islamic img {
+      border-radius: var(--radius-xl);
+      margin: var(--space-6) 0;
+    }
+
+    .prose-islamic a:not(.heading-anchor) {
+      text-decoration: underline;
+      text-decoration-color: var(--color-primary-300);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+  }
+
   .label-overline {
     @apply text-xs font-semibold tracking-widest uppercase;
     color: var(--color-brand-emerald-700);
