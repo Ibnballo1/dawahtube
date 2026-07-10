@@ -1,0 +1,512 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Da'wahTube — Global Design System (Tailwind CSS v4 + Shadcn UI + Premium Tokens)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── CRITICAL: ALL IMPORTS MUST BE AT THE ABSOLUTE TOP OF THE FILE ── */
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap");
+@import "./prose-reminder.css";
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TAILWIND V4 THEME CONFIGURATION
+═══════════════════════════════════════════════════════════════════════════ */
+@theme inline {
+  /* Fonts */
+  --font-display: "Syne", system-ui, sans-serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-mono: "DM Mono", "Cascadia Code", monospace;
+  --font-arabic: "Amiri", "Traditional Arabic", serif;
+
+  --font-heading: var(--font-display);
+
+  /* Shadcn Semantic Mapping to System Properties */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Sidebar Tokens */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Custom Color Palettes */
+  --color-brand-emerald-50: #ecfdf5;
+  --color-brand-emerald-100: #d1fae5;
+  --color-brand-emerald-200: #a7f3d0;
+  --color-brand-emerald-300: #6ee7b7;
+  --color-brand-emerald-400: #34d399;
+  --color-brand-emerald-500: #10b981;
+  --color-brand-emerald-600: #059669;
+  --color-brand-emerald-700: #065f46;
+  --color-brand-emerald-800: #064e3b;
+  --color-brand-emerald-900: #022c22;
+
+  --color-brand-teal-400: #2dd4bf;
+  --color-brand-teal-500: #14b8a6;
+  --color-brand-teal-600: #0d9488;
+  --color-brand-teal-700: #0f766e;
+  --color-brand-teal-800: #115e59;
+
+  --color-brand-gold-200: #fef3c7;
+  --color-brand-gold-300: #fde68a;
+  --color-brand-gold-400: #fcd34d;
+  --color-brand-gold-500: #f59e0b;
+  --color-brand-gold-600: #d97706;
+  --color-brand-gold-700: #d4af37;
+  --color-brand-gold-800: #b45309;
+
+  /* Type Scale Extensions */
+  --text-xs: 0.64rem;
+  --text-sm: 0.8rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.563rem;
+  --text-2xl: 1.953rem;
+  --text-3xl: 2.441rem;
+  --text-4xl: 3.052rem;
+  --text-5xl: 3.815rem;
+
+  /* Custom Transitions & Timings */
+  --animate-shimmer: shimmer 1.5s infinite;
+  --animate-waveform: waveform 1.2s ease-in-out infinite;
+
+  /* Structural Radii mapped from Shadcn */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE DESKTOP TOKENS (Shadcn + Custom Structural Variables)
+═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Base Layout */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.13 0.01 247);
+
+  /* Structural Overlays */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.13 0.01 247);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.13 0.01 247);
+
+  /* Primary Brand Interactions Map — Linked to Academic Emerald #065F46 */
+  --primary: #065f46;
+  --primary-foreground: oklch(0.98 0.01 165.7);
+
+  /* Secondary Map — Linked to Academic Teal #0F766E */
+  --secondary: #0f766e;
+  --secondary-foreground: oklch(1 0 0);
+
+  /* Muted and Functional Accent Layers */
+  --muted: oklch(0.96 0.01 247);
+  --muted-foreground: oklch(0.45 0.02 247);
+  --accent: oklch(0.96 0.01 247);
+  --accent-foreground: #065f46;
+
+  /* Destructive States */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  /* Clean Borders & Input Outlines */
+  --border: oklch(0.92 0.01 247);
+  --input: oklch(0.92 0.01 247);
+  --ring: oklch(0.36 0.11 165.7 / 20%);
+  --radius: 0.75rem;
+
+  /* Layout Custom Variables */
+  --section-py: clamp(4rem, 8vw, 8rem);
+  --section-px: clamp(1.5rem, 5vw, 2rem);
+  --prose-width: 65ch;
+  --geometric-opacity: 0.04;
+
+  /* Sidebar Design Token Overrides */
+  --sidebar: oklch(0.98 0.01 247);
+  --sidebar-foreground: oklch(0.25 0.02 247);
+  --sidebar-primary: oklch(0.36 0.11 165.7);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.93 0.01 247);
+  --sidebar-accent-foreground: oklch(0.36 0.11 165.7);
+  --sidebar-border: oklch(0.92 0.01 247);
+  --sidebar-ring: oklch(0.36 0.11 165.7 / 20%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK MODE DESKTOP TOKENS
+═══════════════════════════════════════════════════════════════════════════ */
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+
+  --primary: oklch(0.78 0.15 163.5);
+  --primary-foreground: oklch(0.12 0.04 165);
+
+  --secondary: #14b8a6;
+  --secondary-foreground: oklch(0.985 0 0);
+
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.78 0.15 163.5 / 30%);
+
+  --geometric-opacity: 0.06;
+
+  /* Sidebar Dark Configurations */
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.78 0.15 163.5);
+  --sidebar-primary-foreground: oklch(0.12 0.04 165);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.78 0.15 163.5 / 30%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE ELEMENTS LAYER
+═══════════════════════════════════════════════════════════════════════════ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans text-base;
+    line-height: 1.625;
+    transition:
+      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-bold text-foreground tracking-tight;
+    line-height: 1.25;
+  }
+
+  h1 {
+    @apply text-4xl;
+  }
+  h2 {
+    @apply text-3xl;
+  }
+  h3 {
+    @apply text-2xl;
+  }
+  h4 {
+    @apply text-xl;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  [lang="ar"],
+  .arabic,
+  .font-arabic {
+    font-family: var(--font-arabic) !important;
+    direction: rtl;
+    line-height: 2;
+    font-size: 1.375rem;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-emerald-100);
+    color: var(--color-brand-emerald-900);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CUSTOM COMPONENT LAYERS & PLATFORM PATTERNS
+═══════════════════════════════════════════════════════════════════════════ */
+@layer components {
+  .container-site {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: var(--section-px);
+  }
+
+  .container-prose {
+    width: 100%;
+    max-width: var(--prose-width);
+    margin-inline: auto;
+  }
+
+  .section {
+    padding-block: var(--section-py);
+  }
+
+  .geometric-bg {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .geometric-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent calc(2rem - 1px),
+        rgba(6, 95, 70, var(--geometric-opacity)) 2rem
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent calc(2rem - 1px),
+        rgba(6, 95, 70, var(--geometric-opacity)) 2rem
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .geometric-bg > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .prose-islamic {
+    @apply text-md text-foreground/90 mx-auto;
+    line-height: 1.75;
+    max-width: var(--prose-width);
+  }
+
+  .prose-islamic h2 {
+    @apply text-2xl mt-12 mb-4 pb-3 border-b border-border;
+  }
+
+  .prose-islamic h3 {
+    @apply text-xl mt-8 mb-3;
+    color: var(--color-brand-emerald-700);
+  }
+
+  .dark .prose-islamic h3 {
+    color: var(--color-brand-emerald-400);
+  }
+
+  .prose-islamic p {
+    @apply mb-6;
+  }
+
+  .prose-islamic blockquote {
+    border-left: 3px solid var(--color-brand-gold-700);
+    @apply pl-6 my-8 italic text-muted-foreground;
+  }
+
+  @layer components {
+    /* Heading anchor links — added by rehype-autolink-headings.
+     Hidden until the heading is hovered or focused, so the article
+     reads cleanly while still offering deep-linkable sections. */
+    .prose-islamic h2,
+    .prose-islamic h3 {
+      position: relative;
+      scroll-margin-top: 96px; /* offset for sticky nav when jumping via TOC */
+    }
+
+    .prose-islamic .heading-anchor {
+      display: inline-flex;
+      align-items: center;
+      margin-left: var(--space-2);
+      color: var(--color-border-emphasis);
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+      vertical-align: middle;
+    }
+
+    .prose-islamic h2:hover .heading-anchor,
+    .prose-islamic h3:hover .heading-anchor,
+    .prose-islamic .heading-anchor:focus-visible {
+      opacity: 1;
+      color: var(--color-primary-700);
+    }
+
+    .prose-islamic ul,
+    .prose-islamic ol {
+      margin: var(--space-4) 0;
+      padding-left: var(--space-6);
+      color: var(--color-text-secondary);
+    }
+
+    .prose-islamic li {
+      margin-bottom: var(--space-2);
+      line-height: var(--leading-relaxed);
+    }
+
+    .prose-islamic img {
+      border-radius: var(--radius-xl);
+      margin: var(--space-6) 0;
+    }
+
+    .prose-islamic a:not(.heading-anchor) {
+      text-decoration: underline;
+      text-decoration-color: var(--color-primary-300);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+  }
+
+  .label-overline {
+    @apply text-xs font-semibold tracking-widest uppercase;
+    color: var(--color-brand-emerald-700);
+  }
+
+  .dark .label-overline {
+    color: var(--color-brand-emerald-400);
+  }
+
+  .rule-gold {
+    display: block;
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--color-brand-gold-700),
+      var(--color-brand-gold-400)
+    );
+    @apply rounded-full;
+  }
+
+  .duration-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    @apply font-mono text-xs font-medium rounded-sm backdrop-blur-md;
+  }
+
+  .waveform-bars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 24px;
+    color: var(--primary);
+  }
+
+  .waveform-bars span {
+    display: block;
+    width: 3px;
+    background: currentColor;
+    @apply rounded-full;
+    animation: waveform 1.2s ease-in-out infinite;
+  }
+
+  .waveform-bars span:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .waveform-bars span:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  .waveform-bars span:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+  .waveform-bars span:nth-child(5) {
+    animation-delay: 0.15s;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    background: var(--color-brand-emerald-700);
+    @apply text-white px-4 py-2 rounded-md font-semibold text-sm;
+    z-index: 50;
+    transition: top 0.1s ease-out;
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATION INTERACTIVE LOGIC
+═══════════════════════════════════════════════════════════════════════════ */
+@layer utilities {
+  @keyframes waveform {
+    0%,
+    100% {
+      height: 4px;
+      opacity: 0.5;
+    }
+    50% {
+      height: 20px;
+      opacity: 1;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
