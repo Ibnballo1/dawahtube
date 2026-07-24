@@ -1,66 +1,82 @@
 // src/core/storage/presign.ts
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { nanoid } from "nanoid";
-import { r2, BUCKETS, type BucketKey } from "./r2-client";
+import { r2, BUCKETS, type BucketName } from "./r2-client";
 
-const ALLOWED_TYPES = {
-  image: ["image/jpeg", "image/webp", "image/png"],
-  audio: ["audio/mpeg", "audio/mp4", "audio/ogg"],
-  video: ["video/mp4", "video/webm"],
-  pdf: ["application/pdf"],
-} as const;
+// ─── Presigned PUT (upload) ───────────────────────────────────────────────────
+// Generates a URL the client can use to PUT a file directly to R2.
+// Expires in 10 minutes — enough time for any reasonable upload.
 
-type MediaType = keyof typeof ALLOWED_TYPES;
+export async function createPresignedUpload({
+  bucket,
+  key,
+  contentType,
+  maxBytes,
+}: {
+  bucket: BucketName;
+  key: string;
+  contentType: string;
+  maxBytes?: number;
+}): Promise<string> {
+  const command = new PutObjectCommand({
+    Bucket: BUCKETS[bucket],
+    Key: key,
+    ContentType: contentType,
+    ...(maxBytes && { ContentLength: maxBytes }),
+  });
 
-interface PresignUploadOptions {
-  bucket: BucketKey;
-  entity: string; // e.g. 'lectures', 'scholars'
-  entityId: string;
-  mediaType: MediaType;
-  mimeType: string;
-  maxBytes: number;
+  return getSignedUrl(r2, command, { expiresIn: 60 * 10 });
 }
 
-export async function createPresignedUpload(opts: PresignUploadOptions) {
-  if (!ALLOWED_TYPES[opts.mediaType].includes(opts.mimeType as never)) {
-    throw new Error(
-      `MIME type ${opts.mimeType} not allowed for ${opts.mediaType}`,
-    );
+// ─── Presigned GET (read) ─────────────────────────────────────────────────────
+// Used for private buckets (audio, books) to generate time-limited read URLs.
+// Public bucket assets use their public CDN URL directly.
+
+export async function createPresignedRead(
+  bucket: BucketName,
+  key: string,
+  expiresInSeconds = 3600,
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: BUCKETS[bucket],
+    Key: key,
+  });
+
+  return getSignedUrl(r2, command, { expiresIn: expiresInSeconds });
+}
+
+// ─── Public URL builder ───────────────────────────────────────────────────────
+// For the public `media` bucket. Uses the R2 custom domain if set.
+
+// Example helper in your presign / storage module
+export function getPublicUrl(key: string, bucket: BucketName): string {
+  let domain = "";
+
+  switch (bucket) {
+    case "media":
+      domain = process.env.NEXT_PUBLIC_MEDIA_URL || "";
+      break;
+    case "uploads":
+      domain = process.env.NEXT_PUBLIC_UPLOADS_URL || "";
+      break;
+    case "books":
+      domain = process.env.NEXT_PUBLIC_BOOKS_URL || "";
+      break;
+    default:
+      domain = process.env.NEXT_PUBLIC_STORAGE_URL || "";
   }
 
-  const ext = opts.mimeType.split("/")[1]!;
-  const key = `${opts.entity}/${opts.entityId}/${opts.mediaType}/${Date.now()}-${nanoid(8)}.${ext}`;
+  // Fallback default if not defined
+  if (!domain) {
+    domain = process.env.NEXT_PUBLIC_STORAGE_URL || "http://localhost:3000";
+  }
 
-  const url = await getSignedUrl(
-    r2,
-    new PutObjectCommand({
-      Bucket: BUCKETS[opts.bucket],
-      Key: key,
-      ContentType: opts.mimeType,
-      ContentLength: opts.maxBytes,
-    }),
-    { expiresIn: 300 }, // 5-minute upload window
-  );
+  if (!domain.startsWith("http://") && !domain.startsWith("https://")) {
+    domain = `https://${domain}`;
+  }
 
-  return {
-    url,
-    key,
-    bucket: opts.bucket,
-    mimeType: opts.mimeType,
-    assetType: opts.mediaType,
-    expiresAt: new Date(Date.now() + 300_000),
-  };
-}
+  const cleanBase = domain.replace(/\/$/, "");
+  const cleanKey = key.replace(/^\//, "");
 
-export async function createPresignedRead(bucket: BucketKey, key: string) {
-  return getSignedUrl(
-    r2,
-    new GetObjectCommand({ Bucket: BUCKETS[bucket], Key: key }),
-    { expiresIn: 3600 }, // 1-hour read window
-  );
-}
-
-export function getPublicUrl(key: string): string {
-  return `${process.env.R2_PUBLIC_URL}/${key}`;
+  return `${cleanBase}/${cleanKey}`;
 }

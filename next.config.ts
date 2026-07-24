@@ -15,6 +15,11 @@ const config: NextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000", // Allow local Next.js server
+      },
+      {
         // Cloudflare R2 public CDN (custom domain)
         // e.g. https://media.dawahtube.com
         protocol: "https",

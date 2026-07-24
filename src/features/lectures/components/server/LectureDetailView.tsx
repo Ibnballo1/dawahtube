@@ -2,7 +2,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@shared/components/ui/badge";
-import { Button } from "@shared/components/ui/button";
 import {
   formatDate,
   formatDurationLong,
@@ -24,6 +23,12 @@ export function LectureDetailView({ lecture }: LectureDetailViewProps) {
       )
     : null;
   const viewCount = Number(lecture.viewCount);
+
+  // Sanitize URLs to ensure empty strings treated as null
+  const thumbnailUrl = lecture.thumbnailAsset?.publicUrl?.trim() || null;
+  const scholarAvatarUrl =
+    lecture.scholar?.avatarAsset?.publicUrl?.trim() || null;
+  const audioUrl = lecture.audioAsset?.publicUrl?.trim() || null;
 
   return (
     <article aria-labelledby="lecture-title" className="flex flex-col gap-6">
@@ -63,15 +68,16 @@ export function LectureDetailView({ lecture }: LectureDetailViewProps) {
       </nav>
 
       {/* ── Thumbnail ───────────────────────────────────────────────── */}
-      {lecture.thumbnailAsset?.publicUrl && (
+      {thumbnailUrl && (
         <div className="relative aspect-video rounded-2xl overflow-hidden bg-surface-muted shadow-lg">
           <Image
-            src={lecture.thumbnailAsset.publicUrl}
-            alt={lecture.thumbnailAsset.altText ?? lecture.title}
+            src={thumbnailUrl}
+            alt={lecture.thumbnailAsset?.altText ?? lecture.title}
             fill
             priority
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 66vw"
+            unoptimized={process.env.NODE_ENV === "development"}
           />
         </div>
       )}
@@ -118,13 +124,14 @@ export function LectureDetailView({ lecture }: LectureDetailViewProps) {
           aria-label={`View profile of ${scholarName}`}
         >
           <div className="relative size-12 rounded-full overflow-hidden bg-primary-100 shrink-0 ring-2 ring-transparent group-hover:ring-primary-300 transition-all">
-            {lecture.scholar.avatarAsset?.publicUrl ? (
+            {scholarAvatarUrl ? (
               <Image
-                src={lecture.scholar.avatarAsset.publicUrl}
+                src={scholarAvatarUrl}
                 alt={scholarName ?? ""}
                 fill
                 className="object-cover"
                 sizes="48px"
+                unoptimized={process.env.NODE_ENV === "development"}
               />
             ) : (
               <div className="absolute inset-0 bg-primary-700 flex items-center justify-center">
@@ -149,18 +156,18 @@ export function LectureDetailView({ lecture }: LectureDetailViewProps) {
       )}
 
       {/* ── Audio player ─────────────────────────────────────────────── */}
-      {lecture.audioAsset && (
+      {lecture.audioAsset && audioUrl && (
         <AudioPlayer
           lectureId={lecture.id}
           lectureTitle={lecture.title}
           scholarName={scholarName}
           audioKey={lecture.audioAsset.key}
-          audioUrl={lecture.audioAsset.publicUrl ?? ""}
+          audioUrl={audioUrl}
           durationSecs={
             lecture.audioAsset.durationSecs ?? lecture.durationSecs ?? 0
           }
           allowDownload={lecture.allowDownload}
-          thumbnailUrl={lecture.thumbnailAsset?.publicUrl ?? null}
+          thumbnailUrl={thumbnailUrl}
         />
       )}
 

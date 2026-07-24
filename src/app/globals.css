@@ -1,0 +1,4 @@
+/* src/app/globals.css
+   This file exists only for Next.js to find a CSS entry point.
+   All actual styles live in src/shared/styles/globals.css — imported in layout.tsx.
+   Do NOT add @import "tailwindcss" here — that would double-load Tailwind. */

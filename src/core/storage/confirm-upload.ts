@@ -1,66 +1,87 @@
 // src/core/storage/confirm-upload.ts
-// Called by the admin client after the browser PUT to R2 succeeds.
-// Writes the media_assets row and returns the asset id.
 "use server";
+
 import { db } from "@core/database/client";
 import { mediaAssets } from "@core/database/schema";
-import { auth } from "@/core/auth/config";
-import { HeadObjectCommand } from "@aws-sdk/client-s3";
-import { r2, BUCKETS } from "./r2-client";
-import { getPublicUrl } from "./presign";
 import { nanoid } from "nanoid";
 import { z } from "zod";
+import { getPublicUrl } from "./presign";
 
 const confirmSchema = z.object({
   key: z.string().min(1),
   bucket: z.enum(["media", "uploads", "books"]),
-  assetType: z.enum([
-    "audio",
-    "video",
-    "image",
-    "pdf",
-    "thumbnail",
-    "avatar",
-    "cover",
-    "og_image",
-  ]),
-  mimeType: z.string(),
+  mimeType: z.string().min(1),
+  sizeBytes: z.number().int().positive(),
+  filename: z.string().min(1),
   altText: z.string().optional(),
+  durationSecs: z.number().int().positive().optional(),
 });
 
-export async function confirmUpload(input: z.infer<typeof confirmSchema>) {
-  const session = await auth.getSession();
-  if (!session?.user) throw new Error("UNAUTHENTICATED");
+export type ConfirmUploadInput = z.infer<typeof confirmSchema>;
 
-  const data = confirmSchema.parse(input);
+export async function confirmUpload(
+  input: ConfirmUploadInput,
+): Promise<
+  | { ok: true; assetId: string; publicUrl: string | null }
+  | { ok: false; error: string }
+> {
+  const data = confirmSchema.safeParse(input);
+  if (!data.success) {
+    return {
+      ok: false,
+      error: data.error.issues[0]?.message ?? "Invalid input",
+    };
+  }
 
-  // Verify the object actually exists in R2 before writing DB record
-  const head = await r2.send(
-    new HeadObjectCommand({
-      Bucket: BUCKETS[data.bucket],
-      Key: data.key,
-    }),
-  );
+  const { key, bucket, mimeType, sizeBytes, filename, altText, durationSecs } =
+    data.data;
 
-  const isPublic = data.bucket === "media";
-  const publicUrl = isPublic ? getPublicUrl(data.key) : null;
+  let assetType:
+    | "audio"
+    | "video"
+    | "image"
+    | "pdf"
+    | "thumbnail"
+    | "avatar"
+    | "cover"
+    | "og_image";
 
-  const [asset] = await db
-    .insert(mediaAssets)
-    .values({
-      id: `mas_${nanoid(16)}`,
-      uploaderUserId: session.user.id,
-      bucket: data.bucket,
-      key: data.key,
+  if (mimeType.startsWith("audio/")) {
+    assetType = "audio";
+  } else if (mimeType === "application/pdf") {
+    assetType = "pdf";
+  } else if (mimeType.startsWith("image/")) {
+    assetType = "image";
+  } else {
+    assetType = "image";
+  }
+
+  // ✅ FIX: Generate public URL for media AND uploads buckets
+  const publicUrl =
+    bucket === "media" || bucket === "uploads" || bucket === "books"
+      ? getPublicUrl(key, bucket)
+      : null;
+
+  const id = `ast_${nanoid(16)}`;
+
+  try {
+    await db.insert(mediaAssets).values({
+      id,
+      key,
+      bucket,
+      mimeType,
+      sizeBytes,
+      originalFilename: filename,
+      altText: altText ?? filename,
       publicUrl,
-      assetType: data.assetType,
-      mimeType: data.mimeType,
-      sizeBytes: head.ContentLength ?? 0,
+      assetType,
+      durationSecs: durationSecs ?? null,
       status: "ready",
-      altText: data.altText ?? null,
-      metadata: {},
-    })
-    .returning();
+    });
 
-  return asset;
+    return { ok: true, assetId: id, publicUrl };
+  } catch (err) {
+    console.error("[confirmUpload] DB insert failed:", err);
+    return { ok: false, error: "Failed to register upload. Please try again." };
+  }
 }

@@ -84,14 +84,16 @@ function LectureCard({
         tabIndex={-1}
         aria-hidden="true"
       >
-        {lecture.thumbnailAsset?.publicUrl ? (
+        {lecture.thumbnailAsset?.publicUrl?.trim() ? (
           <Image
-            src={lecture.thumbnailAsset.publicUrl}
-            alt={lecture.thumbnailAsset.altText ?? lecture.title}
+            src={lecture.thumbnailAsset.publicUrl.trim()}
+            alt={lecture.thumbnailAsset.altText || lecture.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-slow"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={priority}
+            // Add unoptimized in dev if media.dawahtube.com isn't reachable locally:
+            unoptimized={process.env.NODE_ENV === "development"}
           />
         ) : (
           <PlaceholderThumb />

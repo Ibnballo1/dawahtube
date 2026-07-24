@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@shared/lib/utils";
+import Image from "next/image";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SITE FOOTER
@@ -48,7 +49,13 @@ export function SiteFooter() {
               href="/"
               className="flex items-center gap-2.5 w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400 rounded-sm"
             >
-              <FooterLogoMark />
+              {/* <FooterLogoMark /> */}
+              <Image
+                src="/images/dawahtube-logo.png"
+                alt="Da'wahTube"
+                width={32}
+                height={32}
+              />
               <span className="font-display font-bold text-lg text-white leading-none">
                 Da&apos;wahTube
               </span>
@@ -160,21 +167,21 @@ function FooterLink({
   );
 }
 
-function FooterLogoMark() {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 28 28"
-      fill="none"
-      aria-hidden="true"
-    >
-      <rect width="28" height="28" rx="6" fill="#065F46" />
-      <path
-        d="M14 4L16.2 10.5H23L17.4 14.5L19.6 21L14 17L8.4 21L10.6 14.5L5 10.5H11.8L14 4Z"
-        fill="#D4AF37"
-        opacity="0.9"
-      />
-    </svg>
-  );
-}
+// function FooterLogoMark() {
+//   return (
+//     <svg
+//       width="24"
+//       height="24"
+//       viewBox="0 0 28 28"
+//       fill="none"
+//       aria-hidden="true"
+//     >
+//       <rect width="28" height="28" rx="6" fill="#065F46" />
+//       <path
+//         d="M14 4L16.2 10.5H23L17.4 14.5L19.6 21L14 17L8.4 21L10.6 14.5L5 10.5H11.8L14 4Z"
+//         fill="#D4AF37"
+//         opacity="0.9"
+//       />
+//     </svg>
+//   );
+// }

@@ -72,6 +72,7 @@ export function AudioPlayer({
       audio.currentTime = 0;
     };
     const onError = () => {
+      console.error("Audio failed to load from URL:", audioUrl);
       setError(true);
       setLoading(false);
     };

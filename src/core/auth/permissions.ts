@@ -97,16 +97,3 @@ export const DEFAULT_ROLES: Record<
     ],
   },
 };
-
-export async function requirePermission(permission: Permission) {
-  // Placeholder implementation - replace with real auth logic
-  const userPermissions: Permission[] = [
-    PERMISSIONS.LECTURE_CREATE,
-    PERMISSIONS.ARTICLE_EDIT,
-    PERMISSIONS.FEATURED_MANAGE,
-  ]; // Example: fetched from user session or DB
-
-  if (!userPermissions.includes(permission)) {
-    throw new Error("Insufficient permissions");
-  }
-}

@@ -10,7 +10,6 @@ import { z } from "zod";
 import { createPresignedRead } from "@core/storage/presign";
 import { headers } from "next/headers";
 import auth from "@core/auth/config";
-import { getSession } from "@core/auth/config";
 
 // ─── Request a fresh presigned URL for reading/downloading a book PDF ────────
 //
@@ -49,9 +48,9 @@ export async function requestBookAccess(
 
   // Gate non-free books behind authentication (free books are open to all)
   if (!book.allowFreeDownload) {
-    const session = await getSession({ headers: await headers() }).catch(
-      () => null,
-    );
+    const session = await auth.api
+      .getSession({ headers: await headers() })
+      .catch(() => null);
     if (!session?.user) {
       return { ok: false, error: "Please sign in to access this book." };
     }
@@ -86,9 +85,9 @@ export async function requestBookAccess(
 // actually being issued.
 
 async function recordDownload(bookId: string): Promise<void> {
-  const session = await getSession({ headers: await headers() }).catch(
-    () => null,
-  );
+  const session = await auth.api
+    .getSession({ headers: await headers() })
+    .catch(() => null);
 
   await db.insert(bookDownloads).values({
     id: `bd_${nanoid(16)}`,
