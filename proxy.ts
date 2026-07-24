@@ -1,155 +1,188 @@
-// // src/middleware.ts  (project root — Next.js reads it from here)
-// //
-// // Runs on the edge before every request.
-// // Responsibilities:
-// //   1. Redirect canonical slug changes (301 SEO-safe redirects)
-// //   2. Protect /admin/* routes — require authentication + role
-// //   3. Protect /dashboard/* routes — require authentication
-// //   4. Allow everything else through (public routes need no auth)
+// // src/proxy.ts
 
 // import { NextRequest, NextResponse } from "next/server";
-// import auth from "@core/auth/config";
+// import { hasSession } from "@core/auth/edge"; // IMPORT THE NEW EDGE UTILITY HERE
 
-// // Routes that require authentication
 // const PROTECTED_PREFIXES = ["/dashboard", "/account", "/bookmarks"];
-
-// // Routes that require admin role (checked against cached user.roleSlugs)
 // const ADMIN_PREFIXES = ["/admin"];
-
-// // Public routes — always pass through (no auth check even if session exists)
 // const PUBLIC_PREFIXES = [
-//   "/_next",
+//   "/_next/static",
+//   "/_next/image",
 //   "/api/analytics",
 //   "/api/cron",
-//   "/favicon",
-//   "/robots",
-//   "/sitemap",
+//   "/favicon.ico",
+//   "/robots.txt",
+//   "/sitemap.xml",
 //   "/icons",
 // ];
 
 // export async function proxy(req: NextRequest) {
 //   const { pathname } = req.nextUrl;
 
-//   // ── Skip public and static assets ─────────────────────────────────────────
 //   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
 //     return NextResponse.next();
 //   }
 
-//   // ── Admin route protection ─────────────────────────────────────────────────
-//   if (ADMIN_PREFIXES.some((p) => pathname.startsWith(p))) {
-//     const session = await auth.api
-//       .getSession({ headers: req.headers })
-//       .catch(() => null);
+//   const isAuthProtected = PROTECTED_PREFIXES.some((p) =>
+//     pathname.startsWith(p),
+//   );
+//   const isAdminProtected = ADMIN_PREFIXES.some((p) => pathname.startsWith(p));
 
-//     if (!session?.user) {
+//   // ── Unified Edge Session Check ───────────────────────────────────────────
+//   if (isAuthProtected || isAdminProtected) {
+//     if (!hasSession(req)) {
 //       const url = req.nextUrl.clone();
 //       url.pathname = "/sign-in";
 //       url.searchParams.set("redirect", pathname);
 //       return NextResponse.redirect(url, 302);
 //     }
 
-//     const role = session.user.role as string | undefined;
-//     const isAdmin =
-//       role === "super_admin" || role === "admin" || role === "editor";
-
-//     if (!isAdmin) {
-//       const url = req.nextUrl.clone();
-//       url.pathname = "/403";
-//       return NextResponse.rewrite(url);
-//     }
-
+//     // For admin paths, we let the request pass to the Server Component layer
+//     // where deep RBAC verification (role validation) can safely happen.
 //     return NextResponse.next();
-//   }
-
-//   // ── User dashboard protection ──────────────────────────────────────────────
-//   if (PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
-//     const session = await auth.api
-//       .getSession({ headers: req.headers })
-//       .catch(() => null);
-
-//     if (!session?.user) {
-//       const url = req.nextUrl.clone();
-//       url.pathname = "/sign-in";
-//       url.searchParams.set("redirect", pathname);
-//       return NextResponse.redirect(url, 302);
-//     }
-
-//     return NextResponse.next();
-//   }
-
-//   // ── Canonical slug redirect ────────────────────────────────────────────────
-//   // Check if this looks like a content slug path
-//   const SLUG_PATTERNS = [
-//     { prefix: "/lectures/", table: "lectures" },
-//     { prefix: "/articles/", table: "articles" },
-//     { prefix: "/library/", table: "books" },
-//     { prefix: "/scholars/", table: "scholars" },
-//   ];
-
-//   const match = SLUG_PATTERNS.find((p) => pathname.startsWith(p.prefix));
-//   if (match) {
-//     const slug = pathname.replace(match.prefix, "").split("/")[0];
-//     const canonical = req.headers.get("x-canonical-slug");
-
-//     // x-canonical-slug header is set by the page itself when it detects
-//     // the requested slug matches a historical canonical_slug but not the
-//     // current slug. The page rewrites to itself with the header set.
-//     // The middleware then issues a 301 to the current slug.
-//     if (canonical && canonical !== slug) {
-//       const url = req.nextUrl.clone();
-//       url.pathname = `${match.prefix}${canonical}`;
-//       return NextResponse.redirect(url, 301);
-//     }
 //   }
 
 //   return NextResponse.next();
 // }
 
 // export const config = {
-//   // Run on all routes except static files
-//   matcher: ["/((?!_next/static|_next/image|favicon.ico|icons/|images/).*)"],
+//   matcher: [
+//     "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|icons/|images/).*)",
+//   ],
 // };
 
-import { NextRequest, NextResponse } from "next/server";
-import { hasSession } from "@core/auth/edge"; // IMPORT THE NEW EDGE UTILITY HERE
+// src/middleware.ts
+//
+// Edge middleware — runs before every request.
+// Responsibilities (in order):
+//   1. Skip static assets and public API routes
+//   2. Protect /admin/* — requires authentication + admin role
+//   3. Protect /dashboard/* — requires authentication
+//   4. Redirect authenticated users away from auth pages
+//   5. Canonical slug redirect for renamed content
 
-const PROTECTED_PREFIXES = ["/dashboard", "/account", "/bookmarks"];
-const ADMIN_PREFIXES = ["/admin"];
+import { NextRequest, NextResponse } from "next/server";
+import auth from "@core/auth/config";
+
+// Always pass through — no auth check needed
 const PUBLIC_PREFIXES = [
-  "/_next/static",
-  "/_next/image",
+  "/_next",
+  "/api/auth", // BetterAuth's own routes
   "/api/analytics",
   "/api/cron",
-  "/favicon.ico",
-  "/robots.txt",
-  "/sitemap.xml",
+  "/favicon",
+  "/robots",
+  "/sitemap",
   "/icons",
+  "/images",
+];
+
+// Requires valid session + admin/editor role
+const ADMIN_PREFIXES = ["/admin"];
+
+// Requires valid session (any role)
+const PROTECTED_PREFIXES = ["/dashboard", "/account", "/bookmarks"];
+
+// Auth pages — redirect away if already signed in
+const AUTH_PAGES = [
+  "/sign-in",
+  "/sign-up",
+  "/forgot-password",
+  "/reset-password",
 ];
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // ── 1. Always pass through public routes ──────────────────────────────────
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
-  const isAuthProtected = PROTECTED_PREFIXES.some((p) =>
-    pathname.startsWith(p),
-  );
-  const isAdminProtected = ADMIN_PREFIXES.some((p) => pathname.startsWith(p));
+  // ── 2. Admin route protection ─────────────────────────────────────────────
+  if (ADMIN_PREFIXES.some((p) => pathname.startsWith(p))) {
+    const session = await auth.api
+      .getSession({ headers: req.headers })
+      .catch(() => null);
 
-  // ── Unified Edge Session Check ───────────────────────────────────────────
-  if (isAuthProtected || isAdminProtected) {
-    if (!hasSession(req)) {
+    if (!session?.user) {
       const url = req.nextUrl.clone();
       url.pathname = "/sign-in";
       url.searchParams.set("redirect", pathname);
       return NextResponse.redirect(url, 302);
     }
 
-    // For admin paths, we let the request pass to the Server Component layer
-    // where deep RBAC verification (role validation) can safely happen.
+    const role = session.user.role ?? "";
+    const isAdmin = ["super_admin", "admin", "editor"].includes(role);
+
+    if (!isAdmin) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/403";
+      return NextResponse.rewrite(url);
+    }
+
     return NextResponse.next();
+  }
+
+  // ── 3. Protected route — authenticated users only ─────────────────────────
+  if (PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
+    const session = await auth.api
+      .getSession({ headers: req.headers })
+      .catch(() => null);
+
+    if (!session?.user) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/sign-in";
+      url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url, 302);
+    }
+
+    return NextResponse.next();
+  }
+
+  // ── 4. Redirect authenticated users away from auth pages ──────────────────
+  if (AUTH_PAGES.some((p) => pathname.startsWith(p))) {
+    // Only check session if on an auth page — avoids unnecessary DB calls
+    // on every public page load
+    const session = await auth.api
+      .getSession({ headers: req.headers })
+      .catch(() => null);
+
+    if (session?.user) {
+      const redirectTo = req.nextUrl.searchParams.get("redirect") ?? "/";
+      const url = req.nextUrl.clone();
+      url.pathname = redirectTo;
+      url.search = "";
+      return NextResponse.redirect(url, 302);
+    }
+
+    return NextResponse.next();
+  }
+
+  // ── 5. Canonical slug redirect ────────────────────────────────────────────
+  const SLUG_PATTERNS = [
+    { prefix: "/lectures/" },
+    { prefix: "/articles/" },
+    { prefix: "/library/" },
+    { prefix: "/scholars/" },
+  ];
+
+  const isContentPath = SLUG_PATTERNS.some((p) =>
+    pathname.startsWith(p.prefix),
+  );
+
+  if (isContentPath) {
+    // x-canonical-slug is set by the page when it detects a renamed slug.
+    // We issue a 301 to the current slug to preserve SEO equity.
+    const canonical = req.headers.get("x-canonical-slug");
+    if (canonical) {
+      const segment = SLUG_PATTERNS.find((p) =>
+        pathname.startsWith(p.prefix),
+      )!.prefix;
+      const url = req.nextUrl.clone();
+      url.pathname = `${segment}${canonical}`;
+      return NextResponse.redirect(url, 301);
+    }
   }
 
   return NextResponse.next();
@@ -157,6 +190,7 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|icons/|images/).*)",
+    // Match all routes except Next.js internals and static files
+    "/((?!_next/static|_next/image|favicon.ico|icons/|images/).*)",
   ],
 };

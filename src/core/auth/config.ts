@@ -11,7 +11,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const FROM_ADDRESS = `Da'wahTube <noreply@${process.env.EMAIL_FROM_DOMAIN ?? "dawahtube.com"}>`;
+const FROM_ADDRESS = `Da'wahTube ${process.env.EMAIL_FROM_DOMAIN ?? "dawahtube.com"}>`;
 const APP_NAME = "Da'wahTube";
 const APP_URL =
   process.env.BETTER_AUTH_URL ??
@@ -148,6 +148,18 @@ const auth = betterAuth({
     },
   },
 
+  // user: {
+  //   additionalFields: {
+  //     roleSlug: {
+  //       type: "string",
+  //       required: false,
+  //       defaultValue: "reader",
+  //       // Maps to the role_slug column in the user table
+  //       fieldName: "roleSlug",
+  //     },
+  //   },
+  // },
+
   plugins: [
     admin({
       adminRole: "super_admin", // Matches our RBAC role slug
@@ -158,5 +170,8 @@ const auth = betterAuth({
 
 export default auth;
 
-// src/core/auth/server.ts  — import this in Server Components and Actions
-export const { getSession, signInEmail, signOut } = auth.api;
+export type Session = typeof auth.$Infer.Session;
+export type User = typeof auth.$Infer.Session.user;
+
+// // src/core/auth/server.ts  — import this in Server Components and Actions
+// export const { getSession, signInEmail, signOut } = auth.api;

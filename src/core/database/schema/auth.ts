@@ -37,14 +37,14 @@ export const user = pgTable(
       .defaultNow()
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
-    roleSlug: text("role_slug").notNull().default("reader"),
+    role: text("role").notNull().default("reader"),
     deletedAt: timestamp("deleted_at"),
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
     banExpires: timestamp("ban_expires"),
   },
   (table) => [
-    index("user_role_idx").on(table.roleSlug),
+    index("user_role_idx").on(table.role),
     index("user_deleted_at_idx").on(table.deletedAt),
   ],
 );

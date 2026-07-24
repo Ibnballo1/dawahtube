@@ -5,24 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@shared/lib/utils";
 import { Button } from "@shared/components/ui/button";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SITE NAVIGATION
-//
-// Layout:
-//   Desktop: Logo | Nav links (centre) | Auth actions (right)
-//   Mobile:  Logo + hamburger | Fullscreen drawer
-//
-// Behaviour:
-//   - Frosted glass background on scroll (backdrop-blur)
-//   - Border appears after scrolling 20px
-//   - Active link has primary colour + underline
-//   - Mobile drawer traps focus when open (via dialog semantics)
-//   - aria-current="page" on active link for screen readers
-//
-// The nav height (--nav-height: 64px) is a CSS variable consumed by
-// layout components to set scroll padding and content offset.
-// ─────────────────────────────────────────────────────────────────────────────
+import Image from "next/image";
 
 interface NavItem {
   label: string;
@@ -37,7 +20,6 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 interface SiteNavProps {
-  /** Injected from Server Component — avoids client-side auth waterfall */
   isAuthenticated?: boolean;
   userInitials?: string | undefined;
 }
@@ -80,7 +62,7 @@ export function SiteNav({ isAuthenticated, userInitials }: SiteNavProps) {
           "fixed top-0 inset-x-0 z-sticky h-nav",
           "transition-all duration-normal ease-default",
           scrolled
-            ? "bg-[var(--nav-bg)] backdrop-blur-[var(--nav-backdrop)] border-b border-[var(--nav-border)] shadow-xs"
+            ? "bg-background border-b border-border shadow-xs"
             : "bg-transparent",
         )}
         role="banner"
@@ -92,7 +74,13 @@ export function SiteNav({ isAuthenticated, userInitials }: SiteNavProps) {
             className="flex items-center gap-2.5 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 rounded-md"
             aria-label="Da'wahTube — Home"
           >
-            <LogoMark />
+            {/* <LogoMark /> */}
+            <Image
+              src="/images/dawahtube-logo.png"
+              alt="Da'wahTube"
+              width={32}
+              height={32}
+            />
             <span className="font-display font-bold text-lg text-ink-primary leading-none">
               Da&apos;wahTube
             </span>
@@ -126,9 +114,12 @@ export function SiteNav({ isAuthenticated, userInitials }: SiteNavProps) {
                 >
                   Sign in
                 </Link>
-                <Button size="sm" className="px-3">
-                  <Link href="/sign-up">Join free</Link>
-                </Button>
+                <Link
+                  href="/sign-up"
+                  className="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  Join free
+                </Link>
               </>
             )}
           </div>
@@ -159,18 +150,24 @@ export function SiteNav({ isAuthenticated, userInitials }: SiteNavProps) {
         aria-modal="true"
         className={cn(
           "fixed inset-0 z-modal md:hidden",
-          "flex flex-col",
           "bg-surface-base",
           "transition-all duration-slow ease-out",
+          // ✅ FIX: Keep container completely hidden ('hidden') when closed,
+          // and apply flex layout layout container rules ('flex') only when open.
           open
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none",
+            ? "flex flex-col opacity-100 pointer-events-auto"
+            : "hidden opacity-0 pointer-events-none",
         )}
       >
         {/* Drawer header mirrors nav */}
         <div className="h-nav flex items-center justify-between px-6 border-b border-border-default">
           <Link href="/" className="flex items-center gap-2.5">
-            <LogoMark />
+            <Image
+              src="/images/dawahtube-logo.png"
+              alt="Da'wahTube"
+              width={32}
+              height={32}
+            />
             <span className="font-display font-bold text-lg text-ink-primary">
               Da&apos;wahTube
             </span>
@@ -219,12 +216,18 @@ export function SiteNav({ isAuthenticated, userInitials }: SiteNavProps) {
             </Link>
           ) : (
             <>
-              <Button size="lg">
-                <Link href="/sign-up">Join free</Link>
-              </Button>
-              <Button variant="ghost" size="lg">
-                <Link href="/sign-in">Sign in</Link>
-              </Button>
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center justify-center rounded-md px-4 py-2.5 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Join free
+              </Link>
+              <Link
+                href="/sign-in"
+                className="inline-flex items-center justify-center rounded-md px-4 py-2.5 text-sm font-medium text-ink-primary hover:bg-surface-subtle transition-colors"
+              >
+                Sign in
+              </Link>
             </>
           )}
         </div>
@@ -300,25 +303,24 @@ function UserMenu({ initials }: { initials: string }) {
   );
 }
 
-function LogoMark() {
-  return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 28 28"
-      fill="none"
-      aria-hidden="true"
-    >
-      {/* Simplified Islamic geometric mark — 8-point star form */}
-      <rect width="28" height="28" rx="6" fill="#065F46" />
-      <path
-        d="M14 4L16.2 10.5H23L17.4 14.5L19.6 21L14 17L8.4 21L10.6 14.5L5 10.5H11.8L14 4Z"
-        fill="#D4AF37"
-        opacity="0.9"
-      />
-    </svg>
-  );
-}
+// function LogoMark() {
+//   return (
+//     <svg
+//       width="28"
+//       height="28"
+//       viewBox="0 0 28 28"
+//       fill="none"
+//       aria-hidden="true"
+//     >
+//       <rect width="28" height="28" rx="6" fill="#065F46" />
+//       <path
+//         d="M14 4L16.2 10.5H23L17.4 14.5L19.6 21L14 17L8.4 21L10.6 14.5L5 10.5H11.8L14 4Z"
+//         fill="#D4AF37"
+//         opacity="0.9"
+//       />
+//     </svg>
+//   );
+// }
 
 function HamburgerIcon({ open }: { open: boolean }) {
   return (

@@ -86,6 +86,11 @@ function LectureListCard({ lecture }: { lecture: LectureCard }) {
       )
     : null;
 
+  // Sanitize URLs: coerce empty strings "" to null
+  const thumbnailUrl = lecture.thumbnailAsset?.publicUrl?.trim() || null;
+  const scholarAvatarUrl =
+    lecture.scholar?.avatarAsset?.publicUrl?.trim() || null;
+
   return (
     <article
       role="listitem"
@@ -98,13 +103,14 @@ function LectureListCard({ lecture }: { lecture: LectureCard }) {
         tabIndex={-1}
         aria-hidden="true"
       >
-        {lecture.thumbnailAsset?.publicUrl ? (
+        {thumbnailUrl ? (
           <Image
-            src={lecture.thumbnailAsset.publicUrl}
-            alt={lecture.thumbnailAsset.altText ?? lecture.title}
+            src={thumbnailUrl}
+            alt={lecture.thumbnailAsset?.altText ?? lecture.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-slow ease-smooth"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+            unoptimized={process.env.NODE_ENV === "development"}
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-primary-800 to-primary-950 flex items-center justify-center">
@@ -178,13 +184,14 @@ function LectureListCard({ lecture }: { lecture: LectureCard }) {
             className="flex items-center gap-2 w-fit group/s"
           >
             <div className="size-5 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-[10px] font-bold shrink-0 overflow-hidden">
-              {lecture.scholar.avatarAsset?.publicUrl ? (
+              {scholarAvatarUrl ? (
                 <Image
-                  src={lecture.scholar.avatarAsset.publicUrl}
+                  src={scholarAvatarUrl}
                   alt={scholarName ?? ""}
                   width={20}
                   height={20}
                   className="object-cover"
+                  unoptimized={process.env.NODE_ENV === "development"}
                 />
               ) : (
                 lecture.scholar.name[0]?.toUpperCase()

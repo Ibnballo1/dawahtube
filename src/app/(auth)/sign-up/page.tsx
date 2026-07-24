@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
-import { getSession } from "@core/auth/config";
+import auth from "@core/auth/config";
 import { SignUpForm } from "@features/auth/components/client/SignUpForm";
 
 export const metadata: Metadata = {
@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function SignUpPage() {
-  const session = await getSession({ headers: await headers() }).catch(
-    () => null,
-  );
+  const session = await auth.api
+    .getSession({ headers: await headers() })
+    .catch(() => null);
   if (session?.user) redirect("/");
 
   return (
