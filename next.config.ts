@@ -8,6 +8,7 @@ const config: NextConfig = {
   // ── Compiler options ───────────────────────────────────────────────────────
   reactStrictMode: true,
   poweredByHeader: false, // Don't advertise Next.js version
+  turbopack: {},
 
   // ── Image optimisation ─────────────────────────────────────────────────────
   // All media flows through R2. The public CDN domain must be listed here
