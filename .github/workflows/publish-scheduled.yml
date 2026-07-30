@@ -1,0 +1,57 @@
+# .github/workflows/publish-scheduled.yml
+#
+# Replaces the Vercel cron job that was in vercel.json.
+# Hits the /api/cron/publish-scheduled endpoint every 5 minutes to
+# publish any lectures, articles, or books whose scheduledAt time has passed.
+#
+# Setup required:
+#   1. Add CRON_SECRET to your GitHub repository secrets
+#      (Settings → Secrets and variables → Actions → New repository secret)
+#   2. The same CRON_SECRET must be in your Vercel environment variables
+#   3. APP_URL must also be set as a GitHub secret (your production URL)
+#
+# The CRON_SECRET prevents anyone from hitting the endpoint directly.
+# Your route handler should verify it via:
+#   request.headers.get('x-cron-secret') === process.env.CRON_SECRET
+
+name: Publish Scheduled Content
+
+on:
+  schedule:
+    # Runs every 5 minutes — GitHub Actions supports this freely
+    - cron: "*/5 * * * *"
+
+  # Allow manual trigger from the GitHub Actions UI for testing
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish scheduled content
+    runs-on: ubuntu-latest
+    timeout-minutes: 2 # Fail fast if the endpoint hangs
+
+    steps:
+      - name: Trigger publish endpoint
+        run: |
+          response=$(curl \
+            --silent \
+            --write-out "\n%{http_code}" \
+            --max-time 30 \
+            --request POST \
+            --header "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            --header "Content-Type: application/json" \
+            "${{ secrets.APP_URL }}/api/cron/publish-scheduled")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n-1)
+
+          echo "Status: $http_code"
+          echo "Response: $body"
+
+          # Fail the workflow if the endpoint returned a non-2xx status
+          if [ "$http_code" -lt 200 ] || [ "$http_code" -gt 299 ]; then
+            echo "❌ Endpoint returned HTTP $http_code"
+            exit 1
+          fi
+
+          echo "✅ Published successfully"

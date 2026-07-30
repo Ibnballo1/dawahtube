@@ -1,45 +1,58 @@
 // src/app/api/cron/publish-scheduled/route.ts
 //
-// Vercel Cron Job — runs every 5 minutes.
-// Finds all content with status='scheduled' and scheduled_at <= now(),
-// flips them to status='published', and invalidates relevant cache tags.
+// Called every 5 minutes by the GitHub Actions workflow.
+// Publishes any content whose scheduled_at time has passed.
 //
-// vercel.json configuration:
-// {
-//   "crons": [{ "path": "/api/cron/publish-scheduled", "schedule": "*/5 * * * *" }]
-// }
-//
-// Security: Vercel automatically sends an Authorization header with CRON_SECRET.
-// Requests without the correct secret return 401.
+// Security: verifies x-cron-secret header — reject anything without it.
+// This prevents the endpoint from being triggered by arbitrary HTTP requests.
 
 import { NextRequest, NextResponse } from "next/server";
 import { publishScheduledContent } from "@core/jobs/publish-scheduled";
-import { env } from "@core/config/env";
 
-export const runtime = "nodejs"; // needs Drizzle + postgres client, not edge
-export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // needs DB access — can't run on edge
 
-export async function GET(req: NextRequest) {
-  // Verify the request is from Vercel Cron (or an authorised caller in dev)
-  const authHeader = req.headers.get("authorization");
-  const expected = `Bearer ${env.CRON_SECRET}`;
+export async function POST(req: NextRequest) {
+  // ── Auth check ───────────────────────────────────────────────────────────
+  const secret = req.headers.get("x-cron-secret");
+  const expectedSecret = process.env.CRON_SECRET;
 
-  if (env.NODE_ENV === "production" && authHeader !== expected) {
+  if (!expectedSecret) {
+    console.error("[cron] CRON_SECRET env var is not set");
+    return NextResponse.json(
+      { error: "Server misconfiguration" },
+      { status: 500 },
+    );
+  }
+
+  if (!secret || secret !== expectedSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // ── Run publish job ───────────────────────────────────────────────────────
   try {
-    const results = await publishScheduledContent();
+    const result = await publishScheduledContent();
 
-    const total = Object.values(results).reduce((sum, n) => sum + n, 0);
-    console.log(`[cron/publish-scheduled] Published ${total} items:`, results);
+    console.log(
+      `[cron] Published ${result.published} items` +
+        ((result.errors ?? 0) > 0 ? ` (${result.errors ?? 0} errors)` : ""),
+    );
 
-    return NextResponse.json({ ok: true, published: results });
-  } catch (err) {
-    console.error("[cron/publish-scheduled] Error:", err);
+    return NextResponse.json({
+      ok: true,
+      published: result.published,
+      errors: result.errors,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("[cron] publishScheduledContent threw:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
     );
   }
+}
+
+// Reject non-POST requests
+export async function GET() {
+  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
 }
