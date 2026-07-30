@@ -34,18 +34,14 @@ export async function POST(req: NextRequest) {
         body.id,
         body.sessionId,
         body.durationSecs,
-        undefined,
-        ref,
       );
     } else if (body.entity === "article") {
       await analyticsService.trackArticleView(
         body.id,
         body.sessionId,
-        undefined,
-        ref,
       );
     } else {
-      await analyticsService.trackBookDownload(body.id);
+      await analyticsService.trackBookDownload(body.id, body.sessionId);
     }
 
     return NextResponse.json({ ok: true });
