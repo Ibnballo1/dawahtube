@@ -13,11 +13,9 @@ export class PgAnalyticsService implements IAnalyticsService {
     lectureId: string,
     sessionId: string,
     durationSecs?: number,
-    userId?: string,
-    referrer?: string,
+    userId?: string | null,
+    referrer?: string | null,
   ): Promise<void> {
-    // Upsert: if the same session already has a view, just update duration.
-    // Prevents one page refresh from counting as two views.
     await db
       .insert(lectureViews)
       .values({
@@ -37,8 +35,8 @@ export class PgAnalyticsService implements IAnalyticsService {
   async trackArticleView(
     articleId: string,
     sessionId: string,
-    userId?: string,
-    referrer?: string,
+    userId?: string | null,
+    referrer?: string | null,
   ): Promise<void> {
     await db
       .insert(articleViews)
@@ -54,10 +52,15 @@ export class PgAnalyticsService implements IAnalyticsService {
       });
   }
 
-  async trackBookDownload(bookId: string, userId?: string): Promise<void> {
+  async trackBookDownload(
+    bookId: string,
+    sessionId: string,
+    userId?: string | null,
+  ): Promise<void> {
     await db.insert(bookDownloads).values({
       id: `bd_${nanoid(16)}`,
       bookId,
+      sessionId,
       userId: userId ?? null,
     });
   }

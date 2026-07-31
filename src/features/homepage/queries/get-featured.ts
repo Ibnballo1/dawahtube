@@ -8,7 +8,7 @@ export const getFeaturedLectures = unstable_cache(
       where: (s, { eq, and, isNull, or, lte, gte, sql }) =>
         and(
           eq(s.slotKey, "featured_lectures"),
-          eq(s.active, true),
+          eq(s.isActive, true),
           or(isNull(s.validUntil), gte(s.validUntil, sql`now()`)),
         ),
       with: { lecture: { with: { scholar: true, category: true } } },

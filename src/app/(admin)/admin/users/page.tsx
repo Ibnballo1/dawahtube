@@ -68,7 +68,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {result.users.map((user) => {
-              const rawRole = user.userRoles?.[0]?.role?.slug;
+              const rawRole = user.role;
               const currentRole: AssignableRole =
                 rawRole === "reader" ||
                 rawRole === "admin" ||

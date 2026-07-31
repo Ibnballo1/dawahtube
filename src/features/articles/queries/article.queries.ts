@@ -90,7 +90,7 @@ export async function getArticles(
         category: { columns: { id: true, slug: true, name: true } },
         coverAsset: { columns: { publicUrl: true, altText: true } },
         tags: {
-          with: { tag: { columns: { id: true, slug: true, label: true } } },
+          with: { tag: { columns: { id: true, slug: true, name: true } } },
         },
       },
     }),
@@ -122,7 +122,7 @@ export const getArticleBySlug = unstable_cache(
         author: { columns: { id: true, name: true } },
         coverAsset: true,
         tags: {
-          with: { tag: { columns: { id: true, slug: true, label: true } } },
+          with: { tag: { columns: { id: true, slug: true, name: true } } },
         },
       },
     });

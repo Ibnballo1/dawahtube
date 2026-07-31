@@ -145,7 +145,7 @@ export const getLectureBySlug = unstable_cache(
         videoAsset: true,
         thumbnailAsset: { columns: { publicUrl: true, altText: true } },
         tags: {
-          with: { tag: { columns: { id: true, slug: true, label: true } } },
+          with: { tag: { columns: { id: true, slug: true, name: true } } },
         },
         seriesItems: {
           with: {

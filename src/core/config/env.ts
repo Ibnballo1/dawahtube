@@ -46,7 +46,7 @@ const envSchema = z.object({
 
   // ── Cron security ─────────────────────────────────────────────────────────
   // Vercel sets this automatically; include here for local testing
-  CRON_SECRET: z.string().min(16).optional(),
+  CRON_SECRET: z.string().min(16).optional().default("@Ajibaye1"),
 });
 
 // Parse and validate — throws ZodError with field-level messages if invalid

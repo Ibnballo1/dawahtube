@@ -98,13 +98,12 @@ export async function DailyReminder() {
           )}
 
           {/* Browse more reminders CTA */}
-          <Button
-            variant="secondary"
-            className="border-white/20 text-white/70 hover:bg-white/10 hover:border-white/40 hover:text-white"
-            asChild
+          <Link
+            href="/reminders"
+            className="inline-flex items-center justify-center rounded-md border border-white/20 bg-secondary px-4 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:border-white/40 hover:text-white"
           >
-            <Link href="/reminders">Browse all reminders</Link>
-          </Button>
+            Browse all reminders
+          </Link>
         </div>
       </div>
 

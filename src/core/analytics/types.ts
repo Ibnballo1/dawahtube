@@ -4,9 +4,20 @@ export interface IAnalyticsService {
     lectureId: string,
     sessionId: string,
     durationSecs?: number,
+    userId?: string | null,
+    referrer?: string | null,
   ): Promise<void>;
-  trackArticleView(articleId: string, sessionId: string): Promise<void>;
-  trackBookDownload(bookId: string, userId: string | null): Promise<void>;
+  trackArticleView(
+    articleId: string,
+    sessionId: string,
+    userId?: string | null,
+    referrer?: string | null,
+  ): Promise<void>;
+  trackBookDownload(
+    bookId: string,
+    sessionId: string,
+    userId?: string | null,
+  ): Promise<void>;
 }
 
 export interface LectureViewRecord {

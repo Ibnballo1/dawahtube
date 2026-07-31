@@ -1,6 +1,4 @@
 // src/app/api/analytics/view/route.ts
-// Called from a client component on mount — fire and forget.
-// No auth required — anonymous tracking uses sessionId only.
 import { NextRequest, NextResponse } from "next/server";
 import { analyticsService } from "@core/analytics/pg-analytics.service";
 import { z } from "zod";
@@ -27,7 +25,6 @@ const schema = z.discriminatedUnion("entity", [
 export async function POST(req: NextRequest) {
   try {
     const body = schema.parse(await req.json());
-    const ref = req.headers.get("referer") ?? undefined;
 
     if (body.entity === "lecture") {
       await analyticsService.trackLectureView(
@@ -36,10 +33,7 @@ export async function POST(req: NextRequest) {
         body.durationSecs,
       );
     } else if (body.entity === "article") {
-      await analyticsService.trackArticleView(
-        body.id,
-        body.sessionId,
-      );
+      await analyticsService.trackArticleView(body.id, body.sessionId);
     } else {
       await analyticsService.trackBookDownload(body.id, body.sessionId);
     }

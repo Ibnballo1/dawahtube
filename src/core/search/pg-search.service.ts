@@ -4,8 +4,6 @@ import { sql } from "drizzle-orm";
 import type { ISearchService, SearchQuery, SearchResponse } from "./types";
 
 // Postgres built-in text search configurations.
-// Run `SELECT cfgname FROM pg_ts_config;` to see all available on your instance.
-// Supabase Postgres ships with these by default:
 const PG_TS_CONFIGS = {
   en: "english",
   ar: "arabic", // requires pg_catalog.arabic — available on PG 14+
@@ -42,8 +40,6 @@ export class PgSearchService implements ISearchService {
     const limit = query.limit ?? 20;
     const offset = query.offset ?? 0;
 
-    // tsConfig is derived from a closed enum — safe to interpolate as
-    // a SQL identifier. Never interpolate user input directly.
     const results = await db.execute(sql`
       SELECT
         'lecture'     AS entity,
@@ -98,9 +94,12 @@ export class PgSearchService implements ISearchService {
       LIMIT ${limit} OFFSET ${offset}
     `);
 
+    // results is already an array of rows
+    const rows = results as unknown as Record<string, unknown>[];
+
     return {
-      results: results.rows as never,
-      total: results.rows.length,
+      results: rows as never,
+      total: rows.length,
       query: query.query,
     };
   }
@@ -118,7 +117,8 @@ export class PgSearchService implements ISearchService {
       LIMIT 5
     `);
 
-    return (results.rows as Array<{ word: string }>).map((r) => r.word);
+    const rows = results as unknown as Array<{ word: string }>;
+    return rows.map((r) => r.word);
   }
 }
 
