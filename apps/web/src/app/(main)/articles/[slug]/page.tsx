@@ -37,6 +37,10 @@ export async function generateMetadata({
         .join(" ")
     : undefined;
 
+  const publishedIsoDate = article.publishedAt
+    ? new Date(article.publishedAt).toISOString()
+    : undefined;
+
   return {
     title: article.metaTitle ?? article.title,
     description: article.metaDescription ?? article.excerpt ?? undefined,
@@ -45,7 +49,7 @@ export async function generateMetadata({
       description: article.metaDescription ?? article.excerpt ?? undefined,
       type: "article",
       url: `/articles/${article.slug}`,
-      publishedTime: article.publishedAt?.toISOString(),
+      publishedTime: publishedIsoDate,
       authors: scholarName ? [scholarName] : undefined,
       images: article.coverAsset?.publicUrl
         ? [{ url: article.coverAsset.publicUrl, alt: article.title }]
@@ -83,14 +87,22 @@ export default async function ArticleDetailPage({
         .join(" ")
     : undefined;
 
+  const publishedIsoDate = article.publishedAt
+    ? new Date(article.publishedAt).toISOString()
+    : undefined;
+
+  const updatedIsoDate = article.updatedAt
+    ? new Date(article.updatedAt).toISOString()
+    : undefined;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
     description: article.excerpt,
     url: `${env.NEXT_PUBLIC_APP_URL}/articles/${article.slug}`,
-    datePublished: article.publishedAt?.toISOString(),
-    dateModified: article.updatedAt.toISOString(),
+    datePublished: publishedIsoDate,
+    dateModified: updatedIsoDate,
     author: article.scholar
       ? {
           "@type": "Person",

@@ -91,7 +91,9 @@ export default async function LectureDetailPage({
     name: lecture.title,
     description: lecture.description,
     url: `${env.NEXT_PUBLIC_APP_URL}/lectures/${lecture.slug}`,
-    datePublished: lecture.publishedAt?.toISOString(),
+    datePublished: lecture.publishedAt
+      ? new Date(lecture.publishedAt).toISOString()
+      : undefined,
     author: lecture.scholar
       ? {
           "@type": "Person",
