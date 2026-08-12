@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import {
   pgTable,
   varchar,
@@ -165,7 +165,7 @@ export const lectures = pgTable(
     ...softDelete(),
   },
   (t) => [
-    uniqueIndex("lectures_slug_uidx").on(t.slug),
+    uniqueIndex("lectures_slug_uidx").on(t.slug).where(isNull(t.deletedAt)),
     index("lectures_scholar_id_idx").on(t.scholarId),
     index("lectures_category_id_idx").on(t.categoryId),
     index("lectures_status_idx").on(t.status),

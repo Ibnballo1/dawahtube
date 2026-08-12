@@ -55,9 +55,16 @@ export async function createLecture(
     };
   }
 
+  // Fetch scholar to extract name prefix
+  const scholar = await db.query.scholars.findFirst({
+    where: eq(scholars.id, data.data.scholarId),
+    columns: { name: true },
+  });
+
   const slug = await generateUniqueSlug({
     table: "lectures",
     value: data.data.title,
+    ...(scholar?.name && { prefix: scholar.name }),
   });
   const id = `lec_${nanoid(16)}`;
 

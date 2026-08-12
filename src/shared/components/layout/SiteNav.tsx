@@ -17,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Articles", href: "/articles" },
   { label: "Library", href: "/library" },
   { label: "Scholars", href: "/scholars" },
+  { label: "Search", href: "/search" },
 ];
 
 interface SiteNavProps {
@@ -62,7 +63,7 @@ export function SiteNav({ isAuthenticated, userInitials }: SiteNavProps) {
           "fixed top-0 inset-x-0 z-sticky h-nav",
           "transition-all duration-normal ease-default",
           scrolled
-            ? "bg-background border-b border-border shadow-xs"
+            ? "bg-background z-50 border-b border-border shadow-xs"
             : "bg-transparent",
         )}
         role="banner"
@@ -209,7 +210,7 @@ export function SiteNav({ isAuthenticated, userInitials }: SiteNavProps) {
         <div className="px-6 pt-4 mt-auto pb-8 border-t border-border-default flex flex-col gap-3">
           {isAuthenticated ? (
             <Link
-              href="/dashboard"
+              href="/admin"
               className="inline-flex items-center justify-center rounded-md px-4 py-2.5 text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
             >
               My Account
@@ -277,7 +278,7 @@ function UserMenu({ initials }: { initials: string }) {
   return (
     <div className="flex items-center gap-2">
       <Link
-        href="/dashboard"
+        href="/admin"
         className={cn(
           "inline-flex items-center justify-center rounded-md px-3 py-2",
           "font-body font-medium text-sm",

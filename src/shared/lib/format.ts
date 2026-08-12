@@ -101,9 +101,15 @@ export function formatCount(n: number | string): string {
   return String(num);
 }
 
-export function formatPageCount(pages: number | null): string {
-  if (!pages) return "";
-  return `${pages} page${pages === 1 ? "" : "s"}`;
+/**
+ * Formats page count for display.
+ * @example formatPageCount(1)   // "1 page"
+ * @example formatPageCount(240) // "240 pages"
+ * @example formatPageCount(1000) // "1,000 pages"
+ */
+export function formatPageCount(pageCount: number | null | undefined): string {
+  if (!pageCount || pageCount <= 0) return "";
+  return `${pageCount.toLocaleString()} page${pageCount === 1 ? "" : "s"}`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

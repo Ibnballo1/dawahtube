@@ -91,11 +91,16 @@ export function generateSlug(value: string): string {
 interface SlugOptions {
   table: "lectures" | "articles" | "books" | "scholars" | "series";
   value: string;
+  prefix?: string;
   excludeId?: string;
 }
 
 export async function generateUniqueSlug(opts: SlugOptions): Promise<string> {
-  const base = generateSlug(opts.value);
+  const cleanValue = generateSlug(opts.value);
+  const cleanPrefix = opts.prefix ? generateSlug(opts.prefix) : "";
+
+  // Combine: "sheikh-abdulganiy-jumah-the-foundation-of-islaam"
+  const base = cleanPrefix ? `${cleanPrefix}-${cleanValue}` : cleanValue;
 
   const rows = await db.execute(sql`
     SELECT slug FROM ${sql.identifier(opts.table)}
@@ -106,8 +111,6 @@ export async function generateUniqueSlug(opts: SlugOptions): Promise<string> {
 
   if (rows.length === 0) return base;
 
-  // db.execute returns a generic RowList type; cast via unknown to the specific
-  // shape we expect to satisfy TypeScript safely.
   const suffixes = (rows as unknown as Array<{ slug: string }>).map((r) => {
     const match = r.slug.match(new RegExp(`^${base}-(\\d+)$`));
     return match ? parseInt(match[1]!, 10) : 0;

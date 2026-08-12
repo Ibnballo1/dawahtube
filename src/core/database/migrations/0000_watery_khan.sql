@@ -59,7 +59,7 @@ CREATE TABLE "user" (
 	"image" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"role_slug" text DEFAULT 'reader' NOT NULL,
+	"role" text DEFAULT 'reader' NOT NULL,
 	"deleted_at" timestamp,
 	"banned" boolean DEFAULT false,
 	"ban_reason" text,
@@ -542,7 +542,7 @@ CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> state
 CREATE INDEX "role_permissions_permission_idx" ON "role_permissions" USING btree ("permission");--> statement-breakpoint
 CREATE UNIQUE INDEX "roles_slug_uidx" ON "roles" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "session_userId_idx" ON "session" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "user_role_idx" ON "user" USING btree ("role_slug");--> statement-breakpoint
+CREATE INDEX "user_role_idx" ON "user" USING btree ("role");--> statement-breakpoint
 CREATE INDEX "user_deleted_at_idx" ON "user" USING btree ("deleted_at");--> statement-breakpoint
 CREATE INDEX "user_roles_role_id_idx" ON "user_roles" USING btree ("role_id");--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");--> statement-breakpoint
@@ -572,7 +572,7 @@ CREATE INDEX "lecture_categories_parent_id_idx" ON "lecture_categories" USING bt
 CREATE INDEX "lecture_tags_tag_id_idx" ON "lecture_tags" USING btree ("tag_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "lecture_translations_lecture_lang_uidx" ON "lecture_translations" USING btree ("lecture_id","language_code");--> statement-breakpoint
 CREATE INDEX "lecture_translations_lecture_id_idx" ON "lecture_translations" USING btree ("lecture_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "lectures_slug_uidx" ON "lectures" USING btree ("slug");--> statement-breakpoint
+CREATE UNIQUE INDEX "lectures_slug_uidx" ON "lectures" USING btree ("slug") WHERE "lectures"."deleted_at" is null;--> statement-breakpoint
 CREATE INDEX "lectures_scholar_id_idx" ON "lectures" USING btree ("scholar_id");--> statement-breakpoint
 CREATE INDEX "lectures_category_id_idx" ON "lectures" USING btree ("category_id");--> statement-breakpoint
 CREATE INDEX "lectures_status_idx" ON "lectures" USING btree ("status");--> statement-breakpoint

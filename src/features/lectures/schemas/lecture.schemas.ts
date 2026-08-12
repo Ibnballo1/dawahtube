@@ -8,7 +8,9 @@ export const createLectureSchema = z.object({
   description: z.string().max(5000).optional(),
   transcript: z.string().max(100_000).optional(),
 
-  scholarId: z.string().min(1, "Scholar is required"),
+  scholarId: z
+    .string({ message: "Scholar is required" })
+    .min(1, "Scholar is required"),
   categoryId: z.string().optional(),
 
   audioAssetId: z.string().optional(),

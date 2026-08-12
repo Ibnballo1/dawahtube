@@ -11,7 +11,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const FROM_ADDRESS = `Da'wahTube ${process.env.EMAIL_FROM_DOMAIN ?? "dawahtube.com"}>`;
+const FROM_ADDRESS = `Da'wahTube ${process.env.EMAIL_FROM_DOMAIN ?? "dawahtube.com"}`;
 const APP_NAME = "Da'wahTube";
 const APP_URL =
   process.env.BETTER_AUTH_URL ??
@@ -140,10 +140,16 @@ const auth = betterAuth({
     expiresIn: 60 * 60 * 24,
 
     sendVerificationEmail: async ({ user, url }) => {
+      const verificationUrl = new URL(url);
+
+      verificationUrl.searchParams.set("callbackURL", "/verify-email");
       await sendEmail({
         to: user.email,
         subject: `Verify your ${APP_NAME} email address`,
-        html: verificationEmailHtml(user.name ?? user.email, url),
+        html: verificationEmailHtml(
+          user.name ?? user.email,
+          verificationUrl.toString(),
+        ),
       });
     },
   },

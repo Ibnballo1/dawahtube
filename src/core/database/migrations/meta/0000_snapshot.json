@@ -1,5 +1,5 @@
 {
-  "id": "c91e30ef-abb2-4436-b969-e36f2f45f325",
+  "id": "be7ce962-0dea-4afd-8295-163a8f7e29f5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -415,8 +415,8 @@
           "notNull": true,
           "default": "now()"
         },
-        "role_slug": {
-          "name": "role_slug",
+        "role": {
+          "name": "role",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -453,7 +453,7 @@
           "name": "user_role_idx",
           "columns": [
             {
-              "expression": "role_slug",
+              "expression": "role",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2125,6 +2125,7 @@
             }
           ],
           "isUnique": true,
+          "where": "\"lectures\".\"deleted_at\" is null",
           "concurrently": false,
           "method": "btree",
           "with": {}
