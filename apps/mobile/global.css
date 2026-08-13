@@ -1,0 +1,4 @@
+/* apps/mobile/global.css */
+
+@import "tailwindcss/preflight";
+@tailwind utilities;
