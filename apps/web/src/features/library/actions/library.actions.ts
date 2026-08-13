@@ -71,7 +71,9 @@ export async function requestBookAccess(
       url,
       expiresAt: new Date(Date.now() + 3600_000).toISOString(),
     };
-  } catch {
+  } catch (err) {
+    // TEMPORARY — log the actual error so we can see what's failing
+    console.error("[requestBookAccess] presign failed:", err);
     return {
       ok: false,
       error: "Could not generate access link. Please try again.",
@@ -99,7 +101,10 @@ async function recordDownload(bookId: string): Promise<void> {
   // Increment denormalised view_count used as "download count" display for books
   await db
     .update(books)
-    .set({ viewCount: sql`(${books.viewCount}::bigint + 1)::text` })
+    .set({
+      viewCount: sql`COALESCE(${books.viewCount}, 0) + 1`,
+      updatedAt: new Date(),
+    })
     .where(eq(books.id, bookId));
 }
 
