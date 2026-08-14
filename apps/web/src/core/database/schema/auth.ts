@@ -184,7 +184,9 @@ export const userRoles = pgTable(
 export const usersRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
-  userRoles: many(userRoles),
+  // Specify relationName for userRoles
+  userRoles: many(userRoles, { relationName: "user_userRoles" }),
+  assignedUserRoles: many(userRoles, { relationName: "assignedBy_userRoles" }),
 }));
 
 export const rolesRelations = relations(roles, ({ many }) => ({
@@ -193,11 +195,20 @@ export const rolesRelations = relations(roles, ({ many }) => ({
 }));
 
 export const userRolesRelations = relations(userRoles, ({ one }) => ({
-  user: one(user, { fields: [userRoles.userId], references: [user.id] }),
-  role: one(roles, { fields: [userRoles.roleId], references: [roles.id] }),
+  // Specify relationName matching usersRelations
+  user: one(user, {
+    fields: [userRoles.userId],
+    references: [user.id],
+    relationName: "user_userRoles",
+  }),
+  role: one(roles, {
+    fields: [userRoles.roleId],
+    references: [roles.id],
+  }),
   assignedBy: one(user, {
     fields: [userRoles.assignedBy],
     references: [user.id],
+    relationName: "assignedBy_userRoles",
   }),
 }));
 

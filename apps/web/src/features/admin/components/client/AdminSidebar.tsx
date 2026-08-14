@@ -6,9 +6,12 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Video,
+  FileVideo,
   Users,
   FileText,
+  FileTerminal,
   BookOpen,
+  BookSearch,
   Bell,
   Star,
   UserCog,
@@ -48,6 +51,12 @@ const NAV_ITEMS: NavItem[] = [
     icon: Video,
   },
   {
+    label: "Lecture Categories",
+    href: "/admin/categories/lectures",
+    permission: PERMISSIONS.LECTURE_EDIT,
+    icon: FileVideo,
+  },
+  {
     label: "Scholars",
     href: "/admin/scholars",
     permission: PERMISSIONS.SCHOLAR_VIEW,
@@ -60,10 +69,22 @@ const NAV_ITEMS: NavItem[] = [
     icon: FileText,
   },
   {
+    label: "Article Categories",
+    href: "/admin/categories/articles",
+    permission: PERMISSIONS.ARTICLE_EDIT,
+    icon: FileTerminal,
+  },
+  {
     label: "Library",
     href: "/admin/library",
     permission: PERMISSIONS.BOOK_VIEW,
     icon: BookOpen,
+  },
+  {
+    label: "Book Categories",
+    href: "/admin/categories/library",
+    permission: PERMISSIONS.BOOK_EDIT,
+    icon: BookSearch,
   },
   {
     label: "Reminders",
