@@ -9,6 +9,7 @@ import {
   FileVideo,
   Users,
   FileText,
+  Presentation,
   FileTerminal,
   BookOpen,
   BookSearch,
@@ -55,6 +56,12 @@ const NAV_ITEMS: NavItem[] = [
     href: "/admin/categories/lectures",
     permission: PERMISSIONS.LECTURE_EDIT,
     icon: FileVideo,
+  },
+  {
+    label: "Series",
+    href: "/admin/series",
+    permission: PERMISSIONS.LECTURE_EDIT,
+    icon: Presentation,
   },
   {
     label: "Scholars",
