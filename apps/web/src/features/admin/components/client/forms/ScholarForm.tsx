@@ -13,6 +13,7 @@ import {
   ServerErrorBanner,
   SuccessBanner,
 } from "./AdminFormLayout";
+import { FileUpload } from "./FileUpload";
 import {
   createScholar,
   updateScholar,
@@ -34,6 +35,11 @@ interface ScholarFormProps {
     defaultLanguage: string;
     metaTitle: string | null;
     metaDescription: string | null;
+    // Existing asset IDs and URLs for edit mode
+    avatarAssetId: string | null;
+    avatarUrl: string | null;
+    bannerAssetId: string | null;
+    bannerUrl: string | null;
   };
 }
 
@@ -44,6 +50,14 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
   const [isDeleting, startDeleteTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Track uploaded asset IDs — populated when FileUpload completes
+  const [avatarAssetId, setAvatarAssetId] = useState<string | null>(
+    scholar?.avatarAssetId ?? null,
+  );
+  const [bannerAssetId, setBannerAssetId] = useState<string | null>(
+    scholar?.bannerAssetId ?? null,
+  );
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -67,6 +81,9 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
       defaultLanguage: (form.get("defaultLanguage") as string) || "en",
       metaTitle: (form.get("metaTitle") as string) || undefined,
       metaDescription: (form.get("metaDescription") as string) || undefined,
+      // Asset IDs from uploads
+      avatarAssetId: avatarAssetId ?? undefined,
+      bannerAssetId: bannerAssetId ?? undefined,
     };
 
     startTransition(async () => {
@@ -78,17 +95,18 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
         setError(result.error);
         return;
       }
-
-      if (isEdit) {
-        setSuccess("Scholar saved successfully.");
-      } else {
-        router.push("/admin/scholars");
-      }
+      isEdit
+        ? setSuccess("Scholar saved successfully.")
+        : router.push("/admin/scholars");
     });
   }
 
   function handleDelete() {
-    if (!scholar || !confirm(`Delete "${scholar.name}"?`)) return;
+    if (
+      !scholar ||
+      !confirm(`Delete "${scholar.name}"? This cannot be undone.`)
+    )
+      return;
     startDeleteTransition(async () => {
       await deleteScholar(scholar.id);
       router.push("/admin/scholars");
@@ -102,6 +120,7 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
       backLabel="Back to scholars"
       isEdit={isEdit}
     >
+      {/* ── Main column ────────────────────────────────────────────── */}
       <form
         id="scholar-form"
         onSubmit={handleSubmit}
@@ -111,6 +130,7 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
         {error && <ServerErrorBanner message={error} />}
         {success && <SuccessBanner message={success} />}
 
+        {/* Identity */}
         <FormCard title="Identity">
           <div className="grid grid-cols-2 gap-4">
             <FormField label="Full name" htmlFor="name" required>
@@ -179,11 +199,83 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
           </div>
         </FormCard>
 
+        {/* Avatar upload */}
+        <FormCard title="Profile photo (avatar)">
+          <FileUpload
+            uploadType="avatar"
+            accept="image/jpeg,image/png,image/webp"
+            label="Avatar image"
+            hint="JPEG, PNG or WebP · Square recommended · Min 200×200 px · Max 5 MB"
+            maxMB={5}
+            currentUrl={scholar?.avatarUrl ?? null}
+            currentName={avatarAssetId ? "Current avatar" : null}
+            onComplete={(assetId) => setAvatarAssetId(assetId)}
+            onClear={() => setAvatarAssetId(null)}
+          />
+          {avatarAssetId && (
+            <p className="text-xs text-ink-muted font-mono">
+              Asset: {avatarAssetId}
+            </p>
+          )}
+
+          {/* Live preview */}
+          {(scholar?.avatarUrl || avatarAssetId) && (
+            <div className="flex items-center gap-3 mt-2">
+              <div className="size-12 rounded-full overflow-hidden bg-primary-100 shrink-0">
+                {scholar?.avatarUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={scholar.avatarUrl}
+                    alt="Current avatar"
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <p className="text-xs text-ink-muted">
+                Current avatar — upload a new one above to replace it.
+              </p>
+            </div>
+          )}
+        </FormCard>
+
+        {/* Banner upload */}
+        <FormCard title="Profile banner">
+          <FileUpload
+            uploadType="banner"
+            accept="image/jpeg,image/png,image/webp"
+            label="Banner image"
+            hint="JPEG, PNG or WebP · Recommended 1440×400 px · Max 10 MB"
+            maxMB={10}
+            currentUrl={scholar?.bannerUrl ?? null}
+            currentName={bannerAssetId ? "Current banner" : null}
+            onComplete={(assetId) => setBannerAssetId(assetId)}
+            onClear={() => setBannerAssetId(null)}
+          />
+          {bannerAssetId && (
+            <p className="text-xs text-ink-muted font-mono">
+              Asset: {bannerAssetId}
+            </p>
+          )}
+
+          {/* Live banner preview */}
+          {scholar?.bannerUrl && (
+            <div className="mt-2 rounded-lg overflow-hidden border border-border-default">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={scholar.bannerUrl}
+                alt="Current banner"
+                className="w-full h-20 object-cover"
+              />
+            </div>
+          )}
+        </FormCard>
+
+        {/* Biography */}
         <FormCard title="Biography">
           <FormField
             label="Biography (MDX supported)"
             htmlFor="biography"
-            hint="Supports basic MDX formatting. Rendered as HTML on the scholar's profile page."
+            hint="Supports basic MDX — **bold**, ## headings, > blockquotes. Rendered as HTML on the scholar's profile."
           >
             <textarea
               id="biography"
@@ -196,6 +288,7 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
           </FormField>
         </FormCard>
 
+        {/* SEO */}
         <FormCard title="SEO (optional)">
           <FormField
             label="Meta title"
@@ -237,7 +330,7 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
         />
       </form>
 
-      {/* Sidebar */}
+      {/* ── Sidebar ────────────────────────────────────────────────── */}
       <>
         <FormCard title="Links">
           <FormField label="Website URL" htmlFor="websiteUrl">
@@ -303,6 +396,30 @@ export function ScholarForm({ scholar }: ScholarFormProps) {
             </select>
           </FormField>
         </FormCard>
+
+        {isEdit && (
+          <FormCard title="Public profile">
+            <a
+              href={`/scholars/${scholar.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary-700 hover:text-primary-800 font-medium flex items-center gap-1.5 transition-colors"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+              </svg>
+              View public profile
+            </a>
+          </FormCard>
+        )}
       </>
     </AdminFormLayout>
   );

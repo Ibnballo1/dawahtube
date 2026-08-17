@@ -8,6 +8,7 @@ import {
   scholars,
   user,
   auditLogs,
+  mediaAssets,
 } from "@core/database/schema";
 import { eq, and, isNull, desc, count, sql, ne } from "drizzle-orm";
 import type { DashboardStats } from "../types/admin.types";
@@ -264,24 +265,60 @@ export async function getAdminScholars({
     );
   }
 
+  // Subqueries named 'lc' and 'ac'
+  const lectureCountSq = db
+    .select({
+      scholarId: lectures.scholarId,
+      cnt: count(lectures.id).as("cnt"),
+    })
+    .from(lectures)
+    .where(isNull(lectures.deletedAt))
+    .groupBy(lectures.scholarId)
+    .as("lc");
+
+  const articleCountSq = db
+    .select({
+      scholarId: articles.scholarId,
+      cnt: count(articles.id).as("cnt"),
+    })
+    .from(articles)
+    .where(isNull(articles.deletedAt))
+    .groupBy(articles.scholarId)
+    .as("ac");
+
   const [totalResult, rows] = await Promise.all([
     db
       .select({ count: count() })
       .from(scholars)
       .where(and(...conditions)),
-    db.query.scholars.findMany({
-      where: and(...conditions),
-      orderBy: [desc(scholars.updatedAt)],
-      limit: PAGE_SIZE,
-      offset,
-      with: {
-        avatarAsset: { columns: { publicUrl: true, altText: true } },
-      },
-    }),
+
+    db
+      .select({
+        scholar: scholars,
+        avatarAsset: {
+          publicUrl: mediaAssets.publicUrl,
+        },
+        // Explicitly qualified column names using table alias
+        lectureCount: sql<number>`coalesce("lc"."cnt", 0)::int`,
+        articleCount: sql<number>`coalesce("ac"."cnt", 0)::int`,
+      })
+      .from(scholars)
+      .where(and(...conditions))
+      .leftJoin(mediaAssets, eq(scholars.avatarAssetId, mediaAssets.id))
+      .leftJoin(lectureCountSq, eq(scholars.id, lectureCountSq.scholarId))
+      .leftJoin(articleCountSq, eq(scholars.id, articleCountSq.scholarId))
+      .orderBy(desc(scholars.updatedAt))
+      .limit(PAGE_SIZE)
+      .offset(offset),
   ]);
 
   return {
-    scholars: rows,
+    scholars: rows.map((r) => ({
+      ...r.scholar,
+      avatarAsset: r.avatarAsset,
+      lectureCount: r.lectureCount,
+      articleCount: r.articleCount,
+    })),
     total: totalResult[0]?.count ?? 0,
     page,
     totalPages: Math.ceil((totalResult[0]?.count ?? 0) / PAGE_SIZE),

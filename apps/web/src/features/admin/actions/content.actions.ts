@@ -67,12 +67,14 @@ export async function createLecture(
     ...(scholar?.name && { prefix: scholar.name }),
   });
   const id = `lec_${nanoid(16)}`;
+  const { scheduledAt, ...lectureData } = data.data;
 
   await db.insert(lectures).values({
     id,
     slug,
     canonicalSlug: slug,
-    ...data.data,
+    ...lectureData,
+    scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
   });
 
   await writeAuditLog({
@@ -110,7 +112,13 @@ export async function updateLecture(
 
   await db
     .update(lectures)
-    .set({ ...rest, updatedAt: new Date() })
+    .set({
+      ...rest,
+      updatedAt: new Date(),
+      scheduledAt: data.data.scheduledAt
+        ? new Date(data.data.scheduledAt)
+        : null,
+    })
     .where(eq(lectures.id, id));
 
   await writeAuditLog({
@@ -310,13 +318,14 @@ export async function createArticle(
     ? calculateContentMetadata(data.data.content)
     : { wordCount: 0, readingTimeMins: 1 };
 
-  const { tagIds: _tags, ...rest } = data.data;
+  const { tagIds: _tags, scheduledAt, ...rest } = data.data;
 
   await db.insert(articles).values({
     id,
     slug,
     canonicalSlug: slug,
     ...rest,
+    scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
     ...meta,
   });
 
@@ -337,7 +346,13 @@ export async function updateArticle(input: unknown): Promise<ActionResult> {
     };
   }
 
-  const { id, tagIds: _tags, content, ...rest } = data.data;
+  const {
+    id,
+    tagIds: _tags,
+    content,
+    scheduledAt,
+    ...rest
+  } = data.data;
 
   const meta = content ? calculateContentMetadata(content) : {};
 
@@ -352,6 +367,9 @@ export async function updateArticle(input: unknown): Promise<ActionResult> {
     .set({
       ...rest,
       ...(content !== undefined && { content }),
+      ...(scheduledAt !== undefined && {
+        scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+      }),
       ...meta,
       updatedAt: new Date(),
     })

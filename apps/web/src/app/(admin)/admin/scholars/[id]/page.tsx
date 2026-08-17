@@ -13,9 +13,15 @@ export default async function EditScholarPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
   const scholar = await db.query.scholars.findFirst({
     where: (s) => eq(s.id, id),
+    with: {
+      avatarAsset: { columns: { id: true, publicUrl: true } },
+      bannerAsset: { columns: { id: true, publicUrl: true } },
+    },
   });
+
   if (!scholar) notFound();
 
   return (
@@ -34,6 +40,10 @@ export default async function EditScholarPage({
         defaultLanguage: scholar.defaultLanguage,
         metaTitle: scholar.metaTitle,
         metaDescription: scholar.metaDescription,
+        avatarAssetId: scholar.avatarAsset?.id ?? null,
+        avatarUrl: scholar.avatarAsset?.publicUrl ?? null,
+        bannerAssetId: scholar.bannerAsset?.id ?? null,
+        bannerUrl: scholar.bannerAsset?.publicUrl ?? null,
       }}
     />
   );

@@ -13,6 +13,7 @@ import {
   ServerErrorBanner,
   SuccessBanner,
 } from "./AdminFormLayout";
+import { SchedulePublishCard } from "./SchedulePublishCard";
 import {
   createLecture,
   updateLecture,
@@ -20,6 +21,9 @@ import {
   deleteLecture,
 } from "@features/admin/actions/content.actions";
 import { FileUpload } from "./FileUpload";
+
+type LectureStatus =
+  "draft" | "review" | "scheduled" | "published" | "archived";
 
 interface LectureFormProps {
   lecture?: {
@@ -31,7 +35,9 @@ interface LectureFormProps {
     categoryId: string | null;
     durationSecs: number | null;
     allowDownload: boolean;
-    status: string;
+    status: LectureStatus;
+    scheduledAt?: string | Date | null;
+    publishedAt?: string | Date | null;
     defaultLanguage: string;
     metaTitle: string | null;
     metaDescription: string | null;
@@ -64,6 +70,16 @@ export function LectureForm({
     lecture?.thumbnailAssetId ?? null,
   );
 
+  const [scheduleState, setScheduleState] = useState<{
+    status: LectureStatus;
+    scheduledAt: string | null;
+  }>({
+    status: lecture?.status ?? "draft",
+    scheduledAt: lecture?.scheduledAt
+      ? new Date(lecture.scheduledAt).toISOString()
+      : null,
+  });
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
@@ -82,7 +98,11 @@ export function LectureForm({
         ? parseInt(form.get("durationSecs") as string, 10)
         : undefined,
       allowDownload: form.get("allowDownload") === "true",
-      status: (form.get("status") as string) || "draft",
+      status: scheduleState.status,
+      scheduledAt: scheduleState.scheduledAt
+        ? new Date(scheduleState.scheduledAt).toISOString()
+        : undefined,
+
       defaultLanguage: (form.get("defaultLanguage") as string) || "en",
       metaTitle: (form.get("metaTitle") as string) || undefined,
       metaDescription: (form.get("metaDescription") as string) || undefined,
@@ -332,40 +352,30 @@ export function LectureForm({
           </FormField>
         </FormCard>
 
-        <FormCard title="Status">
-          <FormField label="Publication status" htmlFor="status">
-            <select
-              id="status"
-              name="status"
-              form="lecture-form"
-              defaultValue={lecture?.status ?? "draft"}
-              className={inputCls}
-            >
-              <option value="draft">Draft</option>
-              <option value="review">In review</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="published">Published</option>
-              <option value="archived">Archived</option>
-            </select>
-          </FormField>
-
-          {isEdit && lecture.status !== "published" && (
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={() => {
-                startTransition(async () => {
-                  const r = await publishLecture(lecture.id);
-                  if (r.ok) setSuccess("Lecture published.");
-                  else setError(r.error);
-                });
-              }}
-              className="w-full py-2 rounded-lg text-sm font-semibold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-40"
-            >
-              Publish now
-            </button>
-          )}
-        </FormCard>
+        <SchedulePublishCard
+          status={scheduleState.status}
+          publishedAt={
+            lecture?.publishedAt ? new Date(lecture.publishedAt) : null
+          }
+          scheduledAt={
+            scheduleState.scheduledAt
+              ? new Date(scheduleState.scheduledAt)
+              : null
+          }
+          onChange={setScheduleState}
+          {...(isEdit
+            ? {
+                onPublishNow: () => {
+                  startTransition(async () => {
+                    const r = await publishLecture(lecture.id);
+                    if (r.ok) setSuccess("Lecture published.");
+                    else setError(r.error);
+                  });
+                },
+              }
+            : {})}
+          isPublishing={isPending}
+        />
 
         {isEdit && (
           <FormCard title="Preview">

@@ -23,7 +23,7 @@ export const createLectureSchema = z.object({
   status: z
     .enum(["draft", "review", "scheduled", "published", "archived"])
     .default("draft"),
-  scheduledAt: z.coerce.date().optional(),
+  scheduledAt: z.string().datetime().optional().or(z.literal("")).or(z.null()),
 
   defaultLanguage: z.string().max(10).default("en"),
 

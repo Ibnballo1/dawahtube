@@ -46,6 +46,8 @@ interface SeriesFormProps {
     id: string;
     title: string;
     scholarId: string | null;
+    status: string;
+    publishedAt?: Date | null;
   }>;
 }
 
@@ -84,6 +86,7 @@ export function SeriesForm({
     const title = form.get("title") as string;
     const description = (form.get("description") as string) || undefined;
     const scholarId = (form.get("scholarId") as string) || undefined;
+    const isActive = form.get("isActive") === "true";
 
     startTransition(async () => {
       let result;
@@ -94,6 +97,7 @@ export function SeriesForm({
           title,
           description,
           scholarId,
+          isActive,
         };
         result = await updateSeries(updatePayload);
       } else {
@@ -101,6 +105,7 @@ export function SeriesForm({
           title,
           description,
           scholarId,
+          isActive,
         };
         result = await createSeries(createPayload);
       }
@@ -143,8 +148,8 @@ export function SeriesForm({
           id: selectedLectureId,
           title: lecture.title,
           seriesPosition: position,
-          publishedAt: null,
-          status: "draft",
+          publishedAt: lecture.publishedAt ?? null, // Uses actual date if present
+          status: lecture.status, // Uses actual status from availableLectures
         },
       ]);
       setSelectedLectureId("");
@@ -191,99 +196,107 @@ export function SeriesForm({
   }
 
   return (
-    <AdminFormLayout
-      title={isEdit ? `Edit: ${series.title}` : "New series"}
-      backHref="/admin/series"
-      backLabel="Back to series"
-      isEdit={isEdit}
-    >
-      <form
-        id="series-form"
-        onSubmit={handleSubmit}
-        noValidate
-        className="contents"
+    <div className="flex flex-col gap-6">
+      <AdminFormLayout
+        title={isEdit ? `Edit: ${series.title}` : "New series"}
+        backHref="/admin/series"
+        backLabel="Back to series"
+        isEdit={isEdit}
       >
-        {error && <ServerErrorBanner message={error} />}
-        {success && <SuccessBanner message={success} />}
+        <form
+          id="series-form"
+          onSubmit={handleSubmit}
+          noValidate
+          className="contents"
+        >
+          {error && <ServerErrorBanner message={error} />}
+          {success && <SuccessBanner message={success} />}
 
-        <FormCard title="Series details">
-          <FormField label="Title" htmlFor="title" required>
-            <input
-              id="title"
-              name="title"
-              type="text"
-              required
-              defaultValue={series?.title ?? ""}
-              placeholder="e.g. Explanation of the Three Principles"
-              className={inputCls}
-            />
-          </FormField>
+          <FormCard title="Series details">
+            <FormField label="Title" htmlFor="title" required>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                required
+                defaultValue={series?.title ?? ""}
+                placeholder="e.g. Explanation of the Three Principles"
+                className={inputCls}
+              />
+            </FormField>
 
-          <FormField
-            label="Description"
-            htmlFor="description"
-            hint="Briefly describe what this series covers."
-          >
-            <textarea
-              id="description"
-              name="description"
-              rows={4}
-              defaultValue={series?.description ?? ""}
-              placeholder="A multi-part series covering…"
-              className={textareaCls}
-            />
-          </FormField>
-        </FormCard>
-
-        <SubmitRow
-          isSubmitting={isPending}
-          submitLabel={isEdit ? "Save changes" : "Create series"}
-          cancelHref="/admin/series"
-        />
-      </form>
-
-      {/* Sidebar */}
-      <>
-        <FormCard title="Settings">
-          <FormField label="Scholar" htmlFor="scholarId">
-            <select
-              id="scholarId"
-              name="scholarId"
-              form="series-form"
-              defaultValue={series?.scholarId ?? ""}
-              className={inputCls}
+            <FormField
+              label="Description"
+              htmlFor="description"
+              hint="Briefly describe what this series covers."
             >
-              <option value="">— No scholar —</option>
-              {scholars.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.honorifics ? `${s.honorifics} ${s.name}` : s.name}
-                </option>
-              ))}
-            </select>
-          </FormField>
+              <textarea
+                id="description"
+                name="description"
+                rows={4}
+                defaultValue={series?.description ?? ""}
+                placeholder="A multi-part series covering…"
+                className={textareaCls}
+              />
+            </FormField>
+          </FormCard>
 
-          <FormField label="Status" htmlFor="isActive">
-            <select
-              id="isActive"
-              name="isActive"
-              form="series-form"
-              defaultValue={series?.isActive !== false ? "true" : "false"}
-              className={inputCls}
-            >
-              <option value="true">Active — visible on site</option>
-              <option value="false">Inactive — hidden from site</option>
-            </select>
-          </FormField>
-        </FormCard>
-      </>
+          <SubmitRow
+            isSubmitting={isPending}
+            submitLabel={isEdit ? "Save changes" : "Create series"}
+            cancelHref="/admin/series"
+          />
+        </form>
 
-      {/* Lecture management — only shown in edit mode */}
+        {/* Sidebar */}
+        <>
+          <FormCard title="Settings">
+            <FormField label="Scholar" htmlFor="scholarId">
+              <select
+                id="scholarId"
+                name="scholarId"
+                form="series-form"
+                defaultValue={series?.scholarId ?? ""}
+                className={inputCls}
+              >
+                <option value="">— No scholar —</option>
+                {scholars.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.honorifics ? `${s.honorifics} ${s.name}` : s.name}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+
+            <FormField label="Status" htmlFor="isActive">
+              <select
+                id="isActive"
+                name="isActive"
+                form="series-form"
+                defaultValue={series?.isActive !== false ? "true" : "false"}
+                className={inputCls}
+              >
+                <option value="true">Active — visible on site</option>
+                <option value="false">Inactive — hidden from site</option>
+              </select>
+            </FormField>
+          </FormCard>
+        </>
+      </AdminFormLayout>
+
+      {/* ── Lecture management ─────────────────────────────────────────────
+          Rendered OUTSIDE AdminFormLayout so it spans full width below
+          the main form section in edit mode.
+      ──────────────────────────────────────────────────────────────────── */}
       {isEdit && (
-        <div className="lg:col-span-2 flex flex-col gap-5">
-          <FormCard title="Lectures in this series">
+        <div className="flex flex-col gap-5 max-w-6xl">
+          {/* Current lectures in series */}
+          <FormCard
+            title={`Lectures in this series (${seriesLectures.length})`}
+          >
             {seriesLectures.length === 0 ? (
               <p className="text-sm text-ink-muted py-4 text-center">
-                No lectures added yet. Add lectures below.
+                No lectures added yet. Use the form below to add lectures.
               </p>
             ) : (
               <div className="flex flex-col divide-y divide-border-subtle">
@@ -292,7 +305,7 @@ export function SeriesForm({
                     key={lecture.id}
                     className="flex items-center gap-3 py-3"
                   >
-                    {/* Position */}
+                    {/* Position badge */}
                     <span className="size-7 rounded-full bg-primary-100 text-primary-700 text-xs font-bold flex items-center justify-center shrink-0">
                       {idx + 1}
                     </span>
@@ -300,6 +313,17 @@ export function SeriesForm({
                     {/* Title */}
                     <span className="flex-1 text-sm text-ink-primary font-medium line-clamp-1">
                       {lecture.title}
+                    </span>
+
+                    {/* Status badge */}
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${
+                        lecture.status === "published"
+                          ? "bg-green-50 text-green-700"
+                          : "bg-surface-muted text-ink-muted"
+                      }`}
+                    >
+                      {lecture.status}
                     </span>
 
                     {/* Move up/down */}
@@ -342,8 +366,8 @@ export function SeriesForm({
             )}
           </FormCard>
 
-          {/* Add lecture */}
-          {assignableLectures.length > 0 && (
+          {/* Add lecture dropdown */}
+          {assignableLectures.length > 0 ? (
             <FormCard title="Add lecture to series">
               <div className="flex gap-3">
                 <select
@@ -352,7 +376,7 @@ export function SeriesForm({
                   className={`${inputCls} flex-1`}
                   aria-label="Select lecture to add"
                 >
-                  <option value="">— Select a lecture —</option>
+                  <option value="">— Select a lecture to add —</option>
                   {assignableLectures.map((l) => (
                     <option key={l.id} value={l.id}>
                       {l.title}
@@ -365,7 +389,7 @@ export function SeriesForm({
                   disabled={!selectedLectureId || isPending}
                   className="px-4 py-2 rounded-lg text-sm font-semibold bg-primary-700 text-white hover:bg-primary-800 transition-colors disabled:opacity-40 shrink-0"
                 >
-                  Add
+                  Add to series
                 </button>
               </div>
               <p className="text-xs text-ink-muted">
@@ -373,9 +397,16 @@ export function SeriesForm({
                 another series are excluded.
               </p>
             </FormCard>
+          ) : (
+            <div className="rounded-xl bg-surface-subtle border border-border-default px-5 py-4">
+              <p className="text-sm text-ink-muted">
+                No unassigned lectures available to add. Create new lectures or
+                remove lectures from other series first.
+              </p>
+            </div>
           )}
         </div>
       )}
-    </AdminFormLayout>
+    </div>
   );
 }

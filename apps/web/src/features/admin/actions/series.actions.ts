@@ -21,6 +21,7 @@ const createSeriesSchema = z.object({
   description: z.string().max(2000).optional(),
   scholarId: z.string().optional(),
   coverAssetId: z.string().optional(),
+  isActive: z.boolean().optional(),
 });
 
 const updateSeriesSchema = createSeriesSchema.partial().extend({
@@ -63,6 +64,10 @@ export async function createSeries(
 
   const finalSlug = existing ? `${slug}-${nanoid(4)}` : slug;
 
+  // Map incoming boolean `isActive` to database column `status`
+  const isActive = data.data.isActive ?? true;
+  const status = isActive ? "published" : "draft";
+
   await db.insert(series).values({
     id,
     slug: finalSlug,
@@ -70,11 +75,7 @@ export async function createSeries(
     description: data.data.description ?? null,
     scholarId: data.data.scholarId ?? null,
     coverAssetId: data.data.coverAssetId ?? null,
-
-    // Your schema defines series as draft by default.
-    // We can simply omit status and let the DB default apply.
-
-    // Your schema uses itemCount, not lectureCount.
+    status, // DB column
     itemCount: 0,
   });
 
@@ -86,6 +87,7 @@ export async function createSeries(
       id,
       slug: finalSlug,
       title: data.data.title,
+      status,
     },
   });
 
@@ -118,15 +120,19 @@ export async function updateSeries(
     };
   }
 
-  const { id, ...rest } = data.data;
+  const { id, isActive, ...rest } = data.data;
 
-  await db
-    .update(series)
-    .set({
-      ...rest,
-      updatedAt: new Date(),
-    })
-    .where(eq(series.id, id));
+  // Map update values explicitly so `isActive` is not passed to Drizzle .set()
+  const updateData: Record<string, unknown> = {
+    ...rest,
+    updatedAt: new Date(),
+  };
+
+  if (isActive !== undefined) {
+    updateData.status = isActive ? "published" : "draft";
+  }
+
+  await db.update(series).set(updateData).where(eq(series.id, id));
 
   await writeAuditLog({
     action: "update",
@@ -148,14 +154,6 @@ export async function updateSeries(
 
 export async function deleteSeries(id: string): Promise<ActionResult> {
   await requirePermission(PERMISSIONS.LECTURE_DELETE);
-
-  /*
-   * series_items has ON DELETE CASCADE for seriesId.
-   *
-   * Therefore we do NOT need to manually detach lectures.
-   * Deleting/soft-deleting the series does not physically delete the series,
-   * however, so we explicitly remove the series_items first.
-   */
 
   await db.transaction(async (tx) => {
     await tx.delete(seriesItems).where(eq(seriesItems.seriesId, id));
