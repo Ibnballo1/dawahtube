@@ -40,6 +40,12 @@ export default async function EditArticlePage({
         scholarId: article.scholarId,
         categoryId: article.categoryId,
         status: article.status,
+        scheduledAt: article.scheduledAt
+          ? article.scheduledAt.toISOString()
+          : null,
+        publishedAt: article.publishedAt
+          ? article.publishedAt.toISOString()
+          : null,
         defaultLanguage: article.defaultLanguage,
         metaTitle: article.metaTitle,
         metaDescription: article.metaDescription,
