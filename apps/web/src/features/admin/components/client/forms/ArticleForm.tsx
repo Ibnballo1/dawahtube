@@ -13,12 +13,16 @@ import {
   ServerErrorBanner,
   SuccessBanner,
 } from "./AdminFormLayout";
+import { SchedulePublishCard } from "./SchedulePublishCard";
 import {
   createArticle,
   updateArticle,
   publishArticle,
   deleteArticle,
 } from "@features/admin/actions/content.actions";
+
+type ContentStatus =
+  "draft" | "scheduled" | "published" | "archived" | "review";
 
 interface ArticleFormProps {
   article?: {
@@ -28,7 +32,9 @@ interface ArticleFormProps {
     content: string | null;
     scholarId: string | null;
     categoryId: string | null;
-    status: string;
+    status: ContentStatus;
+    scheduledAt: string | null;
+    publishedAt: string | null;
     defaultLanguage: string;
     metaTitle: string | null;
     metaDescription: string | null;
@@ -48,6 +54,15 @@ export function ArticleForm({
   const [isDeleting, startDeleteTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [scheduleState, setScheduleState] = useState<{
+    status: ContentStatus;
+    scheduledAt: string | null;
+  }>({
+    status: article?.status ?? "draft",
+    scheduledAt: article?.scheduledAt
+      ? new Date(article.scheduledAt).toISOString()
+      : null,
+  });
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -63,7 +78,11 @@ export function ArticleForm({
       content: (form.get("content") as string) || undefined,
       scholarId: (form.get("scholarId") as string) || undefined,
       categoryId: (form.get("categoryId") as string) || undefined,
-      status: (form.get("status") as string) || "draft",
+      status: scheduleState.status,
+      scheduledAt: scheduleState.scheduledAt
+        ? new Date(scheduleState.scheduledAt).toISOString()
+        : undefined,
+
       defaultLanguage: (form.get("defaultLanguage") as string) || "en",
       metaTitle: (form.get("metaTitle") as string) || undefined,
       metaDescription: (form.get("metaDescription") as string) || undefined,
@@ -251,40 +270,30 @@ export function ArticleForm({
           </FormField>
         </FormCard>
 
-        <FormCard title="Status">
-          <FormField label="Publication status" htmlFor="status">
-            <select
-              id="status"
-              name="status"
-              form="article-form"
-              defaultValue={article?.status ?? "draft"}
-              className={inputCls}
-            >
-              <option value="draft">Draft</option>
-              <option value="review">In review</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="published">Published</option>
-              <option value="archived">Archived</option>
-            </select>
-          </FormField>
-
-          {isEdit && article.status !== "published" && (
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={() => {
-                startTransition(async () => {
-                  const r = await publishArticle(article.id);
-                  if (r.ok) setSuccess("Article published successfully.");
-                  else setError(r.error);
-                });
-              }}
-              className="w-full py-2 !bg-red-700 rounded-lg text-sm font-semibold text-white hover:bg-green-700 transition-colors disabled:opacity-40"
-            >
-              Publish now
-            </button>
-          )}
-        </FormCard>
+        <SchedulePublishCard
+          status={scheduleState.status}
+          publishedAt={
+            article?.publishedAt ? new Date(article.publishedAt) : null
+          }
+          scheduledAt={
+            scheduleState.scheduledAt
+              ? new Date(scheduleState.scheduledAt)
+              : null
+          }
+          onChange={setScheduleState}
+          {...(isEdit
+            ? {
+                onPublishNow: () => {
+                  startTransition(async () => {
+                    const r = await publishArticle(article.id);
+                    if (r.ok) setSuccess("Article published.");
+                    else setError(r.error);
+                  });
+                },
+              }
+            : {})}
+          isPublishing={isPending}
+        />
 
         {isEdit && (
           <FormCard title="Preview">
