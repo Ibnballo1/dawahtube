@@ -1,4 +1,4 @@
-// src/app/scholars/[slug]/page.tsx
+// src/app/(main)/scholars/[slug]/page.tsx
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -9,7 +9,7 @@ import {
 } from "@features/scholars/queries/scholar.queries";
 import { ScholarProfileHeader } from "@features/scholars/components/server/ScholarProfileHeader";
 import { ScholarContentPanel } from "@features/scholars/components/server/ScholarContentPanel";
-import { Skeleton } from "@/shared/components/ui/skeleton";
+import { Skeleton } from "@shared/components/ui/skeleton";
 import { env } from "@core/config/env";
 import { formatScholarName } from "@shared/lib/format";
 
@@ -91,10 +91,8 @@ export default async function ScholarProfilePage({
       />
 
       <div className="min-h-screen bg-surface-base">
-        {/* Profile header — banner, avatar, name, bio, stats */}
         <ScholarProfileHeader scholar={scholar} />
 
-        {/* Content tabs — lectures / articles */}
         <div className="container-site py-10">
           <Suspense
             fallback={
@@ -105,7 +103,12 @@ export default async function ScholarProfilePage({
               </div>
             }
           >
-            <ScholarContentPanel content={content} scholarSlug={slug} />
+            {/* Pass scholarId so ScholarContentPanel can fetch series */}
+            <ScholarContentPanel
+              content={content}
+              scholarSlug={slug}
+              scholarId={scholar.id}
+            />
           </Suspense>
         </div>
       </div>
