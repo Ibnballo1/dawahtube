@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@core/database/client";
-import { series } from "@core/database/schema";
+import { mediaAssets, series } from "@core/database/schema";
 import { Badge } from "@shared/components/ui/badge";
 import { ScholarContentTabs } from "../client/ScholarContentTabs";
 import {
@@ -27,15 +27,28 @@ export async function ScholarContentPanel({
 }: ScholarContentPanelProps) {
   const { lectures, articles, totalLectures, totalArticles } = content;
 
-  const scholarSeries = await db.query.series.findMany({
-    where: and(
-      eq(series.scholarId, scholarId),
-      eq(series.status, "published"),
-      isNull(series.deletedAt),
-    ),
-    orderBy: [desc(series.createdAt)],
-    with: { coverAsset: { columns: { publicUrl: true, altText: true } } },
-  });
+  const scholarSeries = await db
+    .select({
+      id: series.id,
+      slug: series.slug,
+      title: series.title,
+      description: series.description,
+      itemCount: series.itemCount,
+      coverAsset: {
+        publicUrl: mediaAssets.publicUrl,
+        altText: mediaAssets.altText,
+      },
+    })
+    .from(series)
+    .leftJoin(mediaAssets, eq(series.coverAssetId, mediaAssets.id))
+    .where(
+      and(
+        eq(series.scholarId, scholarId),
+        eq(series.status, "published"),
+        isNull(series.deletedAt),
+      ),
+    )
+    .orderBy(desc(series.createdAt));
 
   const hasLectures = lectures.length > 0;
   const hasArticles = articles.length > 0;

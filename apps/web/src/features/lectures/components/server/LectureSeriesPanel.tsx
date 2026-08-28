@@ -1,30 +1,40 @@
 // src/features/lectures/components/server/LectureSeriesPanel.tsx
-//
-// Shown on the lecture detail page when the lecture belongs to a series.
-// Renders the full episode list with the current episode highlighted.
-// Uses CSS show/hide — no client JS needed.
-
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@core/database/client";
-import { seriesItems, lectures } from "@core/database/schema";
-import { eq, and, isNull, asc } from "drizzle-orm";
+import { seriesItems } from "@core/database/schema";
+import { eq, asc } from "drizzle-orm";
 import { Badge } from "@shared/components/ui/badge";
 import { formatDurationLong } from "@shared/lib/format";
 
+// Match the shape returned by getLectureSeriesContext
+export interface LectureSeriesContext {
+  series: {
+    id: string;
+    slug: string;
+    title: string;
+  };
+  // Add any other properties returned by getLectureSeriesContext if applicable
+}
+
 interface LectureSeriesPanelProps {
-  seriesId: string;
-  seriesSlug: string;
-  seriesTitle: string;
+  context: LectureSeriesContext;
   currentLectureId: string;
 }
 
 export async function LectureSeriesPanel({
-  seriesId,
-  seriesSlug,
-  seriesTitle,
+  context,
   currentLectureId,
 }: LectureSeriesPanelProps) {
+  const seriesId = context?.series?.id;
+  const seriesSlug = context?.series?.slug;
+  const seriesTitle = context?.series?.title;
+
+  // Guard against missing or empty seriesId
+  if (!seriesId) {
+    return null;
+  }
+
   // Fetch series items and include the related published lecture
   const items = await db.query.seriesItems.findMany({
     where: eq(seriesItems.seriesId, seriesId),
@@ -69,23 +79,23 @@ export async function LectureSeriesPanel({
             {seriesTitle}
           </Link>
           <span className="text-xs text-ink-muted">
-            Episode {currentIdx + 1} of {episodes.length}
+            Episode {currentIdx >= 0 ? currentIdx + 1 : 1} of {episodes.length}
           </span>
         </div>
 
         {/* Progress bar */}
         <div className="hidden sm:flex flex-col items-end gap-1">
           <span className="text-xs text-ink-muted">
-            {currentIdx + 1}/{episodes.length}
+            {currentIdx >= 0 ? currentIdx + 1 : 1}/{episodes.length}
           </span>
           <div className="w-24 h-1.5 bg-border-default rounded-full overflow-hidden">
             <div
               className="h-full bg-primary-700 rounded-full transition-all"
               style={{
-                width: `${((currentIdx + 1) / episodes.length) * 100}%`,
+                width: `${(((currentIdx >= 0 ? currentIdx : 0) + 1) / episodes.length) * 100}%`,
               }}
               role="progressbar"
-              aria-valuenow={currentIdx + 1}
+              aria-valuenow={(currentIdx >= 0 ? currentIdx : 0) + 1}
               aria-valuemin={1}
               aria-valuemax={episodes.length}
               aria-label={`Episode ${currentIdx + 1} of ${episodes.length}`}

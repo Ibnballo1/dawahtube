@@ -136,7 +136,7 @@ export default async function LectureDetailPage({
               {seriesContext && (
                 <LectureSeriesPanel
                   context={seriesContext}
-                  currentSlug={slug}
+                  currentLectureId={slug}
                 />
               )}
 

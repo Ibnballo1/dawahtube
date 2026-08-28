@@ -10,6 +10,7 @@ import {
 import { relations } from "drizzle-orm";
 import { mediaAssetStatusEnum, mediaAssetTypeEnum } from "./enums";
 import { idColumn, auditTimestamps, softDelete } from "./helpers";
+import { lectures, series } from "./lectures";
 import { user } from "./auth";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -99,9 +100,14 @@ export const mediaAssets = pgTable(
 // ─────────────────────────────────────────────────────────────────────────────
 // RELATIONS
 // ─────────────────────────────────────────────────────────────────────────────
-export const mediaAssetsRelations = relations(mediaAssets, ({ one }) => ({
+export const mediaAssetsRelations = relations(mediaAssets, ({ one, many }) => ({
   uploader: one(user, {
     fields: [mediaAssets.uploaderUserId],
     references: [user.id],
   }),
+  // Inverse relations required by Drizzle's relational query engine
+  lecturesAudio: many(lectures, { relationName: "audioAsset" }),
+  lecturesVideo: many(lectures, { relationName: "videoAsset" }),
+  lecturesThumbnail: many(lectures, { relationName: "thumbnailAsset" }),
+  seriesCovers: many(series),
 }));
