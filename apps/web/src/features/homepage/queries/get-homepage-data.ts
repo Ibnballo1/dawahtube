@@ -1,11 +1,7 @@
 // src/features/homepage/queries/get-homepage-data.ts
-// All homepage queries run server-side. Each query is independently cached
-// with a tag so surgical revalidation works: publishing a new lecture only
-// invalidates the lectures slot, not the scholars or reminder slots.
 
 import { unstable_cache } from "next/cache";
 import { db } from "@core/database/client";
-import { eq, and, isNull, lte, or, desc, asc } from "drizzle-orm";
 import {
   featuredSlots,
   lectures,
@@ -13,13 +9,11 @@ import {
   articles,
   books,
   reminders,
-  lectureCategories,
-  articleCategories,
-  bookCategories,
-  mediaAssets,
 } from "@core/database/schema";
+import { eq, and, isNull, or, gte, desc, asc, sql } from "drizzle-orm";
 
-// ─── Hero lecture ────────────────────────────────────────────────────────────
+// ─── Hero lecture ─────────────────────────────────────────────────────────────
+
 export const getHeroLecture = unstable_cache(
   async () => {
     const slot = await db.query.featuredSlots.findFirst({
@@ -27,12 +21,24 @@ export const getHeroLecture = unstable_cache(
         and(
           eq(s.slotKey, "hero_lecture"),
           eq(s.isActive, true),
-          or(isNull(s.validUntil), lte(s.validUntil, new Date())),
+          or(isNull(s.validUntil), gte(s.validUntil, new Date())),
         ),
       orderBy: (s) => [asc(s.position)],
     });
 
-    if (!slot || slot.entityType !== "lecture") return null;
+    if (!slot || slot.entityType !== "lecture") {
+      // Fallback — most recent published lecture
+      return db.query.lectures.findFirst({
+        where: (l) => and(eq(l.status, "published"), isNull(l.deletedAt)),
+        orderBy: (l) => [desc(sql`COALESCE(${l.publishedAt}, ${l.createdAt})`)],
+        with: {
+          scholar: { with: { avatarAsset: true } },
+          category: true,
+          thumbnailAsset: true,
+          audioAsset: { columns: { id: true, durationSecs: true } },
+        },
+      });
+    }
 
     return db.query.lectures.findFirst({
       where: (l) =>
@@ -54,20 +60,24 @@ export const getHeroLecture = unstable_cache(
 );
 
 // ─── Featured lectures (up to 6) ─────────────────────────────────────────────
+
 export const getFeaturedLectures = unstable_cache(
   async () => {
     const slots = await db.query.featuredSlots.findMany({
       where: (s) =>
-        and(eq(s.slotKey, "featured_lectures"), eq(s.isActive, true)),
+        and(
+          eq(s.slotKey, "featured_lectures"),
+          eq(s.isActive, true),
+          or(isNull(s.validUntil), gte(s.validUntil, new Date())),
+        ),
       orderBy: (s) => [asc(s.position)],
       limit: 6,
     });
 
     if (slots.length === 0) {
-      // Fallback: most recent published lectures
       return db.query.lectures.findMany({
         where: (l) => and(eq(l.status, "published"), isNull(l.deletedAt)),
-        orderBy: (l) => [desc(l.publishedAt)],
+        orderBy: (l) => [desc(sql`COALESCE(${l.publishedAt}, ${l.createdAt})`)],
         limit: 6,
         with: {
           scholar: {
@@ -97,7 +107,6 @@ export const getFeaturedLectures = unstable_cache(
       },
     });
 
-    // Preserve slot order
     return ids
       .map((id) => rows.find((r) => r.id === id))
       .filter((r): r is NonNullable<typeof r> => r !== undefined);
@@ -110,11 +119,16 @@ export const getFeaturedLectures = unstable_cache(
 );
 
 // ─── Featured scholars (up to 4) ─────────────────────────────────────────────
+
 export const getFeaturedScholars = unstable_cache(
   async () => {
     const slots = await db.query.featuredSlots.findMany({
       where: (s) =>
-        and(eq(s.slotKey, "featured_scholars"), eq(s.isActive, true)),
+        and(
+          eq(s.slotKey, "featured_scholars"),
+          eq(s.isActive, true),
+          or(isNull(s.validUntil), gte(s.validUntil, new Date())),
+        ),
       orderBy: (s) => [asc(s.position)],
       limit: 4,
     });
@@ -152,11 +166,16 @@ export const getFeaturedScholars = unstable_cache(
 );
 
 // ─── Latest articles (up to 4) ───────────────────────────────────────────────
+
 export const getLatestArticles = unstable_cache(
   async () => {
     const slots = await db.query.featuredSlots.findMany({
       where: (s) =>
-        and(eq(s.slotKey, "featured_articles"), eq(s.isActive, true)),
+        and(
+          eq(s.slotKey, "featured_articles"),
+          eq(s.isActive, true),
+          or(isNull(s.validUntil), gte(s.validUntil, new Date())),
+        ),
       orderBy: (s) => [asc(s.position)],
       limit: 4,
     });
@@ -164,7 +183,7 @@ export const getLatestArticles = unstable_cache(
     if (slots.length === 0) {
       return db.query.articles.findMany({
         where: (a) => and(eq(a.status, "published"), isNull(a.deletedAt)),
-        orderBy: (a) => [desc(a.publishedAt)],
+        orderBy: (a) => [desc(sql`COALESCE(${a.publishedAt}, ${a.createdAt})`)],
         limit: 4,
         with: {
           scholar: {
@@ -200,22 +219,42 @@ export const getLatestArticles = unstable_cache(
 );
 
 // ─── Daily reminder ───────────────────────────────────────────────────────────
+
 export const getDailyReminder = unstable_cache(
   async () => {
+    // Try featured slot first
     const slot = await db.query.featuredSlots.findFirst({
-      where: (s) => and(eq(s.slotKey, "daily_reminder"), eq(s.isActive, true)),
+      where: (s) =>
+        and(
+          eq(s.slotKey, "daily_reminder"),
+          eq(s.isActive, true),
+          or(isNull(s.validUntil), gte(s.validUntil, new Date())),
+        ),
       orderBy: (s) => [asc(s.position)],
     });
 
-    if (!slot || slot.entityType !== "reminder") return null;
+    if (slot && slot.entityType === "reminder") {
+      const pinned = await db.query.reminders.findFirst({
+        where: (r) =>
+          and(
+            eq(r.id, slot.entityId),
+            eq(r.status, "published"),
+            isNull(r.deletedAt),
+          ),
+        with: {
+          scholar: {
+            columns: { id: true, slug: true, name: true, honorifics: true },
+          },
+          imageAsset: { columns: { id: true, publicUrl: true, altText: true } },
+        },
+      });
+      if (pinned) return pinned;
+    }
 
+    // Fallback — most recent published or created reminder
     return db.query.reminders.findFirst({
-      where: (r) =>
-        and(
-          eq(r.id, slot.entityId),
-          eq(r.status, "published"),
-          isNull(r.deletedAt),
-        ),
+      where: (r) => and(eq(r.status, "published"), isNull(r.deletedAt)),
+      orderBy: (r) => [desc(sql`COALESCE(${r.publishedAt}, ${r.createdAt})`)],
       with: {
         scholar: {
           columns: { id: true, slug: true, name: true, honorifics: true },
@@ -229,11 +268,16 @@ export const getDailyReminder = unstable_cache(
 );
 
 // ─── Library highlights (up to 4) ────────────────────────────────────────────
+
 export const getLibraryHighlights = unstable_cache(
   async () => {
     const slots = await db.query.featuredSlots.findMany({
       where: (s) =>
-        and(eq(s.slotKey, "library_highlights"), eq(s.isActive, true)),
+        and(
+          eq(s.slotKey, "library_highlights"),
+          eq(s.isActive, true),
+          or(isNull(s.validUntil), gte(s.validUntil, new Date())),
+        ),
       orderBy: (s) => [asc(s.position)],
       limit: 4,
     });
@@ -241,7 +285,7 @@ export const getLibraryHighlights = unstable_cache(
     if (slots.length === 0) {
       return db.query.books.findMany({
         where: (b) => and(eq(b.status, "published"), isNull(b.deletedAt)),
-        orderBy: (b) => [desc(b.publishedAt)],
+        orderBy: (b) => [desc(sql`COALESCE(${b.publishedAt}, ${b.createdAt})`)],
         limit: 4,
         with: {
           category: { columns: { id: true, slug: true, name: true } },
@@ -271,6 +315,7 @@ export const getLibraryHighlights = unstable_cache(
 );
 
 // ─── Platform stats (for mission section) ────────────────────────────────────
+
 export const getPlatformStats = unstable_cache(
   async () => {
     const [lectureCount, scholarCount, articleCount, bookCount] =
@@ -292,9 +337,8 @@ export const getPlatformStats = unstable_cache(
           and(eq(books.status, "published"), isNull(books.deletedAt)),
         ),
       ]);
-
     return { lectureCount, scholarCount, articleCount, bookCount };
   },
   ["platform-stats"],
-  { tags: ["platform-stats"], revalidate: 86400 }, // 24h — stats don't need to be real-time
+  { tags: ["platform-stats"], revalidate: 86400 },
 );

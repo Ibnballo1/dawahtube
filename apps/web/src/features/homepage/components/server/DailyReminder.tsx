@@ -1,6 +1,6 @@
 // src/features/homepage/components/server/DailyReminder.tsx
 import Link from "next/link";
-import { Button } from "@shared/components/ui/button";
+import Image from "next/image";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { mdxComponents } from "@core/content/mdx-components";
 import { getDailyReminder } from "../../queries/get-homepage-data";
@@ -10,8 +10,11 @@ export async function DailyReminder() {
   const reminder = await getDailyReminder();
   if (!reminder) return null;
 
-  // Render MDX content server-side — no client JS required for readers
+  // Render MDX server-side — no client JS required.
+  // Falls back gracefully to plain text paragraphs if MDX parsing fails
+  // (e.g. reminder contains special characters or unregistered components).
   let renderedContent: React.ReactNode = null;
+
   if (reminder.content) {
     try {
       const { content } = await compileMDX({
@@ -21,10 +24,28 @@ export async function DailyReminder() {
       });
       renderedContent = content;
     } catch {
-      // Fallback to plain text if MDX fails (e.g. invalid MDX in DB)
-      renderedContent = <p>{reminder.content}</p>;
+      // Plain text fallback — split on double newlines to preserve paragraphs
+      renderedContent = (
+        <div className="space-y-4">
+          {reminder.content
+            .split(/\n\n+/)
+            .filter(Boolean)
+            .map((para, i) => (
+              <p key={i} className="text-white/75 leading-relaxed">
+                {para.trim()}
+              </p>
+            ))}
+        </div>
+      );
     }
   }
+
+  const scholarName = reminder.scholar
+    ? formatScholarName(
+        reminder.scholar.honorifics ?? null,
+        reminder.scholar.name,
+      )
+    : null;
 
   return (
     <section
@@ -61,47 +82,69 @@ export async function DailyReminder() {
             <span className="block w-8 h-px bg-accent-700" aria-hidden="true" />
           </div>
 
-          {/* Reminder title */}
+          {/* Title */}
           <h2
             id="reminder-heading"
-            className="font-display font-bold text-3xl text-white leading-tight tracking-snug"
+            className="font-display font-bold text-2xl sm:text-3xl text-white leading-tight"
           >
             {reminder.title}
           </h2>
 
-          {/* MDX content */}
+          {/* MDX / plain text content */}
           {renderedContent && (
             <div className="prose-reminder w-full text-left">
               {renderedContent}
             </div>
           )}
 
-          {/* Source */}
+          {/* Source citation */}
           {reminder.source && (
             <p className="text-sm text-white/40 italic">— {reminder.source}</p>
           )}
 
           {/* Scholar attribution */}
-          {reminder.scholar && (
+          {reminder.scholar && scholarName && (
             <Link
               href={`/scholars/${reminder.scholar.slug}`}
-              className="flex items-center gap-2 text-sm text-white/50 hover:text-white/80 transition-colors"
+              className="flex items-center gap-2.5 text-sm text-white/50 hover:text-white/80 transition-colors group"
             >
-              <span className="size-6 rounded-full bg-primary-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                {reminder.scholar.name[0]?.toUpperCase()}
-              </span>
-              {formatScholarName(
-                reminder.scholar.honorifics ?? null,
-                reminder.scholar.name,
+              {reminder.imageAsset?.publicUrl ? (
+                <div className="relative size-7 rounded-full overflow-hidden shrink-0">
+                  <Image
+                    src={reminder.imageAsset.publicUrl}
+                    alt={scholarName}
+                    fill
+                    className="object-cover"
+                    sizes="28px"
+                  />
+                </div>
+              ) : (
+                <span className="size-7 rounded-full bg-primary-700 flex items-center justify-center text-xs font-bold text-white shrink-0 group-hover:bg-primary-600 transition-colors">
+                  {reminder.scholar.name[0]?.toUpperCase()}
+                </span>
               )}
+              <span className="group-hover:text-white/80 transition-colors">
+                {scholarName}
+              </span>
             </Link>
           )}
 
-          {/* Browse more reminders CTA */}
+          {/* CTA */}
           <Link
             href="/reminders"
-            className="inline-flex items-center justify-center rounded-md border border-white/20 bg-secondary px-4 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:border-white/40 hover:text-white"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white/70 border border-white/20 hover:bg-white/10 hover:border-white/40 hover:text-white transition-colors"
           >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
             Browse all reminders
           </Link>
         </div>
