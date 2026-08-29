@@ -58,7 +58,7 @@ export default async function ReminderDetailPage({
       scholar: {
         columns: {
           id: true,
-          slug: true,
+          // slug: true,
           name: true,
           honorifics: true,
           arabicName: true,
@@ -81,7 +81,7 @@ export default async function ReminderDetailPage({
       ),
     orderBy: [desc(reminders.publishedAt)],
     limit: 3,
-    columns: { id: true, slug: true, title: true, publishedAt: true },
+    columns: { id: true, title: true, publishedAt: true },
   });
 
   // Render MDX
@@ -179,7 +179,7 @@ export default async function ReminderDetailPage({
               {/* Scholar */}
               {reminder.scholar && scholarName && (
                 <Link
-                  href={`/scholars/${reminder.scholar.slug}`}
+                  href={`/scholars/${reminder.scholar.id}`}
                   className="flex items-center gap-2 hover:text-ink-primary transition-colors group"
                 >
                   {reminder.scholar.avatarAsset?.publicUrl ? (
