@@ -4,12 +4,16 @@ import { db } from "@core/database/client";
 import { reminders } from "@core/database/schema";
 import { eq, isNull, desc } from "drizzle-orm";
 import { ok, err, withCors, OPTIONS } from "../_helpers";
+import { rateLimit } from "@/core/ratelimit/client";
 
 export { OPTIONS };
 
 // GET /api/v1/reminders — returns the latest published reminder
 // Mobile app uses this for the daily reminder notification and home screen widget.
 export async function GET(_req: NextRequest) {
+  // Inside GET():
+  const rl = await rateLimit("api", _req); // use 'search' for search, 'stream' for stream-url
+  if (!rl.ok) return rl.response!;
   try {
     const reminder = await db.query.reminders.findFirst({
       where: (r) =>

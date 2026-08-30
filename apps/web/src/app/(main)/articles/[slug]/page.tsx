@@ -14,6 +14,7 @@ import { RelatedArticles } from "@/features/articles/components/server/RelatedAr
 import { ArticleViewTracker } from "@/features/articles/components/client/ArticleViewTracker";
 import { ArticleCardSkeleton, Skeleton } from "@shared/components/ui/skeleton";
 import { env } from "@core/config/env";
+import { trackView } from "@/shared/lib/track-view";
 
 export const revalidate = 3600;
 
@@ -30,6 +31,8 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
   if (!article) return { title: "Article not found" };
+
+  trackView("article", article.id); // ← add this line, no await
 
   const scholarName = article.scholar
     ? [article.scholar.honorifics, article.scholar.name]

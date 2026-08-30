@@ -14,6 +14,7 @@ import { RelatedLectures } from "@/features/lectures/components/server/RelatedLe
 import { LectureViewTracker } from "@/features/lectures/components/client/LectureViewTracker";
 import { LectureCardSkeleton, Skeleton } from "@shared/components/ui/skeleton";
 import { env } from "@core/config/env";
+import { trackView } from "@/shared/lib/track-view";
 
 // ── ISR: rebuild every hour, serve stale while revalidating ───────────────────
 export const revalidate = 3600;
@@ -33,6 +34,8 @@ export async function generateMetadata({
   const { slug } = await params;
   const lecture = await getLectureBySlug(slug);
   if (!lecture) return { title: "Lecture not found" };
+
+  trackView("lecture", lecture.id); // ← add this line, no await
 
   const scholarName = lecture.scholar
     ? [lecture.scholar.honorifics, lecture.scholar.name]

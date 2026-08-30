@@ -15,6 +15,7 @@ import {
   BookSearch,
   Bell,
   Star,
+  ChartLine,
   UserCog,
   Menu,
   X,
@@ -98,6 +99,12 @@ const NAV_ITEMS: NavItem[] = [
     href: "/admin/reminders",
     permission: PERMISSIONS.REMINDER_CREATE,
     icon: Bell,
+  },
+  {
+    label: "Analytics",
+    href: "/admin/analytics",
+    permission: PERMISSIONS.ANALYTICS_VIEW,
+    icon: ChartLine,
   },
   {
     label: "Featured",

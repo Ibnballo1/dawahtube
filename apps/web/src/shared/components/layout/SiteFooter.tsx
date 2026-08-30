@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cn } from "@shared/lib/utils";
 import Image from "next/image";
+import { NewsletterForm } from "./NewsLetterForm";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SITE FOOTER
@@ -103,6 +104,10 @@ export function SiteFooter() {
               </FooterLink>
             ))}
           </FooterColumn>
+        </div>
+        {/* Newsletter */}
+        <div className="flex flex-col gap-4 sm:col-span-2 lg:col-span-1">
+          <NewsletterForm />
         </div>
       </div>
 

@@ -4,10 +4,14 @@ import { db } from "@core/database/client";
 import { lectureCategories } from "@core/database/schema";
 import { eq, asc } from "drizzle-orm";
 import { ok, err, withCors, OPTIONS } from "../_helpers";
+import { rateLimit } from "@/core/ratelimit/client";
 
 export { OPTIONS };
 
 export async function GET(_req: NextRequest) {
+  // Inside GET():
+  const rl = await rateLimit("api", _req); // use 'search' for search, 'stream' for stream-url
+  if (!rl.ok) return rl.response!;
   try {
     const rows = await db.query.lectureCategories.findMany({
       where: eq(lectureCategories.isActive, true),

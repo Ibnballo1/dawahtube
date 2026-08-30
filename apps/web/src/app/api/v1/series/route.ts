@@ -10,10 +10,14 @@ import {
   OPTIONS,
   parsePagination,
 } from "../_helpers";
+import { rateLimit } from "@/core/ratelimit/client";
 
 export { OPTIONS };
 
 export async function GET(req: NextRequest) {
+  // Inside GET():
+  const rl = await rateLimit("api", req); // use 'search' for search, 'stream' for stream-url
+  if (!rl.ok) return rl.response!;
   try {
     const sp = req.nextUrl.searchParams;
     const { page, limit, offset } = parsePagination(sp);

@@ -11,6 +11,7 @@ import { BookDetailView } from "@/features/library/components/server/BookDetailV
 import { RelatedBooks } from "@/features/library/components/server/RelatedBooks";
 import { BookCardSkeleton } from "@/shared/components/ui/skeleton";
 import { env } from "@/core/config/env";
+import { trackView } from "@/shared/lib/track-view";
 
 export const revalidate = 3600;
 
@@ -27,6 +28,8 @@ export async function generateMetadata({
   const { slug } = await params;
   const book = await getBookBySlug(slug);
   if (!book) return { title: "Book not found" };
+
+  trackView("book", book.id); // ← add this line, no await
 
   return {
     title: book.metaTitle ?? book.title,

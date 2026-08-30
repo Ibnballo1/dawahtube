@@ -3,6 +3,7 @@ import { type NextRequest } from "next/server";
 import { db } from "@core/database/client";
 import { lectures } from "@core/database/schema";
 import { eq, and, isNull, desc, asc, count, sql, ilike, or } from "drizzle-orm";
+import { rateLimit } from "@/core/ratelimit/client";
 import {
   ok,
   paginated,
@@ -15,6 +16,10 @@ import {
 export { OPTIONS };
 
 export async function GET(req: NextRequest) {
+  // Inside GET():
+  const rl = await rateLimit("api", req); // use 'search' for search, 'stream' for stream-url
+  if (!rl.ok) return rl.response!;
+
   try {
     const sp = req.nextUrl.searchParams;
     const { page, limit, offset } = parsePagination(sp);

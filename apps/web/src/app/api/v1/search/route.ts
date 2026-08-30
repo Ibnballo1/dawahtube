@@ -4,10 +4,14 @@ import { db } from "@core/database/client";
 import { lectures, scholars, series } from "@core/database/schema";
 import { eq, and, isNull, desc, count, sql, ilike, or } from "drizzle-orm";
 import { ok, err, withCors, OPTIONS, parsePagination } from "../_helpers";
+import { rateLimit } from "@/core/ratelimit/client";
 
 export { OPTIONS };
 
 export async function GET(req: NextRequest) {
+  // Inside GET():
+  const rl = await rateLimit("api", req); // use 'search' for search, 'stream' for stream-url
+  if (!rl.ok) return rl.response!;
   try {
     const sp = req.nextUrl.searchParams;
     const q = sp.get("q")?.trim();

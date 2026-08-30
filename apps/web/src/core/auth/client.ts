@@ -1,4 +1,5 @@
 // src/core/auth/client.ts  — "use client" only
+"use client";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({

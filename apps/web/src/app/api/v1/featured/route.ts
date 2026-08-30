@@ -17,10 +17,14 @@ import {
 } from "@core/database/schema";
 import { eq, and, isNull, asc } from "drizzle-orm";
 import { ok, err, withCors, OPTIONS } from "../_helpers";
+import { rateLimit } from "@/core/ratelimit/client";
 
 export { OPTIONS };
 
 export async function GET(_req: NextRequest) {
+  // Inside GET():
+  const rl = await rateLimit("api", _req); // use 'search' for search, 'stream' for stream-url
+  if (!rl.ok) return rl.response!;
   try {
     // Get all active, non-expired slots
     const slots = await db.query.featuredSlots.findMany({
