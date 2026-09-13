@@ -7,6 +7,11 @@ import { AppState } from "react-native";
 import { usePlayerStore, currentTrack } from "../store/playerStore";
 import { storage } from "@/lib/storage/mmkv";
 import type { QueueTrack, PlaybackSpeed } from "../types/player.types";
+import {
+  recordStart,
+  recordProgress,
+  recordCompleted,
+} from "@/features/history/services/historyRecorder";
 
 const POSITION_KEY_PREFIX = "position:";
 const POSITION_WRITE_THROTTLE_MS = 5000;
@@ -42,6 +47,7 @@ async function loadTrack(track: QueueTrack, autoplay: boolean) {
   store.setError(null);
 
   statusUnsub?.();
+  recordStart(track);
   if (player) {
     try {
       player.remove();
@@ -73,11 +79,13 @@ async function loadTrack(track: QueueTrack, autoplay: boolean) {
       store.setPosition(position);
       store.setBuffering(status.isBuffering ?? false);
       persistPosition(track.lectureId, position);
+      recordProgress(track.lectureId, status.currentTime ?? 0);
 
       const reachedEnd =
         status.didJustFinish ||
         (duration > 0 && position >= duration - 0.25 && !status.isBuffering);
       if (reachedEnd) {
+        recordCompleted(track.lectureId);
         void next();
       }
     }

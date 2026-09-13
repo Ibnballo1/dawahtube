@@ -23,6 +23,10 @@ import {
 } from "@/features/lectures/services/resolveLectureSource";
 import { DownloadButton } from "@/features/downloads/components/DownloadButton";
 import { useNetworkStatus } from "@/lib/network/useNetworkStatus";
+import { router } from "expo-router";
+import { BookmarkButton } from "@/features/bookmarks/components/BookmarkButton";
+import { timestampBookmarksFor } from "@/features/bookmarks/store/bookmarksStore";
+import { formatTime } from "@/lib/format/time";
 
 export default function LectureScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -81,13 +85,28 @@ export default function LectureScreen() {
         contentFit="cover"
       />
       <View className="p-4">
-        <View className="flex-row items-start justify-between">
+        {/* <View className="flex-row items-start justify-between">
           <Text
             className="text-text text-xl font-semibold flex-1"
             accessibilityRole="header"
           >
             {data.title}
           </Text>
+          <DownloadButton
+            lecture={toDownloadable(data)}
+            sourceUrl={resolved?.kind === "remote" ? resolved.url : null}
+          />
+        </View> */}
+        <View className="flex-row items-center gap-3">
+          <BookmarkButton
+            bookmark={{
+              lectureId: data.id,
+              title: data.title,
+              scholarName: data.scholar?.displayName ?? null,
+              artworkUrl: data.thumbnail,
+              createdAt: new Date().toISOString(),
+            }}
+          />
           <DownloadButton
             lecture={toDownloadable(data)}
             sourceUrl={resolved?.kind === "remote" ? resolved.url : null}
@@ -124,8 +143,41 @@ export default function LectureScreen() {
           <Text className="text-text font-medium">{playLabel}</Text>
         </Pressable>
 
+        {data.transcript && (
+          <Pressable
+            onPress={() => router.push(`/transcript/${data.id}`)}
+            accessibilityRole="button"
+            accessibilityLabel="View transcript"
+            className="items-center mt-3"
+          >
+            <Text className="text-gold">View transcript</Text>
+          </Pressable>
+        )}
+
         {data.description && (
           <Text className="text-muted mt-4">{data.description}</Text>
+        )}
+
+        {timestampBookmarksFor(data.id).length > 0 && (
+          <View className="mt-6">
+            <Text className="text-text font-semibold mb-2">Your bookmarks</Text>
+            {timestampBookmarksFor(data.id).map((b) => (
+              <Pressable
+                key={b.id}
+                onPress={() => {
+                  if (isCurrentTrack) seekTo(b.timestampSecs);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`Jump to bookmark at ${formatTime(b.timestampSecs)}`}
+                className="flex-row items-center bg-card rounded-lg p-3 mb-2"
+              >
+                <Text className="text-gold w-14">
+                  {formatTime(b.timestampSecs)}
+                </Text>
+                <Text className="text-muted flex-1">{b.note ?? "No note"}</Text>
+              </Pressable>
+            ))}
+          </View>
         )}
       </View>
     </ScrollView>

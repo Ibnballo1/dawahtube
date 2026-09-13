@@ -9,11 +9,20 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { toCardData } from "@/features/lectures/types/lecture.types";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useEffect } from "react";
+import { useHistoryStore } from "@/features/history/store/historyStore";
 
 export default function HomeScreen() {
   const featured = useLectures({ sort: "popular", limit: 5 });
   const recent = useLectures({ sort: "recent", limit: 5 });
   const scholars = useScholars({ limit: 8 });
+  const historyEntries = useHistoryStore((s) => s.entries);
+  const continueListening = Object.values(historyEntries)
+    .filter((e) => !e.completed && e.positionSecs > 10)
+    .sort(
+      (a, b) =>
+        new Date(b.lastPlayedAt).getTime() - new Date(a.lastPlayedAt).getTime(),
+    )
+    .slice(0, 5);
 
   if (featured.isError)
     return <ErrorState error={featured.error} onRetry={featured.refetch} />;
@@ -26,6 +35,25 @@ export default function HomeScreen() {
       className="flex-1 bg-background"
       contentContainerStyle={{ paddingVertical: 16 }}
     >
+      {continueListening.length > 0 && (
+        <>
+          <SectionHeader title="Continue Listening" />
+          {continueListening.map((entry) => (
+            <LectureCard
+              key={entry.lectureId}
+              data={{
+                id: entry.lectureId,
+                title: entry.title,
+                scholarName: entry.scholarName,
+                thumbnailUrl: entry.artworkUrl,
+                durationSecs: entry.durationSecs,
+                allowDownload: false, // unknown here without another fetch — download still available from the lecture detail page
+              }}
+            />
+          ))}
+          <View className="h-4" />
+        </>
+      )}
       <SectionHeader
         title="Featured Lectures"
         onSeeAll={() => router.push("/(tabs)/explore")}

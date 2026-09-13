@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { useState } from "react";
+import { AddTimestampBookmarkSheet } from "@/features/bookmarks/components/AddTimestampBookmarkSheet";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -17,6 +18,7 @@ function formatTime(secs: number) {
 export default function FullPlayerScreen() {
   const player = usePlayer();
   const [showSleepSheet, setShowSleepSheet] = useState(false);
+  const [showBookmarkSheet, setShowBookmarkSheet] = useState(false);
 
   if (!player.currentTrack) {
     router.back();
@@ -143,6 +145,24 @@ export default function FullPlayerScreen() {
           />
           <Ionicons name="volume-high" size={18} color="#94A3B8" />
         </View>
+
+        <Pressable
+          onPress={() => setShowBookmarkSheet(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Add bookmark at current position"
+          className="items-center mt-3"
+        >
+          <Ionicons name="bookmark-outline" size={22} color="#F8FAFC" />
+        </Pressable>
+
+        {showBookmarkSheet && (
+          <AddTimestampBookmarkSheet
+            lectureId={player.currentTrack.lectureId}
+            lectureTitle={player.currentTrack.title}
+            timestampSecs={player.positionSecs}
+            onClose={() => setShowBookmarkSheet(false)}
+          />
+        )}
 
         <Pressable
           onPress={() => setShowSleepSheet(true)}

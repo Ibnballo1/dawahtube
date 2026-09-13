@@ -8,10 +8,14 @@ import { queryClient } from "@/lib/query/queryClient";
 import { useDownloadsStore } from "@/features/downloads/store/downloadsStore";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { MiniPlayer } from "@/features/player/components/MiniPlayer";
+import { useHistoryStore } from "@/features/history/store/historyStore";
+import { useBookmarksStore } from "@/features/bookmarks/store/bookmarksStore";
 
 export default function RootLayout() {
   useEffect(() => {
     useDownloadsStore.getState().hydrate();
+    useBookmarksStore.getState().hydrate();
+    useHistoryStore.getState().hydrate();
   }, []);
 
   return (
