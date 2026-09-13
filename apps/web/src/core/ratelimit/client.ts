@@ -1,14 +1,10 @@
 // src/core/ratelimit/client.ts
 //
 // Rate limiting via Upstash Redis (free tier — 10k requests/day).
-// Falls back gracefully when env vars are not set (local dev works without Redis).
+// Falls back gracefully when env vars are not set or when network/DNS fails locally.
 //
 // Install: pnpm add @upstash/ratelimit @upstash/redis
 // Env vars: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
-//
-// Usage in a route:
-//   const rl = await rateLimit('api', req)
-//   if (!rl.ok) return rl.response!
 
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
@@ -77,31 +73,41 @@ export async function rateLimit(
     "127.0.0.1";
 
   const limiter = limiters[key];
-  const { success, limit, remaining, reset } = await limiter.limit(ip);
 
-  if (!success) {
-    const retryAfterSecs = Math.ceil((reset - Date.now()) / 1000);
-    return {
-      ok: false,
-      response: NextResponse.json(
-        {
-          ok: false,
-          error: "Too many requests. Please slow down.",
-          retryAfter: retryAfterSecs,
-        },
-        {
-          status: 429,
-          headers: {
-            "X-RateLimit-Limit": String(limit),
-            "X-RateLimit-Remaining": "0",
-            "X-RateLimit-Reset": String(reset),
-            "Retry-After": String(retryAfterSecs),
-            "Access-Control-Allow-Origin": "*",
+  try {
+    const { success, limit, remaining, reset } = await limiter.limit(ip);
+
+    if (!success) {
+      const retryAfterSecs = Math.ceil((reset - Date.now()) / 1000);
+      return {
+        ok: false,
+        response: NextResponse.json(
+          {
+            ok: false,
+            error: "Too many requests. Please slow down.",
+            retryAfter: retryAfterSecs,
           },
-        },
-      ),
-    };
-  }
+          {
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit": String(limit),
+              "X-RateLimit-Remaining": "0",
+              "X-RateLimit-Reset": String(reset),
+              "Retry-After": String(retryAfterSecs),
+              "Access-Control-Allow-Origin": "*",
+            },
+          },
+        ),
+      };
+    }
 
-  return { ok: true, remaining };
+    return { ok: true, remaining };
+  } catch (error) {
+    // If Redis host is unreachable (e.g. ENOTFOUND or network drop), log warning & pass through
+    console.warn(
+      `[RateLimit] Bypassing rate limit check for key '${key}' due to Upstash error:`,
+      error instanceof Error ? error.message : error,
+    );
+    return { ok: true };
+  }
 }

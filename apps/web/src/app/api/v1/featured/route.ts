@@ -22,9 +22,17 @@ import { rateLimit } from "@/core/ratelimit/client";
 export { OPTIONS };
 
 export async function GET(_req: NextRequest) {
-  // Inside GET():
-  const rl = await rateLimit("api", _req); // use 'search' for search, 'stream' for stream-url
-  if (!rl.ok) return rl.response!;
+  // ── Rate Limiting with Fail-Open Handling ─────────────────────────────────
+  try {
+    const rl = await rateLimit("api", _req);
+    if (!rl.ok) return rl.response!;
+  } catch (rlError) {
+    // Allows request through if Upstash Redis drops or DNS fails locally
+    console.warn(
+      "[RateLimit] Skipping rate limit check due to Redis connection error:",
+      rlError,
+    );
+  }
   try {
     // Get all active, non-expired slots
     const slots = await db.query.featuredSlots.findMany({

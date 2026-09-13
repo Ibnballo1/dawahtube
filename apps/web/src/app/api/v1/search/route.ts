@@ -9,9 +9,17 @@ import { rateLimit } from "@/core/ratelimit/client";
 export { OPTIONS };
 
 export async function GET(req: NextRequest) {
-  // Inside GET():
-  const rl = await rateLimit("api", req); // use 'search' for search, 'stream' for stream-url
-  if (!rl.ok) return rl.response!;
+  // ── Rate Limiting with Fail-Open Handling ─────────────────────────────────
+  try {
+    const rl = await rateLimit("api", req);
+    if (!rl.ok) return rl.response!;
+  } catch (rlError) {
+    // Allows request through if Upstash Redis drops or DNS fails locally
+    console.warn(
+      "[RateLimit] Skipping rate limit check due to Redis connection error:",
+      rlError,
+    );
+  }
   try {
     const sp = req.nextUrl.searchParams;
     const q = sp.get("q")?.trim();
