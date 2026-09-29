@@ -1,3 +1,4 @@
+import { authClient } from "@/features/auth/services/authClient";
 import { ApiError, normalizeError } from "./errors";
 import type { ApiErrorBody } from "./errors";
 
@@ -142,6 +143,8 @@ export async function apiFetch<T>(
   if (body !== undefined) headers["Content-Type"] = "application/json";
   const token = authTokenProvider?.();
   if (token) headers.Authorization = `Bearer ${token}`;
+  const cookie = await authClient.getCookie();
+  if (cookie) headers.Cookie = cookie;
 
   const init: RequestInit = {
     method,

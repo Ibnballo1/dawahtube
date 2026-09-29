@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@shared/lib/utils";
 
@@ -117,12 +116,12 @@ export function SiteNav({
             className="flex items-center gap-2.5 shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700"
             aria-label="Da'wahTube — Home"
           >
-            <Image
+            <img
               src="/images/dawahtube-logo.png"
               alt="Da'wahTube"
               width={32}
               height={32}
-              priority
+              loading="eager"
             />
 
             <span className="font-display font-bold text-lg text-ink-primary leading-none">
@@ -224,11 +223,12 @@ export function SiteNav({
             className="flex items-center gap-2.5"
             onClick={handleMobileNavigation}
           >
-            <Image
+            <img
               src="/images/dawahtube-logo.png"
               alt="Da'wahTube"
               width={32}
               height={32}
+              loading="eager"
             />
 
             <span className="font-display font-bold text-lg text-ink-primary">

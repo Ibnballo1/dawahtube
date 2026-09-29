@@ -29,6 +29,14 @@ export default function RootLayout() {
             name="player/index"
             options={{ presentation: "modal" }}
           />
+          <Stack.Screen
+            name="(auth)/sign-in"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="(auth)/sign-up"
+            options={{ presentation: "modal" }}
+          />
         </Stack>
         <MiniPlayer />
       </SafeAreaProvider>

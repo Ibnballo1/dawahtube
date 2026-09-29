@@ -84,16 +84,23 @@ export async function HeroSection() {
 
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-4">
-            <Button size="lg" variant="outline">
-              <Link href="/lectures">
-                <PlayIcon />
-                Browse Lectures
-              </Link>
-            </Button>
+            {/* Lecture Button */}
             <Button
               size="lg"
-              variant="secondary"
-              className="border-white/30 text-white hover:bg-white/10 hover:border-white/50"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white border-none"
+              // asChild
+            >
+              <Link href="/lectures" className="inline-flex items-center gap-2">
+                <PlayIcon className="h-4 w-4 shrink-0" />
+                <span>Browse Lectures</span>
+              </Link>
+            </Button>
+
+            {/* Scholar Button */}
+            <Button
+              size="lg"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700"
+              // asChild
             >
               <Link href="/scholars">Our Scholars</Link>
             </Button>
@@ -138,7 +145,10 @@ export async function HeroSection() {
               <div className="relative aspect-video bg-primary-800">
                 {heroLecture.thumbnailAsset?.publicUrl ? (
                   <Image
-                    src={heroLecture.thumbnailAsset.publicUrl}
+                    src={
+                      heroLecture.thumbnailAsset.publicUrl ??
+                      "/images/lecture-default.png"
+                    }
                     alt={
                       heroLecture.thumbnailAsset.altText ?? heroLecture.title
                     }
@@ -295,11 +305,12 @@ function PlaceholderThumbnail() {
   );
 }
 
-function PlayIcon() {
+function PlayIcon({ className }: { className?: string }) {
   return (
     <svg
       width="18"
       height="18"
+      className={className}
       viewBox="0 0 24 24"
       fill="currentColor"
       aria-hidden="true"

@@ -53,7 +53,7 @@ export async function generateMetadata({
       url: `/lectures/${lecture.slug}`,
       images: lecture.thumbnailAsset?.publicUrl
         ? [{ url: lecture.thumbnailAsset.publicUrl, alt: lecture.title }]
-        : undefined,
+        : `/images/lecture-default.png`,
     },
     other: {
       // Audio content signals for search engines
@@ -109,7 +109,9 @@ export default async function LectureDetailPage({
     duration: lecture.durationSecs
       ? `PT${Math.floor(lecture.durationSecs / 60)}M${lecture.durationSecs % 60}S`
       : undefined,
-    image: lecture.thumbnailAsset?.publicUrl,
+    image:
+      lecture.thumbnailAsset?.publicUrl ??
+      `${env.NEXT_PUBLIC_APP_URL}/images/lecture-default.png`,
     partOfSeries: seriesContext
       ? {
           "@type": "PodcastSeries",

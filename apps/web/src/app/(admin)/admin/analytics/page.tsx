@@ -100,10 +100,13 @@ export default async function AdminAnalyticsPage() {
                     {lecture.thumbnailAsset?.publicUrl && (
                       <div className="relative size-8 rounded overflow-hidden bg-surface-muted shrink-0">
                         <Image
-                          src={lecture.thumbnailAsset.publicUrl}
-                          alt=""
+                          src={
+                            lecture.thumbnailAsset?.publicUrl ??
+                            "/images/lecture-default.png"
+                          }
+                          alt={lecture.title}
                           fill
-                          className="object-cover"
+                          className="object-cover group-hover:scale-105 transition-transform duration-slow"
                           sizes="32px"
                         />
                       </div>

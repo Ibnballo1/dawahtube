@@ -99,17 +99,13 @@ function SeriesCard({ series: s }: { series: SeriesItem }) {
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              fill="rgba(255,255,255,0.15)"
-              aria-hidden="true"
-            >
-              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" />
-            </svg>
-          </div>
+          <Image
+            src="/images/series-default.png"
+            alt={s.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-slow"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
         )}
 
         {/* Episode count pill */}

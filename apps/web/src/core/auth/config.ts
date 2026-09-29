@@ -5,6 +5,7 @@ import { admin } from "better-auth/plugins";
 import { db } from "@core/database/client";
 import * as schema from "@core/database/schema";
 import { Resend } from "resend";
+import { expo } from "@better-auth/expo";
 
 // ─── Resend client ─────────────────────────────────────────────────────────────
 const resend = process.env.RESEND_API_KEY
@@ -165,8 +166,10 @@ const auth = betterAuth({
   //     },
   //   },
   // },
+  trustedOrigins: ["dawahtube://", "dawahtube://*"],
 
   plugins: [
+    expo(),
     admin({
       adminRole: "super_admin", // Matches our RBAC role slug
       defaultRole: "reader",

@@ -439,7 +439,8 @@ async function executeSearch(
 
     categoryName: lecture.category?.name ?? null,
 
-    thumbnailUrl: lecture.thumbnailAsset?.publicUrl ?? null,
+    thumbnailUrl:
+      lecture.thumbnailAsset?.publicUrl ?? `/images/lecture-default.png`,
   }));
 
   // ───────────────────────────────────────────────────────────────────────────

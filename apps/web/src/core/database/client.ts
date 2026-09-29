@@ -6,9 +6,10 @@ import * as schema from "./schema";
 
 // Pooled client — used by all Server Actions and Route Handlers
 const pooledClient = postgres(env.DATABASE_URL, {
-  max: 10, // PgBouncer handles pooling; keep app pool small
+  max: 1, // PgBouncer handles pooling; keep app pool small
   idle_timeout: 20,
   connect_timeout: 10,
+  prepare: false, // Disable prepared statements for better PgBouncer compatibility
 });
 
 // Direct client — used ONLY by drizzle-kit (not imported by app code)

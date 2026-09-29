@@ -25,7 +25,8 @@ export function LectureDetailView({ lecture }: LectureDetailViewProps) {
   const viewCount = Number(lecture.viewCount);
 
   // Sanitize URLs to ensure empty strings treated as null
-  const thumbnailUrl = lecture.thumbnailAsset?.publicUrl?.trim() || null;
+  const thumbnailUrl =
+    lecture.thumbnailAsset?.publicUrl?.trim() || `/images/lecture-default.png`;
   const scholarAvatarUrl =
     lecture.scholar?.avatarAsset?.publicUrl?.trim() || null;
   const audioUrl = lecture.audioAsset?.publicUrl?.trim() || null;

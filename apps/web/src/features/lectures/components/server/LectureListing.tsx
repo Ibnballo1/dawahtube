@@ -87,7 +87,8 @@ function LectureListCard({ lecture }: { lecture: LectureCard }) {
     : null;
 
   // Sanitize URLs: coerce empty strings "" to null
-  const thumbnailUrl = lecture.thumbnailAsset?.publicUrl?.trim() || null;
+  const thumbnailUrl =
+    lecture.thumbnailAsset?.publicUrl?.trim() || `/images/lecture-default.png`;
   const scholarAvatarUrl =
     lecture.scholar?.avatarAsset?.publicUrl?.trim() || null;
 

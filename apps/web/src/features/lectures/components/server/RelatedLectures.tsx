@@ -65,7 +65,10 @@ function RelatedLectureCard({ lecture }: { lecture: RelatedLectureRow }) {
         <div className="relative w-24 aspect-video rounded-lg overflow-hidden bg-surface-muted shrink-0">
           {lecture.thumbnailAsset?.publicUrl ? (
             <Image
-              src={lecture.thumbnailAsset.publicUrl}
+              src={
+                lecture.thumbnailAsset.publicUrl ??
+                `/images/lecture-default.png`
+              }
               alt={lecture.thumbnailAsset.altText ?? lecture.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-slow"

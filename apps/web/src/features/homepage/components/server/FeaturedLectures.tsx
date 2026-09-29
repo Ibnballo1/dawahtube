@@ -92,11 +92,17 @@ function LectureCard({
             className="object-cover group-hover:scale-105 transition-transform duration-slow"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={priority}
-            // Add unoptimized in dev if media.dawahtube.com isn't reachable locally:
             unoptimized={process.env.NODE_ENV === "development"}
           />
         ) : (
-          <PlaceholderThumb />
+          <Image
+            src="/images/lecture-default.png"
+            alt={lecture.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-slow"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
+          />
         )}
 
         {/* Duration badge */}
@@ -171,28 +177,28 @@ function ScholarAvatar({ name }: { name: string }) {
   );
 }
 
-function PlaceholderThumb() {
-  return (
-    <div className="absolute inset-0 bg-gradient-to-br from-primary-800 to-primary-950 flex items-center justify-center">
-      <svg
-        width="32"
-        height="32"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="1"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polygon
-          points="10 8 16 12 10 16 10 8"
-          fill="rgba(255,255,255,0.15)"
-          stroke="none"
-        />
-      </svg>
-    </div>
-  );
-}
+// function PlaceholderThumb() {
+//   return (
+//     <div className="absolute inset-0 bg-gradient-to-br from-primary-800 to-primary-950 flex items-center justify-center">
+//       <svg
+//         width="32"
+//         height="32"
+//         viewBox="0 0 24 24"
+//         fill="none"
+//         stroke="rgba(255,255,255,0.2)"
+//         strokeWidth="1"
+//         aria-hidden="true"
+//       >
+//         <circle cx="12" cy="12" r="10" />
+//         <polygon
+//           points="10 8 16 12 10 16 10 8"
+//           fill="rgba(255,255,255,0.15)"
+//           stroke="none"
+//         />
+//       </svg>
+//     </div>
+//   );
+// }
 
 function ArrowRight() {
   return (

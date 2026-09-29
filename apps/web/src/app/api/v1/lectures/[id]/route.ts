@@ -118,7 +118,8 @@ export async function GET(
               name: lecture.category.name,
             }
           : null,
-        thumbnail: lecture.thumbnailAsset?.publicUrl ?? null,
+        thumbnail:
+          lecture.thumbnailAsset?.publicUrl ?? `/images/lecture-default.png`,
         series: lecture.seriesItems.map((item) => ({
           id: item.series.id,
           slug: item.series.slug,

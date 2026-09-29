@@ -56,6 +56,7 @@ export function SiteFooter() {
                 alt="Da'wahTube"
                 width={32}
                 height={32}
+                priority
               />
               <span className="font-display font-bold text-lg text-white leading-none">
                 Da&apos;wahTube

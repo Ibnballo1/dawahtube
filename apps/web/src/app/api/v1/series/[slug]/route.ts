@@ -88,7 +88,7 @@ export async function GET(
             lecture.durationSecs ?? lecture.audioAsset?.durationSecs ?? null,
           publishedAt: lecture.publishedAt,
           hasAudio: !!lecture.audioAsset,
-          thumbnail: lecture.thumbnailAsset?.publicUrl ?? null,
+          thumbnail: lecture.thumbnailAsset?.publicUrl ?? `/images/lecture-default.png`,
         })),
       }),
     );
