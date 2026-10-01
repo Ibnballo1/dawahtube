@@ -101,11 +101,9 @@ export function SiteNav({
 
       <header
         className={cn(
-          "fixed top-0 inset-x-0 z-40 h-nav",
-          "transition-all duration-normal ease-in-out",
-          scrolled
-            ? "bg-background/98 backdrop-blur-md border-b border-border shadow-xs"
-            : "bg-background/95 backdrop-blur-sm border-b border-border-subtle",
+          "fixed top-0 inset-x-0 z-40 h-nav transition-all duration-300 ease-in-out",
+          "bg-background/95 backdrop-blur-md border-b border-border-subtle",
+          scrolled && "shadow-sm",
         )}
         role="banner"
       >
@@ -187,9 +185,12 @@ export function SiteNav({
             aria-controls="mobile-menu"
             onClick={() => setOpen((current) => !current)}
             className={cn(
-              "md:hidden p-2 rounded-md text-ink-secondary",
-              "hover:bg-surface-subtle transition-colors duration-fast",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700",
+              "md:hidden p-2 rounded-md text-ink-secondary hover:bg-surface-subtle transition-colors",
+              // "hover:bg-surface-subtle transition-colors duration-fast",
+              // "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700",
+              // scrolled
+              //   ? "text-ink-secondary hover:bg-surface-subtle"
+              //   : "text-white hover:bg-white/10",
             )}
           >
             <HamburgerIcon open={open} />
@@ -207,7 +208,7 @@ export function SiteNav({
         aria-label="Navigation menu"
         aria-modal="true"
         className={cn(
-          "fixed inset-0 z-modal md:hidden",
+          "fixed inset-0 z-[100] md:hidden",
           "bg-surface-base",
           "flex flex-col",
           "transition-all duration-slow ease-out",

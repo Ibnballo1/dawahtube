@@ -462,29 +462,25 @@
    UTILITIES
 ============================================================================= */
 @layer utilities {
-  .scrollbar-none {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  .z-sticky {
+    z-index: 40;
   }
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
+  .z-modal {
+    z-index: 100;
   }
-  .duration-fast {
-    transition-duration: var(--duration-fast);
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  .duration-normal {
-    transition-duration: var(--duration-normal);
-  }
-  .duration-slow {
-    transition-duration: var(--duration-slow);
-  }
-  .text-arabic-sm {
-    font-size: 1rem;
-    line-height: 2;
-  }
-  .text-arabic-lg {
-    font-size: 1.5rem;
-    line-height: 2;
+  .animate-fade-in-up {
+    animation: fade-in-up 200ms ease-out both;
   }
 }
 

@@ -5,6 +5,8 @@ import auth from "@core/auth/config";
 import { getUserPermissions } from "@core/auth/guard";
 import { AdminSidebar } from "@features/admin/components/client/AdminSidebar";
 
+export const dynamic = "force-dynamic";
+
 // Roles that may access any part of the admin area
 const ADMIN_ROLES = new Set(["super_admin", "admin", "editor"]);
 

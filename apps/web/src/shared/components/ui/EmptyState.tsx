@@ -120,33 +120,38 @@ function EmptyState({
 
       {(action || secondaryAction) && (
         <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
-          {action && (
-            <Button
-              size={size === "sm" ? "sm" : "lg"}
-              onClick={action.onClick}
-              {...(action.href ? { asChild: true } : {})}
-            >
-              {action.href ? (
-                <a href={action.href}>{action.label}</a>
-              ) : (
-                action.label
-              )}
-            </Button>
-          )}
-          {secondaryAction && (
-            <Button
-              variant="ghost"
-              size={size === "sm" ? "sm" : "lg"}
-              onClick={secondaryAction.onClick}
-              {...(secondaryAction.href ? { asChild: true } : {})}
-            >
-              {secondaryAction.href ? (
-                <a href={secondaryAction.href}>{secondaryAction.label}</a>
-              ) : (
-                secondaryAction.label
-              )}
-            </Button>
-          )}
+          {action &&
+            (action.href ? (
+              <a href={action.href}>
+                <Button size={size === "sm" ? "sm" : "lg"}>
+                  {action.label}
+                </Button>
+              </a>
+            ) : (
+              <Button
+                size={size === "sm" ? "sm" : "lg"}
+                onClick={action.onClick}
+              >
+                {action.label}
+              </Button>
+            ))}
+
+          {secondaryAction &&
+            (secondaryAction.href ? (
+              <a href={secondaryAction.href}>
+                <Button variant="ghost" size={size === "sm" ? "sm" : "lg"}>
+                  {secondaryAction.label}
+                </Button>
+              </a>
+            ) : (
+              <Button
+                variant="ghost"
+                size={size === "sm" ? "sm" : "lg"}
+                onClick={secondaryAction.onClick}
+              >
+                {secondaryAction.label}
+              </Button>
+            ))}
         </div>
       )}
     </div>
