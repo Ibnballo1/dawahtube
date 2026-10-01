@@ -63,7 +63,10 @@ export function AudioPlayer({
       setPlaying(true);
       setLoading(false);
     };
-    const onPause = () => setPlaying(false);
+    const onPause = () => {
+      setPlaying(false);
+      setLoading(false); // ← clears any stuck loading state
+    };
     const onWaiting = () => setLoading(true);
     const onCanPlay = () => setLoading(false);
     const onEnded = () => {
@@ -102,10 +105,11 @@ export function AudioPlayer({
   const togglePlay = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio || error) return;
-    setLoading(true);
+    // setLoading(true);
     if (playing) {
       audio.pause();
     } else {
+      setLoading(true);
       try {
         await audio.play();
       } catch {
