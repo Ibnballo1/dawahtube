@@ -113,13 +113,23 @@ export async function ArticleDetailView({ article }: ArticleDetailViewProps) {
       )}
 
       {/* ── Cover image ─────────────────────────────────────────────── */}
-      {article.coverAsset?.publicUrl && (
+      {article.coverAsset?.publicUrl ? (
         <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-surface-muted shadow-lg">
           <Image
             src={article.coverAsset.publicUrl}
             alt={article.coverAsset.altText ?? article.title}
             fill
             priority
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 66vw"
+          />
+        </div>
+      ) : (
+        <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-surface-muted shadow-lg flex items-center justify-center">
+          <Image
+            src="/images/article-default.png"
+            alt={article.title}
+            fill
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 66vw"
           />

@@ -63,7 +63,7 @@ function RelatedArticleCard({ article }: { article: RelatedArticleRow }) {
       role="listitem"
       className="card card-interactive flex flex-col group"
     >
-      {article.coverAsset?.publicUrl && (
+      {article.coverAsset?.publicUrl ? (
         <Link
           href={`/articles/${article.slug}`}
           className="block relative aspect-[16/9] overflow-hidden rounded-t-xl bg-surface-muted"
@@ -75,6 +75,21 @@ function RelatedArticleCard({ article }: { article: RelatedArticleRow }) {
             alt={article.coverAsset.altText ?? article.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-slow"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          />
+        </Link>
+      ) : (
+        <Link
+          href={`/articles/${article.slug}`}
+          className="block relative aspect-[16/9] overflow-hidden rounded-t-xl bg-surface-muted"
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          <Image
+            src="/images/article-default.png"
+            alt={article.title}
+            fill
+            className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
         </Link>

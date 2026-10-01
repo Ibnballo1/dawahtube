@@ -52,6 +52,14 @@ export const metadata: Metadata = {
   authors: [{ name: "Da'wahTube" }],
   creator: "Da'wahTube",
   openGraph: {
+    images: [
+      {
+        url: "/images/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "Da'wahTube — Authentic Islamic Knowledge",
+      },
+    ],
     type: "website",
     locale: "en_US",
     url: "/",
@@ -63,6 +71,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Da'wahTube",
+    images: ["/images/og-default.png"],
   },
   robots: {
     index: true,

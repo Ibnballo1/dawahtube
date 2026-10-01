@@ -177,13 +177,23 @@ export async function ScholarContentPanel({
                   role="listitem"
                   className="card card-interactive flex gap-4 p-4 group"
                 >
-                  {a.coverAsset?.publicUrl && (
+                  {a.coverAsset?.publicUrl ? (
                     <div className="relative w-20 h-16 rounded-lg overflow-hidden bg-surface-muted shrink-0">
                       <Image
                         src={a.coverAsset.publicUrl}
                         alt={a.coverAsset.altText ?? a.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-slow"
+                        sizes="80px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative w-20 h-16 rounded-lg overflow-hidden bg-surface-muted shrink-0">
+                      <Image
+                        src="/images/article-default.png"
+                        alt={a.title}
+                        fill
+                        className="object-cover"
                         sizes="80px"
                       />
                     </div>
@@ -254,17 +264,13 @@ export async function ScholarContentPanel({
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <svg
-                        width="28"
-                        height="28"
-                        viewBox="0 0 24 24"
-                        fill="rgba(255,255,255,0.15)"
-                        aria-hidden="true"
-                      >
-                        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" />
-                      </svg>
-                    </div>
+                    <Image
+                      src="/images/series-default.png"
+                      alt={s.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
                   )}
                   <span className="duration-pill absolute bottom-2 right-2">
                     {formatCount(s.itemCount ?? 0)} episodes

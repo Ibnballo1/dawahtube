@@ -86,7 +86,7 @@ function ArticleListCard({ article }: { article: ArticleCard }) {
       role="listitem"
       className="card card-interactive flex flex-col group"
     >
-      {article.coverAsset?.publicUrl && (
+      {article.coverAsset?.publicUrl ? (
         <Link
           href={`/articles/${article.slug}`}
           className="block relative aspect-[16/9] overflow-hidden rounded-t-xl bg-surface-muted"
@@ -99,6 +99,21 @@ function ArticleListCard({ article }: { article: ArticleCard }) {
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-slow ease-smooth"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+          />
+        </Link>
+      ) : (
+        <Link
+          href={`/articles/${article.slug}`}
+          className="block relative aspect-[16/9] overflow-hidden rounded-t-xl bg-surface-muted"
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          <Image
+            src="/images/article-default.png"
+            alt={article.title}
+            fill
+            className="object-cover"
+            sizes="..."
           />
         </Link>
       )}

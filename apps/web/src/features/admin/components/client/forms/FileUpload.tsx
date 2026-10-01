@@ -125,11 +125,21 @@ export function FileUpload({
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve();
           } else {
-            reject(new Error(`R2 upload failed with status ${xhr.status}`));
+            // Captures 403, 400, 500 errors from R2 directly
+            reject(
+              new Error(
+                `Storage server returned HTTP ${xhr.status}: ${xhr.statusText}`,
+              ),
+            );
           }
         };
 
-        xhr.onerror = () => reject(new Error("Network error during upload"));
+        xhr.onerror = () =>
+          reject(
+            new Error(
+              "Network/CORS error: Could not connect to Cloudflare R2 storage.",
+            ),
+          );
 
         xhr.open("PUT", urlResult.uploadUrl);
         xhr.setRequestHeader("Content-Type", file.type);

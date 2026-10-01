@@ -42,10 +42,14 @@ export function BookDetailView({ book }: BookDetailViewProps) {
               sizes="280px"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-b from-primary-700 to-primary-900 flex items-end p-6">
-              <p className="text-white font-display font-bold text-lg leading-tight">
-                {book.title}
-              </p>
+            <div className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-primary-100 shadow-lg">
+              <Image
+                src="/images/book-default.png"
+                alt={book.title}
+                fill
+                className="object-cover"
+                sizes="280px"
+              />
             </div>
           )}
         </div>

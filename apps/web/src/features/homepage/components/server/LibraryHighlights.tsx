@@ -61,7 +61,13 @@ function BookCard({ book }: { book: BookData }) {
             sizes="64px"
           />
         ) : (
-          <PlaceholderCover title={book.title} />
+          <Image
+            src="/images/book-default.png"
+            alt={book.title}
+            fill
+            className="object-cover"
+            sizes="64px"
+          />
         )}
       </div>
 
@@ -112,16 +118,6 @@ function BookCard({ book }: { book: BookData }) {
         </div>
       </div>
     </Link>
-  );
-}
-
-function PlaceholderCover({ title }: { title: string }) {
-  return (
-    <div className="absolute inset-0 bg-gradient-to-b from-primary-700 to-primary-900 flex items-end p-1.5">
-      <p className="text-white text-[9px] font-bold leading-tight line-clamp-3 font-display">
-        {title}
-      </p>
-    </div>
   );
 }
 

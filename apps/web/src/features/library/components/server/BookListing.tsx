@@ -85,7 +85,13 @@ function BookListCard({ book }: { book: BookCard }) {
             sizes="80px"
           />
         ) : (
-          <PlaceholderCover title={book.title} />
+          <Image
+            src="/images/book-default.png"
+            alt={book.title}
+            fill
+            className="object-cover"
+            sizes="80px"
+          />
         )}
       </div>
 
