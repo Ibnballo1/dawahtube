@@ -62,10 +62,12 @@ export async function getLectures(
   }
 
   // ── Build ORDER BY ────────────────────────────────────────────────────────
+  const effectiveDate = sql`COALESCE(${lectures.recordedAt}, ${lectures.publishedAt})`;
+
   const orderBy = (() => {
     switch (filters.sort) {
       case "oldest":
-        return [asc(lectures.publishedAt)];
+        return [asc(effectiveDate)];
       case "popular":
         return [desc(sql`${lectures.viewCount}::bigint`)];
       case "duration-asc":
@@ -74,7 +76,7 @@ export async function getLectures(
         return [desc(lectures.durationSecs)];
       case "newest":
       default:
-        return [desc(lectures.publishedAt)];
+        return [desc(effectiveDate)];
     }
   })();
 

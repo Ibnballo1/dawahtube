@@ -42,6 +42,7 @@ export type LectureCard = Pick<
   | "isFeatured"
   | "viewCount"
   | "allowDownload"
+  | "recordedAt"
 > & {
   scholar: ScholarMini | null;
   category: CategoryMini | null;

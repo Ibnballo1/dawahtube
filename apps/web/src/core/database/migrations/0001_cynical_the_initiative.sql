@@ -1,0 +1,1 @@
+ALTER TABLE "lectures" ADD COLUMN "recorded_at" date;

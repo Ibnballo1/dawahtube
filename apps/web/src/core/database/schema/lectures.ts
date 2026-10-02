@@ -6,12 +6,12 @@ import {
   integer,
   smallint,
   boolean,
-  vector,
   index,
   uniqueIndex,
   primaryKey,
   bigint,
   AnyPgColumn,
+  date,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { contentStatusEnum, languageCodeEnum } from "./enums";
@@ -157,6 +157,9 @@ export const lectures = pgTable(
     downloadCount: bigint("download_count", { mode: "number" })
       .notNull()
       .default(0),
+
+    // The date a lecture was actually done by the scholar. This is different from published_at, which is when it was made public on the platform.
+    recordedAt: date("recorded_at", { mode: "date" }),
 
     // Denormalised view count — updated by background job from lecture_views
     ...viewCountColumn(),

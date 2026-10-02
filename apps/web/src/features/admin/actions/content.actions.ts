@@ -55,26 +55,44 @@ export async function createLecture(
     };
   }
 
+  const payload = data.data;
   // Fetch scholar to extract name prefix
   const scholar = await db.query.scholars.findFirst({
-    where: eq(scholars.id, data.data.scholarId),
+    where: eq(scholars.id, payload.scholarId),
     columns: { name: true },
   });
 
   const slug = await generateUniqueSlug({
     table: "lectures",
-    value: data.data.title,
+    value: payload.title,
     ...(scholar?.name && { prefix: scholar.name }),
   });
   const id = `lec_${nanoid(16)}`;
-  const { scheduledAt, ...lectureData } = data.data;
+  // Determine publishedAt timestamp
+  const publishedAt =
+    payload.status === "published"
+      ? payload.publishedAt
+        ? new Date(payload.publishedAt)
+        : new Date() // default to current time if creating as published directly
+      : null;
+
+  // Determine scheduledAt timestamp
+  const scheduledAt =
+    payload.status === "scheduled" && payload.scheduledAt
+      ? new Date(payload.scheduledAt)
+      : null;
+
+  const recordedAt = payload.recordedAt ? new Date(payload.recordedAt) : null;
+  const { ...lectureData } = payload;
 
   await db.insert(lectures).values({
     id,
     slug,
     canonicalSlug: slug,
     ...lectureData,
-    scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+    scheduledAt,
+    recordedAt,
+    publishedAt,
   });
 
   await writeAuditLog({
@@ -115,8 +133,12 @@ export async function updateLecture(
     .set({
       ...rest,
       updatedAt: new Date(),
+      recordedAt: data.data.recordedAt ? new Date(data.data.recordedAt) : null,
       scheduledAt: data.data.scheduledAt
         ? new Date(data.data.scheduledAt)
+        : null,
+      publishedAt: data.data.publishedAt
+        ? new Date(data.data.publishedAt)
         : null,
     })
     .where(eq(lectures.id, id));
@@ -346,13 +368,7 @@ export async function updateArticle(input: unknown): Promise<ActionResult> {
     };
   }
 
-  const {
-    id,
-    tagIds: _tags,
-    content,
-    scheduledAt,
-    ...rest
-  } = data.data;
+  const { id, tagIds: _tags, content, scheduledAt, ...rest } = data.data;
 
   const meta = content ? calculateContentMetadata(content) : {};
 

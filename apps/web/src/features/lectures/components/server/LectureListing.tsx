@@ -5,6 +5,7 @@ import { Badge } from "@shared/components/ui/badge";
 import { Button } from "@shared/components/ui/button";
 import { EmptyState } from "@shared/components/ui/EmptyState";
 import {
+  formatDate,
   formatDurationLong,
   formatScholarName,
   formatCount,
@@ -12,6 +13,7 @@ import {
 } from "@shared/lib/format";
 import { getLectures } from "../../queries/lecture.queries";
 import type { LectureFilters, LectureCard } from "../../types/lecture.types";
+import { Calendar } from "lucide-react";
 
 interface LectureListingProps {
   filters: LectureFilters;
@@ -206,8 +208,14 @@ function LectureListCard({ lecture }: { lecture: LectureCard }) {
 
         {/* Footer: date + views */}
         <div className="flex items-center justify-between mt-auto pt-2 border-t border-border-subtle text-xs text-ink-muted">
-          {lecture.publishedAt && (
-            <span>{formatRelativeDate(lecture.publishedAt)}</span>
+          {(lecture.recordedAt ?? lecture.publishedAt) && (
+            <div className="flex items-center gap-1.5 text-xs text-ink-muted">
+              <Calendar className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              {lecture.recordedAt
+                ? formatDate(lecture.recordedAt) // "15 March 2019"
+                : formatRelativeDate(lecture.publishedAt!)}{" "}
+              {/* "2 days ago" */}
+            </div>
           )}
           {lecture.viewCount > 0 && (
             <span>{formatCount(lecture.viewCount)} views</span>

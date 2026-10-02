@@ -243,10 +243,14 @@ export async function HeroSection() {
               </p>
               <p className="text-white/30 text-xs">— Sunan Ibn Mājah 224</p>
             </div>
-            <Button size="lg" variant="outline">
-              <Link href="/lectures">
-                <PlayIcon />
-                Start Learning
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white border-none"
+            >
+              <Link href="/lectures" className="inline-flex items-center gap-2">
+                <PlayIcon className="h-4 w-4 shrink-0" />
+                <span>Start Learning</span>
               </Link>
             </Button>
           </div>

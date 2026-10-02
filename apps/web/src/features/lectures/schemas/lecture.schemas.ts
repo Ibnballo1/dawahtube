@@ -18,12 +18,14 @@ export const createLectureSchema = z.object({
   thumbnailAssetId: z.string().optional(),
 
   durationSecs: z.number().int().min(0).optional(),
+  recordedAt: z.string().datetime().optional(),
   allowDownload: z.boolean().default(true),
 
   status: z
     .enum(["draft", "review", "scheduled", "published", "archived"])
     .default("draft"),
   scheduledAt: z.string().datetime().optional().or(z.literal("")).or(z.null()),
+  publishedAt: z.string().datetime().optional().nullable(),
 
   defaultLanguage: z.string().max(10).default("en"),
 

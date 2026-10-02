@@ -2,16 +2,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
+  formatDate,
   formatDurationLong,
   formatScholarName,
   formatRelativeDate,
 } from "@shared/lib/format";
+import { Calendar } from "lucide-react";
 
 type RelatedLectureRow = {
   id: string;
   slug: string;
   title: string;
   durationSecs: number | null;
+  recordedAt: Date | null;
   publishedAt: Date | null;
   viewCount: string;
   scholar: {
@@ -108,10 +111,14 @@ function RelatedLectureCard({ lecture }: { lecture: RelatedLectureRow }) {
             </p>
           )}
 
-          {lecture.publishedAt && (
-            <p className="text-xs text-ink-muted mt-auto">
-              {formatRelativeDate(lecture.publishedAt)}
-            </p>
+          {(lecture.recordedAt ?? lecture.publishedAt) && (
+            <div className="flex items-center gap-1.5 text-xs text-ink-muted">
+              <Calendar className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              {lecture.recordedAt
+                ? formatDate(lecture.recordedAt) // "15 March 2019"
+                : formatRelativeDate(lecture.publishedAt!)}{" "}
+              {/* "2 days ago" */}
+            </div>
           )}
         </div>
       </Link>

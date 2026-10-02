@@ -50,6 +50,8 @@ export default async function EditLecturePage({
         categoryId: lecture.categoryId,
         durationSecs: lecture.durationSecs,
         allowDownload: lecture.allowDownload,
+        recordedAt: lecture.recordedAt,
+        publishedAt: lecture.publishedAt,
         status: lecture.status,
         defaultLanguage: lecture.defaultLanguage,
         metaTitle: lecture.metaTitle,

@@ -34,6 +34,7 @@ interface LectureFormProps {
     scholarId: string | null;
     categoryId: string | null;
     durationSecs: number | null;
+    recordedAt: string | Date | null;
     allowDownload: boolean;
     status: LectureStatus;
     scheduledAt?: string | Date | null;
@@ -48,6 +49,16 @@ interface LectureFormProps {
   };
   scholars: Array<{ id: string; name: string; honorifics: string | null }>;
   categories: Array<{ id: string; name: string }>;
+}
+
+function toLocalDatetimeString(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  const mm = pad(date.getMonth() + 1);
+  const dd = pad(date.getDate());
+  const hh = pad(date.getHours());
+  const mi = pad(date.getMinutes());
+  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
 }
 
 export function LectureForm({
@@ -86,6 +97,7 @@ export function LectureForm({
     setSuccess(null);
 
     const form = new FormData(e.currentTarget);
+    const publishedAtInput = form.get("publishedAt") as string;
 
     const payload = {
       ...(isEdit && { id: lecture.id }),
@@ -102,8 +114,12 @@ export function LectureForm({
       scheduledAt: scheduleState.scheduledAt
         ? new Date(scheduleState.scheduledAt).toISOString()
         : undefined,
+      publishedAt: publishedAtInput
+        ? new Date(publishedAtInput).toISOString()
+        : undefined,
 
       defaultLanguage: (form.get("defaultLanguage") as string) || "en",
+      tagIds: [],
       metaTitle: (form.get("metaTitle") as string) || undefined,
       metaDescription: (form.get("metaDescription") as string) || undefined,
       // Asset IDs from uploads
@@ -205,6 +221,46 @@ export function LectureForm({
               </select>
             </FormField>
           </div>
+
+          <FormField
+            label="Lecture date"
+            htmlFor="recordedAt"
+            hint="When was this lecture originally delivered? Used for sorting and display."
+          >
+            <input
+              id="recordedAt"
+              name="recordedAt"
+              type="date"
+              defaultValue={
+                lecture?.recordedAt instanceof Date
+                  ? lecture.recordedAt.toISOString().split("T")[0]
+                  : (lecture?.recordedAt ?? "")
+              }
+              max={new Date().toISOString().split("T")[0]}
+              className={inputCls}
+            />
+          </FormField>
+
+          {/* Show Override Published Date when status is published in edit mode */}
+          {scheduleState.status === "published" && (
+            <FormField
+              label="Published date"
+              htmlFor="publishedAt"
+              hint="Override when this lecture appears to have been published. Use the original lecture date for archive uploads."
+            >
+              <input
+                id="publishedAt"
+                name="publishedAt"
+                type="datetime-local"
+                defaultValue={
+                  lecture?.publishedAt
+                    ? toLocalDatetimeString(new Date(lecture.publishedAt))
+                    : ""
+                }
+                className={inputCls}
+              />
+            </FormField>
+          )}
 
           <FormField label="Allow download?" htmlFor="allowDownload">
             <select
