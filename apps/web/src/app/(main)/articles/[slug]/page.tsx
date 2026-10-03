@@ -16,6 +16,7 @@ import { ArticleCardSkeleton, Skeleton } from "@shared/components/ui/skeleton";
 import { env } from "@core/config/env";
 import { trackView } from "@/shared/lib/track-view";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {

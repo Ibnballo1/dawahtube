@@ -16,6 +16,8 @@ import { LectureCardSkeleton, Skeleton } from "@shared/components/ui/skeleton";
 import { env } from "@core/config/env";
 import { trackView } from "@/shared/lib/track-view";
 
+export const dynamic = "force-dynamic";
+
 // ── ISR: rebuild every hour, serve stale while revalidating ───────────────────
 export const revalidate = 3600;
 

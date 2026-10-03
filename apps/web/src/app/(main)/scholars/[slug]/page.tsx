@@ -13,6 +13,7 @@ import { Skeleton } from "@shared/components/ui/skeleton";
 import { env } from "@core/config/env";
 import { formatScholarName } from "@shared/lib/format";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
