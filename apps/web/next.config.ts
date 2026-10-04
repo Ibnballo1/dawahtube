@@ -6,7 +6,13 @@ dotenv.config();
 
 const config: NextConfig = {
   // Allow local network IP for mobile device connections during development
-  allowedDevOrigins: ["192.168.43.93", "192.168.43.93:3000", "localhost:3000"],
+  allowedDevOrigins: [
+    "192.168.43.93",
+    "192.168.43.92",
+    "192.168.43.92:3000",
+    "192.168.43.93:3000",
+    "localhost:3000",
+  ],
   // ── Compiler options ───────────────────────────────────────────────────────
   reactStrictMode: true,
   poweredByHeader: false, // Don't advertise Next.js version
