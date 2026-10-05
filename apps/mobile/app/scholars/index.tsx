@@ -5,6 +5,8 @@ import { router } from "expo-router";
 import { useScholars } from "@/features/scholars/queries/useScholars";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
 export default function ScholarsScreen() {
   const {
@@ -43,8 +45,9 @@ export default function ScholarsScreen() {
             accessibilityLabel={item.displayName}
             className="flex-row items-center bg-card rounded-xl p-3 mb-3 mx-4"
           >
-            <Image
+            <ArtworkImage
               source={item.avatar}
+              fallback={DEFAULT_IMAGES.scholar}
               style={{
                 width: 48,
                 height: 48,

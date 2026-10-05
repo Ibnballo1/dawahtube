@@ -123,15 +123,43 @@ export interface SeriesSummary {
   id: string;
   slug: string;
   title: string;
-  scholar: Pick<ScholarSummary, "id" | "slug" | "name"> | null;
+  description: string | null;
+  lectureCount: number;
+  thumbnail: string | null;
+  scholar: {
+    id: string;
+    slug: string;
+    displayName: string;
+    avatar: string | null;
+  } | null;
 }
 
-export interface SeriesDetail extends SeriesSummary {
+export interface SeriesEpisode {
+  id: string;
+  slug: string;
+  title: string;
   description: string | null;
-  items: Array<{
-    order: number;
-    lecture: LectureSummary;
-  }>;
+  position: number;
+  durationSecs: number | null;
+  publishedAt: string | null;
+  hasAudio: boolean;
+  thumbnail: string; // always present — may be relative, see resolveImageUrl above
+}
+
+export interface SeriesDetail {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  thumbnail: string | null;
+  scholar: {
+    id: string;
+    slug: string;
+    displayName: string;
+    avatar: string | null;
+  } | null;
+  episodeCount: number;
+  episodes: SeriesEpisode[]; // was: items — flattened fields, not a nested `.lecture`
 }
 
 export interface ReminderSummary {

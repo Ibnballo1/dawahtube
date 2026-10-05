@@ -29,7 +29,9 @@ const dmMono = DM_Mono({
 // ─── Root metadata ────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://dawahtube.com",
+    process.env.NEXT_PUBLIC_APP_URL
+      ? `https://${process.env.NEXT_PUBLIC_APP_URL}`
+      : process.env.NEXT_PUBLIC_APP_URL || "https://dawahtube.vercel.app",
   ),
   title: {
     default: "Da'wahTube — Authentic Islamic Knowledge",
@@ -52,6 +54,11 @@ export const metadata: Metadata = {
   authors: [{ name: "Da'wahTube" }],
   creator: "Da'wahTube",
   openGraph: {
+    title: "DawahTube — Authentic Islamic Knowledge",
+    description:
+      "Listen to Islamic lectures from authentic scholars upon the Qur'an and Sunnah.",
+    url: "https://dawahtube.vercel.app",
+    siteName: "DawahTube",
     images: [
       {
         url: "/images/og-default.png",
@@ -62,15 +69,13 @@ export const metadata: Metadata = {
     ],
     type: "website",
     locale: "en_US",
-    url: "/",
-    siteName: "Da'wahTube",
-    title: "Da'wahTube — Authentic Islamic Knowledge",
-    description:
-      "Lectures, articles, books and daily reminders upon the Qur'an and Sunnah.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Da'wahTube",
+    description:
+      "Listen to Islamic lectures from authentic scholars upon the Qur'an and Sunnah.",
+    creator: "@dawahtube",
     images: ["/images/og-default.png"],
   },
   robots: {

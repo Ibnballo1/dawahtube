@@ -5,6 +5,8 @@ import { router } from "expo-router";
 import { useHistoryStore } from "@/features/history/store/historyStore";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatTime } from "@/lib/format/time";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
 export default function HistoryScreen() {
   const entries = useHistoryStore((s) => s.entries);
@@ -49,8 +51,9 @@ export default function HistoryScreen() {
               accessibilityLabel={item.title}
               className="flex-row items-center bg-card rounded-xl p-3 mb-3 mx-4"
             >
-              <Image
+              <ArtworkImage
                 source={item.artworkUrl}
+                fallback={DEFAULT_IMAGES.lecture}
                 style={{ width: 56, height: 56, borderRadius: 8 }}
               />
               <View className="flex-1 ml-3">

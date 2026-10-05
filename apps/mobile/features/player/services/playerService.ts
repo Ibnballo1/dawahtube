@@ -12,6 +12,7 @@ import {
   recordProgress,
   recordCompleted,
 } from "@/features/history/services/historyRecorder";
+import { resolveImageUrl } from "@/lib/assets/resolveImageUrl";
 
 const POSITION_KEY_PREFIX = "position:";
 const POSITION_WRITE_THROTTLE_MS = 5000;
@@ -104,13 +105,16 @@ async function loadTrack(track: QueueTrack, autoplay: boolean) {
   }
   player.volume = store.volume;
 
+  const artwork = resolveImageUrl(track.artworkUrl, "");
+  const hasValidArtwork = /^https?:\/\//.test(artwork);
+
   setTimeout(() => {
     player?.setActiveForLockScreen(
       true,
       {
         title: track.title,
         artist: track.scholarName ?? "Da'wahTube",
-        artworkUrl: track.artworkUrl ?? undefined,
+        artworkUrl: hasValidArtwork ? artwork : undefined,
       },
       { showSeekForward: true, showSeekBackward: true },
     );

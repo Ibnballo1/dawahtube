@@ -10,11 +10,15 @@ import { toCardData } from "@/features/lectures/types/lecture.types";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useEffect } from "react";
 import { useHistoryStore } from "@/features/history/store/historyStore";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
+import { useSeriesList } from "@/features/series/queries/useSeries";
 
 export default function HomeScreen() {
   const featured = useLectures({ sort: "popular", limit: 5 });
   const recent = useLectures({ sort: "recent", limit: 5 });
   const scholars = useScholars({ limit: 8 });
+  const series = useSeriesList({ limit: 6 });
   const historyEntries = useHistoryStore((s) => s.entries);
   const continueListening = Object.values(historyEntries)
     .filter((e) => !e.completed && e.positionSecs > 10)
@@ -95,8 +99,9 @@ export default function HomeScreen() {
             accessibilityLabel={scholar.displayName}
             className="mr-4 items-center w-20"
           >
-            <Image
+            <ArtworkImage
               source={scholar.avatar}
+              fallback={DEFAULT_IMAGES.scholar}
               style={{
                 width: 56,
                 height: 56,
@@ -109,6 +114,32 @@ export default function HomeScreen() {
               numberOfLines={2}
             >
               {scholar.displayName}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      <SectionHeader title="Series" onSeeAll={() => router.push("/series")} />
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="px-4"
+      >
+        {(series.data?.pages.flatMap((p) => p.data) ?? []).map((s) => (
+          <Pressable
+            key={s.id}
+            onPress={() => router.push(`/series/${s.slug}`)}
+            accessibilityRole="button"
+            accessibilityLabel={s.title}
+            className="mr-4 w-32"
+          >
+            <ArtworkImage
+              source={s.thumbnail}
+              fallback={DEFAULT_IMAGES.series}
+              style={{ width: 128, height: 128, borderRadius: 10 }}
+            />
+            <Text className="text-text text-sm mt-1" numberOfLines={2}>
+              {s.title}
             </Text>
           </Pressable>
         ))}

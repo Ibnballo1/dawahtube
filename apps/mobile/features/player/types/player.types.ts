@@ -8,6 +8,7 @@ export interface QueueTrack {
   sourceUrl: string | null;
   mimeType: string;
   durationSecs: number | null;
+  resolveSource?: () => Promise<string | null>; // only present for lazy tracks
 }
 
 export type PlaybackSpeed = 0.75 | 1 | 1.25 | 1.5 | 2;

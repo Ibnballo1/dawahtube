@@ -5,6 +5,8 @@ import { router, usePathname } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePlayer } from "../hooks/usePlayer";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
 const TAB_SCREENS = ["/", "/explore", "/downloads", "/history", "/profile"];
 
@@ -43,8 +45,9 @@ export function MiniPlayer() {
         style={{ width: `${progress * 100}%` }}
       />
       <View className="flex-row items-center p-2">
-        <Image
+        <ArtworkImage
           source={currentTrack.artworkUrl}
+          fallback={DEFAULT_IMAGES.lecture}
           style={{ width: 40, height: 40, borderRadius: 6 }}
         />
         <View className="flex-1 ml-3">

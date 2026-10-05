@@ -3,6 +3,8 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { lecturesApi } from "@/lib/api/endpoints";
 import { DownloadButton } from "@/features/downloads/components/DownloadButton";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
 export interface LectureCardData {
   id: string;
@@ -29,8 +31,9 @@ export function LectureCard({ data }: { data: LectureCardData }) {
       accessibilityLabel={`${data.title}${data.scholarName ? `, by ${data.scholarName}` : ""}`}
       className="flex-row bg-card rounded-xl p-3 mb-3 mx-4"
     >
-      <Image
+      <ArtworkImage
         source={data.thumbnailUrl}
+        fallback={DEFAULT_IMAGES.lecture}
         accessible={false}
         style={{
           width: 72,

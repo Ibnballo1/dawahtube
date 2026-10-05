@@ -27,6 +27,8 @@ import { router } from "expo-router";
 import { BookmarkButton } from "@/features/bookmarks/components/BookmarkButton";
 import { timestampBookmarksFor } from "@/features/bookmarks/store/bookmarksStore";
 import { formatTime } from "@/lib/format/time";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
 export default function LectureScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -79,8 +81,9 @@ export default function LectureScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background">
-      <Image
+      <ArtworkImage
         source={data.thumbnail}
+        fallback={DEFAULT_IMAGES.lecture}
         style={{ width: "100%", height: 220, backgroundColor: "#1E293B" }}
         contentFit="cover"
       />
@@ -103,7 +106,7 @@ export default function LectureScreen() {
               lectureId: data.id,
               title: data.title,
               scholarName: data.scholar?.displayName ?? null,
-              artworkUrl: data.thumbnail,
+              artworkUrl: data.thumbnail ?? DEFAULT_IMAGES.lecture,
               createdAt: new Date().toISOString(),
             }}
           />

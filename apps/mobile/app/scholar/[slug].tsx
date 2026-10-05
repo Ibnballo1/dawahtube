@@ -10,6 +10,8 @@ import { LectureCard } from "@/components/ui/LectureCard";
 import { toCardData } from "@/features/lectures/types/lecture.types";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
 export default function ScholarScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -25,8 +27,9 @@ export default function ScholarScreen() {
   return (
     <ScrollView className="flex-1 bg-background">
       <View className="items-center pt-8 pb-6">
-        <Image
-          source={scholar.data.avatar}
+        <ArtworkImage
+          source={scholar.data.avatar ?? DEFAULT_IMAGES.scholar}
+          fallback={DEFAULT_IMAGES.scholar}
           style={{
             width: 96,
             height: 96,

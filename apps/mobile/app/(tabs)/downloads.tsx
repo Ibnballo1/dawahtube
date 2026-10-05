@@ -4,6 +4,8 @@ import { Image } from "expo-image";
 import { useDownloads } from "@/features/downloads/hooks/useDownloads";
 import { DownloadButton } from "@/features/downloads/components/DownloadButton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
 function formatBytes(bytes: number) {
   if (bytes === 0) return "0 MB";
@@ -32,8 +34,9 @@ export default function DownloadsScreen() {
         ListEmptyComponent={<EmptyState message="No downloads yet." />}
         renderItem={({ item }) => (
           <View className="flex-row items-center bg-card rounded-xl p-3 mb-3 mx-4">
-            <Image
+            <ArtworkImage
               source={item.artworkUrl}
+              fallback={DEFAULT_IMAGES.lecture}
               style={{ width: 56, height: 56, borderRadius: 8 }}
             />
             <View className="flex-1 ml-3">

@@ -8,6 +8,8 @@ import { router } from "expo-router";
 import { usePlayer } from "@/features/player/hooks/usePlayer";
 import { SpeedSelector } from "@/features/player/components/SpeedSelector";
 import { SleepTimerSheet } from "@/features/player/components/SleepTimerSheet";
+import { ArtworkImage } from "@/components/ui/ArtworkImage";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
 function formatTime(secs: number) {
   const m = Math.floor(secs / 60);
@@ -38,8 +40,9 @@ export default function FullPlayerScreen() {
       </Pressable>
 
       <View className="items-center">
-        <Image
+        <ArtworkImage
           source={player.currentTrack.artworkUrl}
+          fallback={DEFAULT_IMAGES.lecture}
           style={{
             width: 280,
             height: 280,
