@@ -8,20 +8,20 @@ export type ApiErrorKind =
 export class ApiError extends Error {
   readonly kind: ApiErrorKind;
   readonly status?: number;
-  readonly code?: string;
+  // readonly code?: string;
 
   constructor(params: {
     kind: ApiErrorKind;
     message: string;
     status?: number;
-    code?: string;
+    // code?: string;
     cause?: unknown;
   }) {
     super(params.message);
     this.name = "ApiError";
     this.kind = params.kind;
     this.status = params.status;
-    this.code = params.code;
+    // this.code = params.code;
     if (params.cause !== undefined) {
       this.cause = params.cause;
     }
@@ -70,5 +70,5 @@ export function normalizeError(error: unknown): ApiError {
 
 export interface ApiErrorBody {
   ok: false;
-  error: { code?: string; message: string };
+  error: string;
 }

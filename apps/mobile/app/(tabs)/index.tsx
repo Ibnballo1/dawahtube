@@ -1,25 +1,29 @@
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { Image } from "expo-image";
+import { ScrollView, View, Text, Pressable } from "react-native";
 import { router } from "expo-router";
-import { useLectures } from "@/features/lectures/queries/useLectures";
-import { useScholars } from "@/features/scholars/queries/useScholars";
-import { LectureCard } from "@/components/ui/LectureCard";
-import { SectionHeader } from "@/components/ui/SectionHeader";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { toCardData } from "@/features/lectures/types/lecture.types";
-import { ErrorState } from "@/components/ui/ErrorState";
-import { useEffect } from "react";
 import { useHistoryStore } from "@/features/history/store/historyStore";
+import { useLectures } from "@/features/lectures/queries/useLectures";
+import { useSeriesList } from "@/features/series/queries/useSeries";
+import { useFeatured } from "@/features/reminders/queries/useFeatured";
+import { LectureCard } from "@/components/ui/LectureCard";
 import { ArtworkImage } from "@/components/ui/ArtworkImage";
 import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
-import { useSeriesList } from "@/features/series/queries/useSeries";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { toCardData } from "@/features/lectures/types/lecture.types";
+import {
+  toArray,
+  featuredLectureToCardData,
+  featuredScholarToCardData,
+} from "@/features/lectures/types/featured.types";
+import { DailyReminderCard } from "@/features/reminders/components/DailyReminderCard";
 
 export default function HomeScreen() {
-  const featured = useLectures({ sort: "popular", limit: 5 });
-  const recent = useLectures({ sort: "recent", limit: 5 });
-  const scholars = useScholars({ limit: 8 });
-  const series = useSeriesList({ limit: 6 });
   const historyEntries = useHistoryStore((s) => s.entries);
+  const featured = useFeatured();
+  const recent = useLectures({ sort: "recent", limit: 5 });
+  const series = useSeriesList({ limit: 6 });
+
   const continueListening = Object.values(historyEntries)
     .filter((e) => !e.completed && e.positionSecs > 10)
     .sort(
@@ -28,11 +32,10 @@ export default function HomeScreen() {
     )
     .slice(0, 5);
 
-  if (featured.isError)
-    return <ErrorState error={featured.error} onRetry={featured.refetch} />;
-
-  const featuredLectures = featured.data?.pages.flatMap((p) => p.data) ?? [];
-  const recentLectures = recent.data?.pages.flatMap((p) => p.data) ?? [];
+  const heroLecture = toArray(featured.data?.hero_lecture)[0];
+  const featuredLectures = toArray(featured.data?.featured_lectures);
+  const featuredScholars = toArray(featured.data?.featured_scholars);
+  const dailyReminder = toArray(featured.data?.daily_reminder)[0];
 
   return (
     <ScrollView
@@ -51,22 +54,66 @@ export default function HomeScreen() {
                 scholarName: entry.scholarName,
                 thumbnailUrl: entry.artworkUrl,
                 durationSecs: entry.durationSecs,
-                allowDownload: false, // unknown here without another fetch — download still available from the lecture detail page
+                allowDownload: false,
               }}
             />
           ))}
           <View className="h-4" />
         </>
       )}
+
+      {dailyReminder && (
+        <>
+          <DailyReminderCard reminder={dailyReminder} />
+          <View className="h-4" />
+        </>
+      )}
+
+      {heroLecture && (
+        <>
+          <Pressable
+            onPress={() => router.push(`/lecture/${heroLecture.id}`)}
+            accessibilityRole="button"
+            accessibilityLabel={heroLecture.title}
+            className="mx-4 mb-4 rounded-xl overflow-hidden"
+          >
+            <ArtworkImage
+              source={heroLecture.thumbnail}
+              fallback={DEFAULT_IMAGES.lecture}
+              style={{ width: "100%", height: 180 }}
+              contentFit="cover"
+            />
+            <View className="bg-card p-3">
+              <Text
+                className="text-text text-lg font-semibold"
+                numberOfLines={2}
+              >
+                {heroLecture.title}
+              </Text>
+              {heroLecture.scholar && (
+                <Text className="text-muted text-sm mt-1">
+                  {heroLecture.scholar.displayName}
+                </Text>
+              )}
+            </View>
+          </Pressable>
+        </>
+      )}
+
       <SectionHeader
         title="Featured Lectures"
         onSeeAll={() => router.push("/(tabs)/explore")}
       />
-      {featuredLectures.length === 0 && !featured.isLoading ? (
-        <EmptyState message="No featured lectures yet." />
+      {featured.isError ? (
+        <ErrorState error={featured.error} onRetry={featured.refetch} />
+      ) : featuredLectures.length === 0 && !featured.isLoading ? (
+        <EmptyState message="No featured lectures right now." />
       ) : (
         featuredLectures.map((lecture) => (
-          <LectureCard key={lecture.id} data={toCardData(lecture)} />
+          <LectureCard
+            key={lecture.id}
+            data={featuredLectureToCardData(lecture)}
+          />
         ))
       )}
 
@@ -76,14 +123,18 @@ export default function HomeScreen() {
         title="Recently Added"
         onSeeAll={() => router.push("/(tabs)/explore")}
       />
-      {recentLectures.map((lecture) => (
-        <LectureCard key={lecture.id} data={toCardData(lecture)} />
-      ))}
+      {recent.isError ? (
+        <ErrorState error={recent.error} onRetry={recent.refetch} />
+      ) : (
+        (recent.data?.pages.flatMap((p) => p.data) ?? []).map((lecture) => (
+          <LectureCard key={lecture.id} data={toCardData(lecture)} />
+        ))
+      )}
 
       <View className="h-4" />
 
       <SectionHeader
-        title="Browse Scholars"
+        title="Featured Scholars"
         onSeeAll={() => router.push("/scholars")}
       />
       <ScrollView
@@ -91,33 +142,33 @@ export default function HomeScreen() {
         showsHorizontalScrollIndicator={false}
         className="px-4"
       >
-        {(scholars.data?.pages.flatMap((p) => p.data) ?? []).map((scholar) => (
-          <Pressable
-            key={scholar.id}
-            onPress={() => router.push(`/scholar/${scholar.slug}`)}
-            accessibilityRole="button"
-            accessibilityLabel={scholar.displayName}
-            className="mr-4 items-center w-20"
-          >
-            <ArtworkImage
-              source={scholar.avatar}
-              fallback={DEFAULT_IMAGES.scholar}
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: 28,
-                backgroundColor: "#1E293B",
-              }}
-            />
-            <Text
-              className="text-muted text-xs mt-1 text-center"
-              numberOfLines={2}
+        {featuredScholars.map((scholar) => {
+          const data = featuredScholarToCardData(scholar);
+          return (
+            <Pressable
+              key={data.id}
+              onPress={() => router.push(`/scholar/${data.slug}`)}
+              accessibilityRole="button"
+              accessibilityLabel={data.displayName}
+              className="mr-4 items-center w-20"
             >
-              {scholar.displayName}
-            </Text>
-          </Pressable>
-        ))}
+              <ArtworkImage
+                source={scholar.avatar}
+                fallback={DEFAULT_IMAGES.scholar}
+                style={{ width: 56, height: 56, borderRadius: 28 }}
+              />
+              <Text
+                className="text-muted text-xs mt-1 text-center"
+                numberOfLines={2}
+              >
+                {data.displayName}
+              </Text>
+            </Pressable>
+          );
+        })}
       </ScrollView>
+
+      <View className="h-4" />
 
       <SectionHeader title="Series" onSeeAll={() => router.push("/series")} />
       <ScrollView
@@ -136,7 +187,7 @@ export default function HomeScreen() {
             <ArtworkImage
               source={s.thumbnail}
               fallback={DEFAULT_IMAGES.series}
-              style={{ width: 128, height: 128, borderRadius: 10 }}
+              style={{ width: 100, height: 100, borderRadius: 10 }}
             />
             <Text className="text-text text-sm mt-1" numberOfLines={2}>
               {s.title}

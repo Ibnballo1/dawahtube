@@ -41,3 +41,7 @@ export * from "./analytics";
 
 // 9. Audit — depends on users
 export * from "./audit-logs";
+
+// listening history and bookmarks — depends on users, lectures
+export * from "./listening-history";
+export * from "./bookmark";

@@ -160,7 +160,7 @@ function welcomeEmailHtml({
       </p>
       <p style="margin:0 0 20px;color:#64748b;font-size:15px;line-height:1.7">
         You are now subscribed to Da&apos;wahTube. You will receive updates when new
-        lectures, articles, and books are published from trusted Nigerian scholars
+        lectures, articles, and books are published from trusted scholars
         upon the Qur&apos;an and Sunnah.
       </p>
 

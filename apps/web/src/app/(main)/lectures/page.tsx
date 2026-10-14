@@ -14,7 +14,7 @@ import type {
 export const metadata: Metadata = {
   title: "Lectures",
   description:
-    "Browse hundreds of Islamic lectures from trusted Nigerian scholars upon the Qur'an and Sunnah.",
+    "Browse hundreds of Islamic lectures from trusted Nigerian and other scholars upon the Qur'an and Sunnah.",
 };
 
 // Listing pages are dynamic — searchParams drive the query

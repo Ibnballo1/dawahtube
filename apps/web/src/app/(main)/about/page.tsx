@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Da'wahTube is a platform dedicated to authentic Islamic knowledge upon the Qur'an and Sunnah from trusted Nigerian scholars.",
+    "Da'wahTube is a platform dedicated to authentic Islamic knowledge upon the Qur'an and Sunnah from trusted Nigerian and other scholars.",
 };
 
 export default function AboutPage() {
@@ -36,13 +36,12 @@ export default function AboutPage() {
           <h1 className="font-display font-bold text-4xl text-white mt-4 leading-tight">
             Authentic Islamic Knowledge
             <br />
-            for the Nigerian Muslim
+            for the Muslims
           </h1>
           <p className="text-white/60 text-lg mt-6 leading-relaxed max-w-2xl">
             A platform dedicated to preserving and sharing the lectures,
-            articles, and books of trusted Nigerian scholars upon the
-            Qur&apos;an and Sunnah according to the understanding of the
-            Salaf-us-Saalih.
+            articles, and books of trusted scholars upon the Qur&apos;an and
+            Sunnah according to the understanding of the Salaf-us-Saalih.
           </p>
         </div>
         <div
@@ -60,16 +59,16 @@ export default function AboutPage() {
           <div className="prose-islamic space-y-4">
             <p>
               Da&apos;wahTube was founded with a simple purpose — to make
-              authentic Islamic knowledge accessible to every Nigerian Muslim,
-              wherever they are. We believe that the spread of sound knowledge
-              upon the Qur&apos;an and Sunnah is among the most important acts
-              of worship in our time.
+              authentic Islamic knowledge accessible to all Muslims, wherever
+              they are. We believe that the spread of sound knowledge upon the
+              Qur&apos;an and Sunnah is among the most important acts of worship
+              in our time.
             </p>
             <p>
-              We partner with trusted Nigerian scholars who teach upon the
-              methodology of the Salaf-us-Saalih — the pious predecessors — to
-              bring you lectures, articles, and books that are grounded in
-              authentic Islamic scholarship.
+              We bring together lectures, articles, and books from respected
+              scholars who adhere to the methodology of the Salaf-us-Saalih —
+              the pious predecessors — to provide Muslims worldwide with
+              authentic Islamic knowledge.
             </p>
             <p>
               All content on Da&apos;wahTube is free to access. We believe that
@@ -88,7 +87,7 @@ export default function AboutPage() {
               {
                 icon: "🎧",
                 title: "Lectures",
-                desc: "Audio lectures from trusted Nigerian scholars on Aqeedah, Fiqh, Tafseer, and more.",
+                desc: "Audio lectures from trusted scholars on Aqeedah, Fiqh, Tafseer, and more.",
               },
               {
                 icon: "📄",

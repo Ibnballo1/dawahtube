@@ -57,8 +57,10 @@ export interface ScholarDetail extends ScholarSummary {
   lectureCount: number;
   articleCount: number;
   isFeatured: boolean;
-  // bannerAsset / biography — still unconfirmed, not in this list response;
-  // leave as-is until you hit /api/v1/scholars/:slug and can confirm those
+  biography: string | null;
+  websiteUrl: string | null;
+  twitterHandle: string | null;
+  banner: string | null;
 }
 
 export interface LectureSummary {
@@ -165,43 +167,73 @@ export interface SeriesDetail {
 export interface ReminderSummary {
   id: string;
   title: string;
-  body: string;
-  scholar: Pick<ScholarSummary, "id" | "slug" | "name" | "honorifics"> | null;
-  imageAsset: AssetRef | null;
+  content: string;
+  source: string | null;
+  scholar: { id: string; slug: string; displayName: string } | null;
 }
 
-export type MobileSearchType = "lectures" | "scholars";
+export interface SearchLectureHit {
+  id: string;
+  slug: string;
+  title: string;
+  durationSecs: number | null;
+  thumbnail: string | null;
+  scholar: { slug: string; displayName: string } | null;
+}
+export interface SearchScholarHit {
+  id: string;
+  slug: string;
+  displayName: string;
+  lectureCount: number;
+  avatar: string | null;
+}
+export interface SearchSeriesHit {
+  id: string;
+  slug: string;
+  title: string;
+  lectureCount: number;
+  thumbnail: string | null;
+}
+export interface SearchResponse {
+  query: string;
+  total: number;
+  lectures: SearchLectureHit[];
+  lecturesTotal: number;
+  scholars: SearchScholarHit[];
+  scholarsTotal: number;
+  series: SearchSeriesHit[];
+  seriesTotal: number;
+  meta: { page: number; limit: number; hasNext: boolean };
+}
 
-export interface SearchLectureResult {
-  kind: "lecture";
+export interface FeaturedLecture {
   id: string;
   slug: string;
   title: string;
   description: string | null;
   durationSecs: number | null;
-  publishedAt: string | null; // wire format — Date on the backend, ISO string over HTTP
-  scholarName: string | null;
-  categoryName: string | null;
-  thumbnailUrl: string | null;
-  allowDownload: boolean;
+  hasAudio: boolean;
+  thumbnail: string | null;
+  scholar: { id: string; slug: string; displayName: string } | null;
 }
-
-export interface SearchScholarResult {
-  kind: "scholar";
+export interface FeaturedScholar {
   id: string;
   slug: string;
-  name: string;
-  honorifics: string | null;
-  arabicName: string | null;
-  nationality: string | null;
+  displayName: string;
   lectureCount: number;
-  avatarUrl: string | null;
+  avatar: string | null;
 }
-
-export interface SearchResultsPayload {
-  query: string;
-  lectures: { items: SearchLectureResult[]; total: number };
-  scholars: { items: SearchScholarResult[]; total: number };
-  // articles / books exist in the real response — intentionally not typed here,
-  // mobile ignores them.
+export interface FeaturedReminder {
+  id: string;
+  title: string;
+  content: string;
+  source: string | null;
+  scholar: { id: string; slug: string; displayName: string } | null;
+}
+export interface FeaturedResponse {
+  hero_lecture?: FeaturedLecture | FeaturedLecture[];
+  featured_lectures?: FeaturedLecture | FeaturedLecture[];
+  featured_scholars?: FeaturedScholar | FeaturedScholar[];
+  daily_reminder?: FeaturedReminder | FeaturedReminder[];
+  [slotKey: string]: unknown; // other slot keys the backend may add later — ignored here
 }

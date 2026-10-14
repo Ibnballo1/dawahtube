@@ -1,6 +1,7 @@
 // src/app/lectures/[slug]/page.tsx
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 import {
   getLectureBySlug,
@@ -15,6 +16,12 @@ import { LectureViewTracker } from "@/features/lectures/components/client/Lectur
 import { LectureCardSkeleton, Skeleton } from "@shared/components/ui/skeleton";
 import { env } from "@core/config/env";
 import { trackView } from "@/shared/lib/track-view";
+import {
+  isBookmarked,
+  recordLecturePlay,
+} from "@/features/account/actions/history-bookmark.actions";
+import auth from "@/core/auth/config";
+import { after } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -89,6 +96,19 @@ export default async function LectureDetailPage({
     ),
   ]);
 
+  const [bookmarked, session] = await Promise.all([
+    isBookmarked(lecture.id).catch(() => false),
+    auth.api.getSession({ headers: await headers() }).catch(() => null),
+  ]);
+
+  // 1. Increment public view counter
+  trackView("lecture", lecture.id);
+
+  // 2. Record listening history if user is signed in
+  if (session?.user) {
+    await recordLecturePlay(lecture.id, 0, false).catch(() => null);
+  }
+
   // JSON-LD structured data for this lecture
   const structuredData = {
     "@context": "https://schema.org",
@@ -148,7 +168,11 @@ export default async function LectureDetailPage({
               )}
 
               {/* Main lecture view: player + metadata */}
-              <LectureDetailView lecture={lecture} />
+              <LectureDetailView
+                lecture={lecture}
+                initialBookmarked={bookmarked}
+                isAuthenticated={!!session?.user}
+              />
             </div>
 
             {/* ── Sidebar ──────────────────────────────────────────── */}

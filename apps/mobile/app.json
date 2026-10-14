@@ -24,7 +24,8 @@
       },
       "permissions": [
         "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        "FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "POST_NOTIFICATIONS"
       ],
       "predictiveBackGestureEnabled": false,
       "package": "com.ibnballo.mobile"
@@ -43,7 +44,8 @@
           "microphonePermission": "Allow microphone access..."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "@react-native-community/datetimepicker"
     ],
     "extra": {
       "router": {},

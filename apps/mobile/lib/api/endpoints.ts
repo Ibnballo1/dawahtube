@@ -11,7 +11,9 @@ import type {
   StreamUrlResponse,
   CategorySummary,
   ReminderSummary,
-  SearchResultsPayload,
+  // SearchResultsPayload,
+  SearchResponse,
+  FeaturedResponse,
 } from "./types";
 
 export type LectureListParams = PaginationParams & {
@@ -69,37 +71,30 @@ export const categoriesApi = {
 };
 
 export const featuredApi = {
-  list: (signal?: AbortSignal) =>
-    apiFetch<LectureSummary[]>("/featured", {
-      params: { type: "lecture" },
-      signal,
-    }),
+  all: (signal?: AbortSignal) =>
+    apiFetch<FeaturedResponse>("/featured", { signal }),
 };
 
 export const remindersApi = {
-  daily: (signal?: AbortSignal) =>
-    apiFetch<ReminderSummary[]>("/reminders/daily", { signal }),
+  latest: (signal?: AbortSignal) =>
+    apiFetch<ReminderSummary | null>("/reminders", { signal }),
 };
 
 export interface SearchParams {
   q: string;
+  type?: "all" | "lectures" | "scholars" | "series";
   page?: number;
 }
+export const searchApi = {
+  query: (params: SearchParams, signal?: AbortSignal) =>
+    apiFetch<SearchResponse>("/search", {
+      params: { q: params.q, type: params.type ?? "all", page: params.page },
+      signal,
+    }),
+};
 
 export interface SearchResult {
   lectures: LectureSummary[];
   scholars: ScholarSummary[];
   series: SeriesSummary[];
 }
-
-export const searchApi = {
-  // ASSUMPTION: type=all returns lectures+scholars (+articles/books we ignore)
-  // in one response, matching SearchResults. Please confirm — if type=all
-  // doesn't populate every bucket, we'll switch to two calls (type=lectures,
-  // type=scholars) instead.
-  query: (params: SearchParams, signal?: AbortSignal) =>
-    apiFetch<SearchResultsPayload>("/search", {
-      params: { query: params.q, type: "all", page: params.page },
-      signal,
-    }),
-};

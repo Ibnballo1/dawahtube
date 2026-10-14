@@ -14,7 +14,7 @@ import type {
 export const metadata: Metadata = {
   title: "Articles",
   description:
-    "Read articles and written explanations from trusted Nigerian scholars upon the Qur'an and Sunnah.",
+    "Read articles and written explanations from trusted Nigerian and other scholars upon the Qur'an and Sunnah.",
 };
 
 export const dynamic = "force-dynamic";

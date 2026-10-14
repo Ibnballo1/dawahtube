@@ -26,7 +26,7 @@ const FOOTER_LINKS = {
   platform: [
     { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
-    { label: "Donate", href: "/donate" },
+    // { label: "Donate", href: "/donate" },
     { label: "Newsletter", href: "/newsletter" },
   ],
   legal: [

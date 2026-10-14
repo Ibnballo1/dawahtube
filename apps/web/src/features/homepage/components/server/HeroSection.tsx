@@ -78,8 +78,9 @@ export async function HeroSection() {
 
           {/* Description */}
           <p className="text-md text-white/60 leading-relaxed max-w-[42ch]">
-            Lectures, articles, books and daily reminders from trusted Nigerian
-            scholars — verified upon sound evidence.
+            Lectures, articles, books and daily reminders from trusted scholars
+            upon the Qur&apos;an and Sunnah according to the understanding of
+            the Salaf-us-Saalih.
           </p>
 
           {/* CTAs */}

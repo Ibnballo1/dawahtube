@@ -69,10 +69,24 @@ export function AudioPlayer({
     };
     const onWaiting = () => setLoading(true);
     const onCanPlay = () => setLoading(false);
+    // Also mark completed when audio ends — add to your existing onEnded handler:
     const onEnded = () => {
       setPlaying(false);
       setCurrentTime(0);
+      const audio = audioRef.current;
+      if (!audio) return;
       audio.currentTime = 0;
+
+      // Mark as completed
+      fetch("/api/track/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lectureId,
+          progressSecs: Math.round(duration),
+          completed: true,
+        }),
+      }).catch(() => {});
     };
     const onError = () => {
       console.error("Audio failed to load from URL:", audioUrl);
@@ -100,6 +114,34 @@ export function AudioPlayer({
       audio.removeEventListener("error", onError);
     };
   }, [durationSecs]);
+
+  // Add this inside AudioPlayer — after your existing useEffect for audio events
+
+  useEffect(() => {
+    if (!playing) return;
+
+    // Report progress every 30 seconds while playing
+    const interval = setInterval(async () => {
+      const audio = audioRef.current;
+      if (!audio || !playing) return;
+
+      try {
+        await fetch("/api/track/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lectureId: lectureId,
+            progressSecs: Math.round(audio.currentTime),
+            completed: false,
+          }),
+        });
+      } catch {
+        // Silently fail — progress sync is best-effort
+      }
+    }, 30_000); // every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [playing, lectureId]);
 
   // ── Controls ────────────────────────────────────────────────────────────────
   const togglePlay = useCallback(async () => {

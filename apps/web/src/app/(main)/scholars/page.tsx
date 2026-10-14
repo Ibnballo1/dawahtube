@@ -14,7 +14,7 @@ import type {
 export const metadata: Metadata = {
   title: "Scholars",
   description:
-    "Trusted Nigerian scholars upon the Qur'an and Sunnah — browse their lectures, articles and biographies.",
+    "Trusted Nigerian and other scholars upon the Qur'an and Sunnah — browse their lectures, articles and biographies.",
 };
 
 export const dynamic = "force-dynamic";

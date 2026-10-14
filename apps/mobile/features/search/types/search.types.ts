@@ -1,13 +1,15 @@
-import type { SearchLectureResult } from "@/lib/api/types";
+import type { SearchLectureHit } from "@/lib/api/types";
 import type { LectureCardData } from "@/components/ui/LectureCard";
+import { resolveImageUrl } from "@/lib/assets/resolveImageUrl";
+import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
 
-export function toCardData(result: SearchLectureResult): LectureCardData {
+export function toCardData(hit: SearchLectureHit): LectureCardData {
   return {
-    id: result.id,
-    title: result.title,
-    scholarName: result.scholarName,
-    thumbnailUrl: result.thumbnailUrl,
-    durationSecs: result.durationSecs,
-    allowDownload: result.allowDownload,
+    id: hit.id,
+    title: hit.title,
+    scholarName: hit.scholar?.displayName ?? null,
+    thumbnailUrl: resolveImageUrl(hit.thumbnail, DEFAULT_IMAGES.lecture),
+    durationSecs: hit.durationSecs,
+    allowDownload: false, // search doesn't return this; unknown until opening the lecture
   };
 }

@@ -1,16 +1,14 @@
-// src/app/account/page.tsx
+// src/app/(main)/account/page.tsx
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
 import auth from "@core/auth/config";
-import { SignOutButton } from "@/features/auth/components/client/SignOutButton";
-import { formatDate } from "@shared/lib/format";
-import { Badge } from "@shared/components/ui/badge";
+import { UpdateProfileForm } from "@features/account/components/UpdateProfileForm";
+import { UpdatePasswordForm } from "@features/account/components/UpdatePasswordForm";
+import { DangerZone } from "@features/account/components/DangerZone";
 
-export const metadata: Metadata = {
-  title: "My Account",
-  robots: { index: false },
-};
+export const metadata: Metadata = { title: "My Account" };
+export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const session = await auth.api
@@ -19,81 +17,111 @@ export default async function AccountPage() {
 
   if (!session?.user) redirect("/sign-in?redirect=/account");
 
-  const { user } = session;
-  const initials = user.name
-    .split(" ")
-    .slice(0, 2)
-    .map((w: string) => w[0]?.toUpperCase() ?? "")
-    .join("");
+  const user = session.user as {
+    id: string;
+    name: string;
+    email: string;
+    emailVerified: boolean;
+    image?: string | null;
+    createdAt: Date | string;
+    role?: string;
+  };
+
+  const memberSince = new Date(user.createdAt).toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
-    <div className="min-h-screen bg-surface-subtle">
-      <div className="container-site py-12 max-w-2xl mx-auto">
-        <div className="flex flex-col gap-1 mb-8">
-          <h1 className="font-display font-bold text-2xl text-ink-primary">
+    <div className="min-h-screen bg-surface-base">
+      {/* Header */}
+      <div className="bg-surface-subtle border-b border-border-default">
+        <div className="container-site py-10 max-w-2xl">
+          <span className="label-overline">Settings</span>
+          <h1 className="font-display font-bold text-3xl text-ink-primary mt-3">
             My Account
           </h1>
-          <p className="text-ink-tertiary text-sm">
-            Manage your Da&apos;wahTube account
+          <p className="text-ink-muted text-sm mt-2">
+            Member since {memberSince}
+            {user.emailVerified && (
+              <span className="ml-2 inline-flex items-center gap-1 text-green-600 text-xs font-medium">
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  aria-hidden="true"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Verified
+              </span>
+            )}
           </p>
         </div>
+      </div>
 
-        <div className="bg-surface-card border border-border-default rounded-2xl p-6 flex flex-col gap-6 shadow-sm">
-          {/* Avatar + name */}
-          <div className="flex items-center gap-4">
-            <div className="size-16 rounded-full bg-primary-700 flex items-center justify-center shrink-0">
-              <span className="font-display font-bold text-xl text-white">
-                {initials}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="font-display font-bold text-lg text-ink-primary">
-                {user.name}
-              </p>
-              <p className="text-sm text-ink-tertiary">{user.email}</p>
-              <div className="flex items-center gap-2">
-                {user.emailVerified ? (
-                  <Badge variant="success" size="sm">
-                    Verified
-                  </Badge>
-                ) : (
-                  <Badge variant="warning" size="sm">
-                    Unverified
-                  </Badge>
-                )}
-              </div>
-            </div>
+      <div className="container-site py-10 max-w-2xl flex flex-col gap-8">
+        {/* Profile info card */}
+        <div className="card p-6 flex items-center gap-4">
+          {/* Avatar */}
+          <div className="size-14 rounded-full bg-primary-700 flex items-center justify-center shrink-0">
+            <span className="font-display font-bold text-xl text-white">
+              {user.name
+                ?.split(" ")
+                .map((w: string) => w[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase()}
+            </span>
           </div>
-
-          <hr className="border-border-subtle" />
-
-          <dl className="flex flex-col gap-3 text-sm">
-            <div className="flex items-center justify-between py-1.5 border-b border-border-subtle">
-              <dt className="text-ink-muted">Member since</dt>
-              <dd className="font-medium text-ink-secondary">
-                {formatDate(new Date(user.createdAt))}
-              </dd>
-            </div>
-            <div className="flex items-center justify-between py-1.5">
-              <dt className="text-ink-muted">Role</dt>
-              <dd className="font-medium text-ink-secondary capitalize">
-                {(user.role as string | undefined) ?? "reader"}
-              </dd>
-            </div>
-          </dl>
-
-          <hr className="border-border-subtle" />
-
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-ink-primary">Sign out</p>
-              <p className="text-xs text-ink-muted">
-                You will be signed out of this session.
-              </p>
-            </div>
-            <SignOutButton />
+          <div className="flex flex-col gap-0.5">
+            <p className="font-display font-bold text-lg text-ink-primary">
+              {user.name}
+            </p>
+            <p className="text-sm text-ink-muted">{user.email}</p>
+            {user.role && user.role !== "reader" && (
+              <span className="text-xs text-primary-700 font-medium capitalize">
+                {user.role.replace("_", " ")}
+              </span>
+            )}
           </div>
         </div>
+
+        {/* Update profile */}
+        <section>
+          <h2 className="font-display font-semibold text-lg text-ink-primary mb-4">
+            Profile information
+          </h2>
+          <div className="card p-6">
+            <UpdateProfileForm
+              currentName={user.name}
+              currentEmail={user.email}
+            />
+          </div>
+        </section>
+
+        {/* Change password */}
+        <section>
+          <h2 className="font-display font-semibold text-lg text-ink-primary mb-4">
+            Change password
+          </h2>
+          <div className="card p-6">
+            <UpdatePasswordForm />
+          </div>
+        </section>
+
+        {/* Danger zone */}
+        <section>
+          <h2 className="font-display font-semibold text-lg text-red-600 mb-4">
+            Danger zone
+          </h2>
+          <div className="card p-6 border-red-200">
+            <DangerZone userId={user.id} userEmail={user.email} />
+          </div>
+        </section>
       </div>
     </div>
   );

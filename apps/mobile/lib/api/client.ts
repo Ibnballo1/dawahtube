@@ -62,13 +62,10 @@ function sleep(ms: number) {
 
 async function parseErrorBody(
   response: Response,
-): Promise<{ code?: string; message: string }> {
+): Promise<{ message: string }> {
   try {
     const body = (await response.json()) as ApiErrorBody;
-    return {
-      code: body.error?.code,
-      message: body.error?.message ?? response.statusText,
-    };
+    return { message: body.error || response.statusText };
   } catch {
     return {
       message:
@@ -93,11 +90,11 @@ async function performRequest<T>(
     const response = await fetch(url, { ...init, signal: controller.signal });
     console.log("👉 API FETCH SUCCESS:", url, response.status);
     if (!response.ok) {
-      const { code, message } = await parseErrorBody(response);
+      const { message } = await parseErrorBody(response);
       throw new ApiError({
         kind: "http",
         status: response.status,
-        code,
+        // code,
         message,
       });
     }

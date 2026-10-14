@@ -5,13 +5,14 @@ import type { DownloadableLecture } from "@/features/downloads/types/download.ty
 import { lecturesApi } from "@/lib/api/endpoints";
 import { resolveLectureSource } from "../services/resolveLectureSource";
 import { DEFAULT_IMAGES } from "@/lib/assets/defaultImages";
+import { resolveImageUrl } from "@/lib/assets/resolveImageUrl";
 
 export function toCardData(lecture: LectureSummary): LectureCardData {
   return {
     id: lecture.id,
     title: lecture.title,
     scholarName: lecture.scholar?.displayName ?? null,
-    thumbnailUrl: lecture.thumbnail ?? DEFAULT_IMAGES.lecture,
+    thumbnailUrl: resolveImageUrl(lecture.thumbnail, DEFAULT_IMAGES.lecture),
     durationSecs: lecture.durationSecs,
     allowDownload: lecture.allowDownload,
   };
@@ -25,7 +26,7 @@ export function toQueueTrack(
     lectureId: lecture.id,
     title: lecture.title,
     scholarName: lecture.scholar?.displayName ?? null,
-    artworkUrl: lecture.thumbnail ?? DEFAULT_IMAGES.lecture,
+    artworkUrl: resolveImageUrl(lecture.thumbnail, DEFAULT_IMAGES.lecture),
     mimeType: "audio/mpeg",
     durationSecs: lecture.durationSecs,
     sourceUrl,
@@ -37,7 +38,7 @@ export function toDownloadable(lecture: LectureDetail): DownloadableLecture {
     id: lecture.id,
     title: lecture.title,
     scholarName: lecture.scholar?.displayName ?? null,
-    artworkUrl: lecture.thumbnail ?? DEFAULT_IMAGES.lecture,
+    artworkUrl: resolveImageUrl(lecture.thumbnail, DEFAULT_IMAGES.lecture),
     durationSecs: lecture.durationSecs,
     allowDownload: lecture.allowDownload,
   };
@@ -51,7 +52,7 @@ export function toLazyQueueTrack(
     lectureId: lecture.id,
     title: lecture.title,
     scholarName: lecture.scholar?.displayName ?? null,
-    artworkUrl: lecture.thumbnail ?? DEFAULT_IMAGES.lecture,
+    artworkUrl: resolveImageUrl(lecture.thumbnail, DEFAULT_IMAGES.lecture),
     mimeType: "audio/mpeg",
     durationSecs: lecture.durationSecs,
     sourceUrl: null,

@@ -11,12 +11,19 @@ import {
 } from "@shared/lib/format";
 import { AudioPlayer } from "../client/AudioPlayer";
 import type { LectureDetail } from "../../types/lecture.types";
+import { BookmarkButton } from "@/features/account/components/BookmarkButton";
 
 interface LectureDetailViewProps {
   lecture: LectureDetail;
+  initialBookmarked: boolean;
+  isAuthenticated: boolean;
 }
 
-export function LectureDetailView({ lecture }: LectureDetailViewProps) {
+export function LectureDetailView({
+  lecture,
+  initialBookmarked,
+  isAuthenticated,
+}: LectureDetailViewProps) {
   const scholarName = lecture.scholar
     ? formatScholarName(
         lecture.scholar.honorifics ?? null,
@@ -172,6 +179,14 @@ export function LectureDetailView({ lecture }: LectureDetailViewProps) {
           thumbnailUrl={thumbnailUrl}
         />
       )}
+
+      {/* Bookmark Button */}
+      <BookmarkButton
+        lectureId={lecture.id}
+        lectureSlug={lecture.slug}
+        initialBookmarked={initialBookmarked}
+        isAuthenticated={isAuthenticated}
+      />
 
       {/* ── Description ─────────────────────────────────────────────── */}
       {lecture.description && (

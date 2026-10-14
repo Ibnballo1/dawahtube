@@ -2,7 +2,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@shared/components/ui/badge";
-import { Button } from "@shared/components/ui/button";
 import { EmptyState } from "@shared/components/ui/EmptyState";
 import {
   formatDate,
@@ -13,7 +12,6 @@ import {
 } from "@shared/lib/format";
 import { getLectures } from "../../queries/lecture.queries";
 import type { LectureFilters, LectureCard } from "../../types/lecture.types";
-import { Calendar } from "lucide-react";
 
 interface LectureListingProps {
   filters: LectureFilters;
@@ -39,7 +37,7 @@ export async function LectureListing({ filters }: LectureListingProps) {
   }
 
   return (
-    <div className="mt-8 flex flex-col gap-8">
+    <div className="mt-6 flex flex-col gap-6">
       {/* Results count */}
       <p className="text-sm text-ink-muted" role="status" aria-live="polite">
         {result.total.toLocaleString()}{" "}
@@ -55,14 +53,18 @@ export async function LectureListing({ filters }: LectureListingProps) {
         )}
       </p>
 
-      {/* Grid */}
+      {/* List */}
       <div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        className="flex flex-col divide-y divide-border-subtle bg-surface-card border border-border-default rounded-2xl overflow-hidden"
         role="list"
         aria-label="Lecture results"
       >
-        {result.lectures.map((lecture) => (
-          <LectureListCard key={lecture.id} lecture={lecture} />
+        {result.lectures.map((lecture, idx) => (
+          <LectureListRow
+            key={lecture.id}
+            lecture={lecture}
+            index={idx + 1 + ((filters.page ?? 1) - 1) * 20}
+          />
         ))}
       </div>
 
@@ -78,100 +80,50 @@ export async function LectureListing({ filters }: LectureListingProps) {
   );
 }
 
-// ─── Lecture list card ────────────────────────────────────────────────────────
+// ─── Lecture list row ─────────────────────────────────────────────────────────
 
-function LectureListCard({ lecture }: { lecture: LectureCard }) {
+function LectureListRow({
+  lecture,
+  index,
+}: {
+  lecture: LectureCard;
+  index: number;
+}) {
   const scholarName = lecture.scholar
     ? formatScholarName(
         lecture.scholar.honorifics ?? null,
         lecture.scholar.name,
       )
     : null;
-
-  // Sanitize URLs: coerce empty strings "" to null
-  const thumbnailUrl =
-    lecture.thumbnailAsset?.publicUrl?.trim() || `/images/lecture-default.png`;
   const scholarAvatarUrl =
     lecture.scholar?.avatarAsset?.publicUrl?.trim() || null;
+  const displayDate = lecture.recordedAt ?? lecture.publishedAt;
 
   return (
     <article
       role="listitem"
-      className="card card-interactive flex flex-col group"
+      className="group flex items-start gap-4 px-5 py-4 hover:bg-surface-subtle transition-colors"
     >
-      {/* Thumbnail */}
-      <Link
-        href={`/lectures/${lecture.slug}`}
-        className="block relative aspect-video overflow-hidden rounded-t-xl bg-surface-muted"
-        tabIndex={-1}
-        aria-hidden="true"
-      >
-        {thumbnailUrl ? (
-          <Image
-            src={thumbnailUrl}
-            alt={lecture.thumbnailAsset?.altText ?? lecture.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-slow ease-smooth"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-            unoptimized={process.env.NODE_ENV === "development"}
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-800 to-primary-950 flex items-center justify-center">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="rgba(255,255,255,0.2)"
-              strokeWidth="1"
-              aria-hidden="true"
-            >
-              <polygon
-                points="5 3 19 12 5 21 5 3"
-                fill="rgba(255,255,255,0.15)"
-                stroke="none"
-              />
-            </svg>
+      {/* Index number */}
+      <div className="shrink-0 w-8 h-8 rounded-full bg-surface-subtle border border-border-default flex items-center justify-center mt-0.5 group-hover:bg-primary-50 group-hover:border-primary-200 transition-colors">
+        <span className="text-xs font-bold text-ink-muted group-hover:text-primary-700 transition-colors tabular-nums">
+          {index}
+        </span>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 min-w-0 flex flex-col gap-2">
+        {/* Category */}
+        {lecture.category && (
+          <div>
+            <Badge variant="primary" size="sm" className="text-[10px]">
+              {lecture.category.name}
+            </Badge>
           </div>
         )}
 
-        {/* Duration pill */}
-        {lecture.durationSecs && (
-          <span className="duration-pill absolute bottom-2 right-2">
-            {formatDurationLong(lecture.durationSecs)}
-          </span>
-        )}
-
-        {/* Play overlay */}
-        <span
-          aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-normal bg-black/20"
-        >
-          <span className="size-11 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="white"
-              aria-hidden="true"
-            >
-              <polygon points="5 3 19 12 5 21 5 3" />
-            </svg>
-          </span>
-        </span>
-      </Link>
-
-      {/* Body */}
-      <div className="flex flex-col flex-1 gap-2.5 p-4">
-        {/* Category */}
-        {lecture.category && (
-          <Badge variant="primary" size="sm" className="w-fit">
-            {lecture.category.name}
-          </Badge>
-        )}
-
         {/* Title */}
-        <h2 className="font-display font-bold text-base text-ink-primary leading-snug line-clamp-2">
+        <h2 className="font-display font-semibold text-base text-ink-primary leading-snug">
           <Link
             href={`/lectures/${lecture.slug}`}
             className="hover:text-primary-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 rounded-sm"
@@ -180,48 +132,115 @@ function LectureListCard({ lecture }: { lecture: LectureCard }) {
           </Link>
         </h2>
 
-        {/* Scholar */}
-        {lecture.scholar && (
-          <Link
-            href={`/scholars/${lecture.scholar.slug}`}
-            className="flex items-center gap-2 w-fit group/s"
-          >
-            <div className="size-5 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-[10px] font-bold shrink-0 overflow-hidden">
-              {scholarAvatarUrl ? (
-                <Image
-                  src={scholarAvatarUrl}
-                  alt={scholarName ?? ""}
-                  width={20}
-                  height={20}
-                  className="object-cover"
-                  unoptimized={process.env.NODE_ENV === "development"}
-                />
-              ) : (
-                lecture.scholar.name[0]?.toUpperCase()
-              )}
-            </div>
-            <span className="text-xs text-ink-tertiary group-hover/s:text-primary-700 transition-colors truncate">
-              {scholarName}
-            </span>
-          </Link>
-        )}
-
-        {/* Footer: date + views */}
-        <div className="flex items-center justify-between mt-auto pt-2 border-t border-border-subtle text-xs text-ink-muted">
-          {(lecture.recordedAt ?? lecture.publishedAt) && (
-            <div className="flex items-center gap-1.5 text-xs text-ink-muted">
-              <Calendar className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              {lecture.recordedAt
-                ? formatDate(lecture.recordedAt) // "15 March 2019"
-                : formatRelativeDate(lecture.publishedAt!)}{" "}
-              {/* "2 days ago" */}
-            </div>
+        {/* Scholar + meta row */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          {/* Scholar */}
+          {lecture.scholar && scholarName && (
+            <Link
+              href={`/scholars/${lecture.scholar.slug}`}
+              className="flex items-center gap-1.5 group/s shrink-0"
+            >
+              <div className="size-5 rounded-full bg-primary-100 flex items-center justify-center shrink-0 overflow-hidden">
+                {scholarAvatarUrl ? (
+                  <Image
+                    src={scholarAvatarUrl}
+                    alt={scholarName}
+                    width={20}
+                    height={20}
+                    className="object-cover"
+                    unoptimized={process.env.NODE_ENV === "development"}
+                  />
+                ) : (
+                  <span className="text-[9px] font-bold text-primary-700">
+                    {lecture.scholar.name[0]?.toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <span className="text-xs text-ink-tertiary group-hover/s:text-primary-700 transition-colors">
+                {scholarName}
+              </span>
+            </Link>
           )}
+
+          {/* Duration */}
+          {lecture.durationSecs && (
+            <span className="flex items-center gap-1 text-xs text-ink-muted">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              {formatDurationLong(lecture.durationSecs)}
+            </span>
+          )}
+
+          {/* Date */}
+          {displayDate && (
+            <span className="flex items-center gap-1 text-xs text-ink-muted">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              {lecture.recordedAt
+                ? formatDate(lecture.recordedAt)
+                : formatRelativeDate(lecture.publishedAt!)}
+            </span>
+          )}
+
+          {/* Views */}
           {lecture.viewCount > 0 && (
-            <span>{formatCount(lecture.viewCount)} views</span>
+            <span className="flex items-center gap-1 text-xs text-ink-muted">
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              {formatCount(lecture.viewCount)}
+            </span>
           )}
         </div>
       </div>
+
+      {/* Play button — right side */}
+      <Link
+        href={`/lectures/${lecture.slug}`}
+        aria-label={`Play: ${lecture.title}`}
+        className="shrink-0 size-9 rounded-full border border-border-default flex items-center justify-center text-ink-muted hover:bg-primary-700 hover:border-primary-700 hover:text-white transition-all duration-fast mt-0.5"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+      </Link>
     </article>
   );
 }
@@ -249,7 +268,6 @@ function Pagination({
     return `/lectures?${params.toString()}`;
   }
 
-  // Show at most 5 page buttons around current page
   const pages: (number | "ellipsis")[] = [];
   if (totalPages <= 7) {
     for (let i = 1; i <= totalPages; i++) pages.push(i);
@@ -267,18 +285,26 @@ function Pagination({
     pages.push(totalPages);
   }
 
+  const navLinkCls = (active: boolean) =>
+    [
+      "inline-flex items-center justify-center min-w-[36px] h-9 px-3 rounded-lg text-sm font-medium transition-colors",
+      active
+        ? "bg-primary-700 text-white"
+        : "text-ink-tertiary hover:bg-surface-subtle hover:text-ink-primary",
+    ].join(" ");
+
   return (
     <nav
       className="flex items-center justify-center gap-1"
       aria-label="Pagination"
     >
-      <Button
-        variant="ghost"
-        size="sm"
-        aria-disabled={currentPage === 1}
-        className={currentPage === 1 ? "pointer-events-none opacity-40" : ""}
-      >
-        <Link href={buildUrl(currentPage - 1)} aria-label="Previous page">
+      {/* Prev */}
+      {currentPage > 1 ? (
+        <Link
+          href={buildUrl(currentPage - 1)}
+          aria-label="Previous page"
+          className={navLinkCls(false)}
+        >
           <svg
             width="14"
             height="14"
@@ -290,42 +316,55 @@ function Pagination({
           >
             <path d="M15 18l-6-6 6-6" />
           </svg>
-          Prev
+          <span className="ml-1 hidden sm:inline">Prev</span>
         </Link>
-      </Button>
+      ) : (
+        <span className={`${navLinkCls(false)} opacity-40 pointer-events-none`}>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <span className="ml-1 hidden sm:inline">Prev</span>
+        </span>
+      )}
 
+      {/* Pages */}
       {pages.map((p, i) =>
         p === "ellipsis" ? (
           <span key={`ellipsis-${i}`} className="px-2 text-ink-muted text-sm">
             …
           </span>
+        ) : p === currentPage ? (
+          <span key={p} className={navLinkCls(true)} aria-current="page">
+            {p}
+          </span>
         ) : (
-          <Button
+          <Link
             key={p}
-            variant={p === currentPage ? "default" : "ghost"}
-            size="sm"
-            aria-current={p === currentPage ? "page" : undefined}
+            href={buildUrl(p)}
             aria-label={`Page ${p}`}
+            className={navLinkCls(false)}
           >
-            {p === currentPage ? (
-              <span>{p}</span>
-            ) : (
-              <Link href={buildUrl(p)}>{p}</Link>
-            )}
-          </Button>
+            {p}
+          </Link>
         ),
       )}
 
-      <Button
-        variant="ghost"
-        size="sm"
-        aria-disabled={currentPage === totalPages}
-        className={
-          currentPage === totalPages ? "pointer-events-none opacity-40" : ""
-        }
-      >
-        <Link href={buildUrl(currentPage + 1)} aria-label="Next page">
-          Next
+      {/* Next */}
+      {currentPage < totalPages ? (
+        <Link
+          href={buildUrl(currentPage + 1)}
+          aria-label="Next page"
+          className={navLinkCls(false)}
+        >
+          <span className="mr-1 hidden sm:inline">Next</span>
           <svg
             width="14"
             height="14"
@@ -338,7 +377,22 @@ function Pagination({
             <path d="M9 18l6-6-6-6" />
           </svg>
         </Link>
-      </Button>
+      ) : (
+        <span className={`${navLinkCls(false)} opacity-40 pointer-events-none`}>
+          <span className="mr-1 hidden sm:inline">Next</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </span>
+      )}
     </nav>
   );
 }

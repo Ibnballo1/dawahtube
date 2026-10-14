@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     template: "%s | Da'wahTube",
   },
   description:
-    "Authentic Islamic knowledge upon the Qur'an and Sunnah according to the understanding of the Salaf-us-Saalih. Lectures, articles, books, and daily reminders from trusted Nigerian scholars.",
+    "Authentic Islamic knowledge upon the Qur'an and Sunnah according to the understanding of the Salaf-us-Saalih. Lectures, articles, books, and daily reminders from trusted Nigerian and other scholars.",
   keywords: [
     "Islamic lectures",
     "Salafi",

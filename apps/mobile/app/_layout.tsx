@@ -10,12 +10,27 @@ import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { MiniPlayer } from "@/features/player/components/MiniPlayer";
 import { useHistoryStore } from "@/features/history/store/historyStore";
 import { useBookmarksStore } from "@/features/bookmarks/store/bookmarksStore";
+import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
 
 export default function RootLayout() {
   useEffect(() => {
     useDownloadsStore.getState().hydrate();
     useBookmarksStore.getState().hydrate();
     useHistoryStore.getState().hydrate();
+  }, []);
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        if (
+          response.notification.request.content.data?.type === "daily-reminder"
+        ) {
+          router.push("/reminder");
+        }
+      },
+    );
+    return () => subscription.remove();
   }, []);
 
   return (
@@ -35,6 +50,18 @@ export default function RootLayout() {
           />
           <Stack.Screen
             name="(auth)/sign-up"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="account/edit-name"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="account/change-password"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="account/delete-account"
             options={{ presentation: "modal" }}
           />
         </Stack>

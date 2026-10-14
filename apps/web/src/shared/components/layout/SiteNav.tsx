@@ -372,6 +372,12 @@ function UserMenu({ initials }: { initials: string }) {
         Dashboard
       </Link>
 
+      <Link href="/account/bookmarks" className="text-sm ...">
+        Bookmarks
+      </Link>
+      <Link href="/account/history" className="text-sm ...">
+        History
+      </Link>
       <Link
         href="/account"
         className={cn(

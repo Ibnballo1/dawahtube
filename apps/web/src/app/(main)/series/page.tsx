@@ -12,7 +12,7 @@ import { formatScholarName, formatCount } from "@shared/lib/format";
 export const metadata: Metadata = {
   title: "Lecture Series",
   description:
-    "Browse complete lecture series from trusted Nigerian scholars — structured multi-part lessons upon the Qur'an and Sunnah.",
+    "Browse complete lecture series from trusted Nigerian and other scholars — structured multi-part lessons upon the Qur'an and Sunnah.",
 };
 
 export const dynamic = "force-dynamic";

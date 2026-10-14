@@ -50,6 +50,12 @@ export default function ScholarScreen() {
             ? "…"
             : `${lectures.data?.pages[0]?.meta.total ?? 0} lecture${lectures.data?.pages[0]?.meta.total === 1 ? "" : "s"}`}
         </Text>
+
+        {scholar.data.biography && (
+          <Text className="text-text leading-6 px-4 mt-4">
+            {scholar.data.biography}
+          </Text>
+        )}
       </View>
 
       {lectures.isError ? (
