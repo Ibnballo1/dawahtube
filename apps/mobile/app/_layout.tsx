@@ -12,6 +12,7 @@ import { useHistoryStore } from "@/features/history/store/historyStore";
 import { useBookmarksStore } from "@/features/bookmarks/store/bookmarksStore";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
+import { SyncManager } from "@/features/sync/components/SyncManager";
 
 export default function RootLayout() {
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
+        <SyncManager />
         <StatusBar style="light" />
         <OfflineBanner />
         <Stack screenOptions={{ headerShown: false }}>

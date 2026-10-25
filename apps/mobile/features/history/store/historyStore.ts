@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createMMKV } from "react-native-mmkv";
+import { enqueue } from "@/features/sync/store/outboxStore";
 import type { HistoryEntry } from "../types/history.types";
 
 const storage = createMMKV({ id: "dawahtube-history" });
@@ -22,7 +23,11 @@ interface HistoryState {
   entries: Record<string, HistoryEntry>;
   hydrate: () => void;
   upsert: (entry: HistoryEntry) => void;
+  /** User-initiated "Clear history" — also tells the server. */
   clear: () => void;
+  /** Used by sync only. Never queues anything. */
+  setAll: (entries: Record<string, HistoryEntry>) => void;
+  reset: () => void;
 }
 
 export const useHistoryStore = create<HistoryState>((set, get) => ({
@@ -34,6 +39,15 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
     set({ entries });
   },
   clear: () => {
+    save({});
+    set({ entries: {} });
+    enqueue({ kind: "history.clear" });
+  },
+  setAll: (entries) => {
+    save(entries);
+    set({ entries });
+  },
+  reset: () => {
     save({});
     set({ entries: {} });
   },

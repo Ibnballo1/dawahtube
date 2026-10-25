@@ -1,3 +1,7 @@
+import {
+  flushOutbox,
+  wipeLocalUserData,
+} from "@/features/sync/services/syncEngine";
 import { authClient } from "./authClient";
 
 export async function signInWithEmail(email: string, password: string) {
@@ -13,7 +17,10 @@ export async function signUpWithEmail(
 }
 
 export async function signOut() {
-  return authClient.signOut();
+  await flushOutbox().catch(() => {}); // best effort while the session is still valid
+  const result = await authClient.signOut();
+  wipeLocalUserData();
+  return result;
 }
 
 export async function updateProfile(name: string) {

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { deleteAccount } from "@/features/auth/services/authActions";
+import { wipeLocalUserData } from "@/features/sync/services/syncEngine";
 
 const CONFIRM_PHRASE = "DELETE";
 
@@ -25,6 +26,7 @@ export default function DeleteAccountScreen() {
       setError("Couldn't delete your account. Please try again.");
       return;
     }
+    wipeLocalUserData();
     router.replace("/(tabs)");
   };
 

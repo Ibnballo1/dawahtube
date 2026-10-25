@@ -123,6 +123,26 @@ export function SiteFooter() {
           <p className="text-xs text-white/40 shrink-0">
             © {year} Da&apos;wahTube. All rights reserved.
           </p>
+          {/* ── Built-by credit ──────────────────────────────────────── */}
+          <Link
+            href="/built-by"
+            className="text-xs text-white/30 hover:text-white/60 transition-colors duration-fast flex items-center gap-1.5 group"
+          >
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+              className="group-hover:text-accent-500 transition-colors"
+            >
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+            Designed &amp; developed by Abdullateef Bello
+          </Link>
         </div>
       </div>
     </footer>

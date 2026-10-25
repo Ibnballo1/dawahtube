@@ -13,6 +13,7 @@ import {
   recordCompleted,
 } from "@/features/history/services/historyRecorder";
 import { resolveImageUrl } from "@/lib/assets/resolveImageUrl";
+import { record } from "better-auth";
 
 const POSITION_KEY_PREFIX = "position:";
 const POSITION_WRITE_THROTTLE_MS = 5000;
@@ -135,7 +136,11 @@ export function togglePlayPause() {
   if (store.isPlaying) {
     player.pause();
     store.setPlaying(false);
-    persistPosition(currentTrack()?.lectureId ?? "", store.positionSecs, true);
+    const paused = currentTrack();
+    if (paused) {
+      persistPosition(paused.lectureId, store.positionSecs, true);
+      recordProgress(paused.lectureId, store.positionSecs, true);
+    }
   } else {
     player.play();
     store.setPlaying(true);
@@ -173,7 +178,10 @@ export function setVolume(volume: number) {
 export async function next() {
   const store = usePlayerStore.getState();
   const track = currentTrack();
-  if (track) persistPosition(track.lectureId, store.positionSecs, true);
+  if (track) {
+    persistPosition(track.lectureId, store.positionSecs, true);
+    recordProgress(track.lectureId, store.positionSecs, true);
+  }
 
   if (store.queueIndex + 1 >= store.queue.length) {
     player?.pause();
@@ -230,6 +238,9 @@ AppState.addEventListener("change", (state) => {
   if (state === "background" || state === "inactive") {
     const store = usePlayerStore.getState();
     const track = currentTrack();
-    if (track) persistPosition(track.lectureId, store.positionSecs, true);
+    if (track) {
+      persistPosition(track.lectureId, store.positionSecs, true);
+      recordProgress(track.lectureId, store.positionSecs, true); // NEW
+    }
   }
 });

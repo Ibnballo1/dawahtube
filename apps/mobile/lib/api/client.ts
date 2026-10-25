@@ -21,7 +21,7 @@ export function setAuthTokenProvider(provider: (() => string | null) | null) {
 }
 
 interface RequestOptions {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   signal?: AbortSignal;
   timeoutMs?: number;
@@ -148,6 +148,7 @@ export async function apiFetch<T>(
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
     signal,
+    credentials: "omit",
   };
 
   let lastError: ApiError | undefined;

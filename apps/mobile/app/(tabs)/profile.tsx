@@ -1,8 +1,32 @@
 import { View, Text, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useSession } from "@/features/auth/hooks/useSession";
 import { signOut } from "@/features/auth/services/authActions";
+import { useBookmarksStore } from "@/features/bookmarks/store/bookmarksStore";
 import { DailyReminderSettings } from "@/features/notifications/components/DailyReminderSettings";
+
+function LibraryCard() {
+  const savedCount = useBookmarksStore(
+    (s) => Object.keys(s.lectureBookmarks).length,
+  );
+  return (
+    <View className="bg-card rounded-xl overflow-hidden">
+      <Pressable
+        onPress={() => router.push("/saved")}
+        accessibilityRole="button"
+        accessibilityLabel={`Saved lectures, ${savedCount}`}
+        className="flex-row items-center justify-between px-4 py-3"
+      >
+        <Text className="text-text">Saved lectures</Text>
+        <View className="flex-row items-center">
+          <Text className="text-muted mr-2">{savedCount}</Text>
+          <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+        </View>
+      </Pressable>
+    </View>
+  );
+}
 
 export default function ProfileScreen() {
   const { data: session, isPending } = useSession();
@@ -19,7 +43,8 @@ export default function ProfileScreen() {
           You&apos;re browsing as a guest
         </Text>
         <Text className="text-muted text-center mb-6">
-          Sign in to manage your account.
+          Sign in to keep your saved lectures and listening history across
+          devices.
         </Text>
         <Pressable
           onPress={() => router.push("/(auth)/sign-in")}
@@ -29,20 +54,21 @@ export default function ProfileScreen() {
         >
           <Text className="text-text font-medium">Sign in</Text>
         </Pressable>
-        <View className="mt-6 px-6 w-full">
+        <View className="mt-6 w-full">
+          <LibraryCard />
+        </View>
+        <View className="mt-4 w-full">
           <DailyReminderSettings />
         </View>
       </View>
     );
   }
 
-  const authenticatedSession = session as {
-    user: {
-      name: string;
-      email: string;
-      emailVerified: boolean;
-    };
-  };
+  const user = (
+    session as {
+      user: { name: string; email: string; emailVerified: boolean };
+    }
+  ).user;
 
   return (
     <View className="flex-1 bg-background p-6 pt-12">
@@ -50,14 +76,18 @@ export default function ProfileScreen() {
         className="text-text text-xl font-semibold"
         accessibilityRole="header"
       >
-        {authenticatedSession.user.name}
+        {user.name}
       </Text>
-      <Text className="text-muted mt-1">{authenticatedSession.user.email}</Text>
-      {!authenticatedSession.user.emailVerified && (
+      <Text className="text-muted mt-1">{user.email}</Text>
+      {!user.emailVerified && (
         <Text className="text-gold text-sm mt-1">Email not verified</Text>
       )}
 
-      <View className="mt-8 bg-card rounded-xl overflow-hidden">
+      <View className="mt-8">
+        <LibraryCard />
+      </View>
+
+      <View className="mt-4 bg-card rounded-xl overflow-hidden">
         <Pressable
           onPress={() => router.push("/account/edit-name")}
           accessibilityRole="button"
@@ -76,7 +106,7 @@ export default function ProfileScreen() {
         </Pressable>
       </View>
 
-      <View className="mt-6">
+      <View className="mt-4">
         <DailyReminderSettings />
       </View>
 

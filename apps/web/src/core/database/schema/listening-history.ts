@@ -5,6 +5,7 @@ import {
   boolean,
   timestamp,
   uniqueIndex,
+  index,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth"; // Your BetterAuth user schema
 import { lectures } from "./lectures";
@@ -31,6 +32,7 @@ export const listeningHistory = pgTable(
       table.userId,
       table.lectureId,
     ),
+    index("listening_history_user_played_idx").on(table.userId, table.playedAt),
   ],
 );
 

@@ -3,6 +3,7 @@
 
 import { useState, useTransition } from "react";
 import { sendContactEmail } from "../actions/contact.action";
+import { useSearchParams } from "next/navigation";
 
 const inputCls = [
   "w-full rounded-lg px-3 py-2.5 text-sm",
@@ -23,10 +24,12 @@ const SUBJECTS = [
 ];
 
 export function ContactForm() {
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
+  const defaultSubject = searchParams.get("subject") ?? "";
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
@@ -155,6 +158,7 @@ export function ContactForm() {
           required
           className={inputCls}
           disabled={isPending}
+          defaultValue={defaultSubject}
         >
           <option value="">— Select a subject —</option>
           {SUBJECTS.map((s) => (

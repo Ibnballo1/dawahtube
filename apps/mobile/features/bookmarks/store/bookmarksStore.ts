@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createMMKV } from "react-native-mmkv";
+import { enqueue } from "@/features/sync/store/outboxStore";
 import type {
   LectureBookmark,
   TimestampBookmark,
@@ -29,6 +30,12 @@ interface BookmarksState {
   toggleLectureBookmark: (bookmark: LectureBookmark) => void;
   addTimestampBookmark: (bookmark: TimestampBookmark) => void;
   removeTimestampBookmark: (id: string) => void;
+  /** Used by sync only. Never queues anything. */
+  setAll: (
+    lecture: Record<string, LectureBookmark>,
+    timestamps: Record<string, TimestampBookmark>,
+  ) => void;
+  reset: () => void;
 }
 
 export const useBookmarksStore = create<BookmarksState>((set, get) => ({
@@ -39,26 +46,56 @@ export const useBookmarksStore = create<BookmarksState>((set, get) => ({
       lectureBookmarks: load(LECTURE_KEY),
       timestampBookmarks: load(TIMESTAMP_KEY),
     }),
+
   toggleLectureBookmark: (bookmark) => {
     const current = { ...get().lectureBookmarks };
     if (current[bookmark.lectureId]) {
       delete current[bookmark.lectureId];
+      enqueue({ kind: "bookmark.delete", lectureId: bookmark.lectureId });
     } else {
       current[bookmark.lectureId] = bookmark;
+      enqueue({
+        kind: "bookmark.put",
+        lectureId: bookmark.lectureId,
+        createdAt: bookmark.createdAt,
+      });
     }
     save(LECTURE_KEY, current);
     set({ lectureBookmarks: current });
   },
+
   addTimestampBookmark: (bookmark) => {
     const current = { ...get().timestampBookmarks, [bookmark.id]: bookmark };
     save(TIMESTAMP_KEY, current);
     set({ timestampBookmarks: current });
+    enqueue({
+      kind: "tbookmark.put",
+      id: bookmark.id,
+      lectureId: bookmark.lectureId,
+      timestampSecs: Math.floor(bookmark.timestampSecs),
+      note: bookmark.note,
+      createdAt: bookmark.createdAt,
+    });
   },
+
   removeTimestampBookmark: (id) => {
     const current = { ...get().timestampBookmarks };
     delete current[id];
     save(TIMESTAMP_KEY, current);
     set({ timestampBookmarks: current });
+    enqueue({ kind: "tbookmark.delete", id });
+  },
+
+  setAll: (lecture, timestamps) => {
+    save(LECTURE_KEY, lecture);
+    save(TIMESTAMP_KEY, timestamps);
+    set({ lectureBookmarks: lecture, timestampBookmarks: timestamps });
+  },
+
+  reset: () => {
+    save(LECTURE_KEY, {});
+    save(TIMESTAMP_KEY, {});
+    set({ lectureBookmarks: {}, timestampBookmarks: {} });
   },
 }));
 
