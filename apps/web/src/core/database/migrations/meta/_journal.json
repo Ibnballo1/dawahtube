@@ -29,6 +29,20 @@
       "when": 1792186359075,
       "tag": "0003_sticky_ares",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793047222393,
+      "tag": "0004_large_anthem",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793048810952,
+      "tag": "0005_steady_midnight",
+      "breakpoints": true
     }
   ]
 }

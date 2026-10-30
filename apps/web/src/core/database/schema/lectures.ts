@@ -157,6 +157,7 @@ export const lectures = pgTable(
     downloadCount: bigint("download_count", { mode: "number" })
       .notNull()
       .default(0),
+    likeCount: integer("like_count").notNull().default(0),
 
     // The date a lecture was actually done by the scholar. This is different from published_at, which is when it was made public on the platform.
     recordedAt: date("recorded_at", { mode: "date" }),

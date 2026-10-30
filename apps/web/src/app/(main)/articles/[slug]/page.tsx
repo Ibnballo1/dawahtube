@@ -15,6 +15,7 @@ import { ArticleViewTracker } from "@/features/articles/components/client/Articl
 import { ArticleCardSkeleton, Skeleton } from "@shared/components/ui/skeleton";
 import { env } from "@core/config/env";
 import { trackView } from "@/shared/lib/track-view";
+import { ContentStats } from "@/features/likes/components/Contentstats";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;

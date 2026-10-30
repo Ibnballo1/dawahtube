@@ -46,5 +46,8 @@ export * from "./audit-logs";
 export * from "./listening-history";
 export * from "./bookmark";
 
+// likes — depends on users, lectures, articles, books, reminders
+export * from "./likes";
+
 // timestamp-bookmarks
 export * from "./timestamp-bookmarks";

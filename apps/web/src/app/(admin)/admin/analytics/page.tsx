@@ -75,6 +75,18 @@ export default async function AdminAnalyticsPage() {
           sub="active"
           icon="👨‍🏫"
         />
+        <StatCard
+          label="Lecture likes"
+          value={formatCount(totals.lectureLikes)}
+          sub={`${totals.publishedLectures} published`}
+          icon="❤️"
+        />
+        <StatCard
+          label="Article likes"
+          value={formatCount(totals.articleLikes)}
+          sub={`${totals.publishedArticles} published`}
+          icon="❤️"
+        />
       </div>
 
       {/* Two-column: top lectures + top articles */}

@@ -109,6 +109,7 @@ export const articles = pgTable(
     // Computed content metadata
     readingTimeMins: smallint("reading_time_mins").notNull().default(1),
     wordCount: integer("word_count").notNull().default(0),
+    likeCount: integer("like_count").notNull().default(0),
 
     // Lifecycle
     status: contentStatusEnum("status").notNull().default("draft"),

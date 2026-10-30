@@ -12,6 +12,7 @@ import {
 import { AudioPlayer } from "../client/AudioPlayer";
 import type { LectureDetail } from "../../types/lecture.types";
 import { BookmarkButton } from "@/features/account/components/BookmarkButton";
+import { ContentStats } from "@/features/likes/components/Contentstats";
 
 interface LectureDetailViewProps {
   lecture: LectureDetail;
@@ -110,6 +111,13 @@ export function LectureDetailView({
             {formatCount(viewCount)} views
           </Badge>
         )}
+
+        <ContentStats
+          entityType="lecture"
+          entityId={lecture.id}
+          // viewCount={lecture.viewCount ?? 0}
+        />
+
         {lecture.isFeatured && (
           <Badge variant="gold" size="md">
             Featured

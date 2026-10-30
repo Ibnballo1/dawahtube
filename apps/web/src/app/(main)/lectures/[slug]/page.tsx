@@ -21,7 +21,6 @@ import {
   recordLecturePlay,
 } from "@/features/account/actions/history-bookmark.actions";
 import auth from "@/core/auth/config";
-import { after } from "next/server";
 
 export const dynamic = "force-dynamic";
 

@@ -13,12 +13,12 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { mdxComponents } from "@core/content/mdx-components";
+import { articleMdxComponents } from "@core/content/mdx-components";
 
 export async function renderArticleMdx(source: string) {
   const { content } = await compileMDX({
     source,
-    components: mdxComponents,
+    components: articleMdxComponents,
     options: {
       parseFrontmatter: false,
       mdxOptions: {

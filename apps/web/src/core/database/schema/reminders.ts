@@ -1,4 +1,4 @@
-import { pgTable, varchar, text, index } from "drizzle-orm/pg-core";
+import { pgTable, varchar, text, index, integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { contentStatusEnum } from "./enums";
 import {
@@ -46,6 +46,7 @@ export const reminders = pgTable(
     // Lifecycle
     status: contentStatusEnum("status").notNull().default("draft"),
     ...publishingColumns(),
+    likeCount: integer("like_count").notNull().default(0),
 
     // i18n
     ...defaultLanguageColumn(),

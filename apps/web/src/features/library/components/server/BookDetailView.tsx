@@ -10,6 +10,7 @@ import {
 } from "@shared/lib/format";
 import { PdfViewer } from "@features/library/components/client/PdfViewer";
 import type { BookDetail } from "../../types/library.types";
+import { ContentStats } from "@/features/likes/components/Contentstats";
 
 interface BookDetailViewProps {
   book: BookDetail;
@@ -126,6 +127,11 @@ export function BookDetailView({ book }: BookDetailViewProps) {
                     Free Download
                   </Badge>
                 )}
+                <ContentStats
+                  entityType="book"
+                  entityId={book.id}
+                  viewCount={book.viewCount ?? 0}
+                />
                 {book.isFeatured && (
                   <Badge variant="gold" size="md">
                     Featured

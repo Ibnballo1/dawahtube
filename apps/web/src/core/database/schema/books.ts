@@ -118,6 +118,7 @@ export const books = pgTable(
     pageCount: integer("page_count"),
     language: varchar("language", { length: 10 }).notNull().default("en"),
     allowFreeDownload: boolean("allow_free_download").notNull().default(true),
+    likeCount: integer("like_count").notNull().default(0),
 
     // Lifecycle
     status: contentStatusEnum("status").notNull().default("draft"),

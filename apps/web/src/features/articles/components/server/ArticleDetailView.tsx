@@ -10,6 +10,7 @@ import {
 } from "@shared/lib/format";
 import { renderArticleMdx } from "../../lib/render-article-mdx";
 import type { ArticleDetail } from "../../types/article.types";
+import { ContentStats } from "@/features/likes/components/Contentstats";
 
 interface ArticleDetailViewProps {
   article: ArticleDetail;
@@ -90,6 +91,11 @@ export async function ArticleDetailView({ article }: ArticleDetailViewProps) {
             {formatCount(article.viewCount)} views
           </Badge>
         )}
+        <ContentStats
+          entityType="article"
+          entityId={article.id}
+          viewCount={article.viewCount ?? 0}
+        />
         {article.isFeatured && (
           <Badge variant="gold" size="md">
             Featured
@@ -176,7 +182,16 @@ export async function ArticleDetailView({ article }: ArticleDetailViewProps) {
 
       {/* ── MDX content body ────────────────────────────────────────── */}
       {renderedContent && (
-        <div className="prose-islamic max-w-none">{renderedContent}</div>
+        <div
+          className="prose-islamic max-w-none"
+          style={{
+            color: "var(--color-ink-primary)",
+            lineHeight: "1.75",
+            fontSize: "1.0625rem",
+          }}
+        >
+          {renderedContent}
+        </div>
       )}
 
       {/* ── Tags ────────────────────────────────────────────────────── */}
