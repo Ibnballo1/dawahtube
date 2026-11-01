@@ -79,13 +79,21 @@ export async function getTopScholars(limit = 10) {
 }
 
 export async function getPlatformTotals() {
-  const [lv, av, bv, pl, pa, pb, ts] = await Promise.all([
+  const [lv, ll, av, al, bv, pl, pa, pb, ts] = await Promise.all([
     db
       .select({ total: sum(lectures.viewCount).mapWith(Number) })
       .from(lectures)
       .where(and(eq(lectures.status, "published"), isNull(lectures.deletedAt))),
     db
+      .select({ total: sum(lectures.likeCount).mapWith(Number) })
+      .from(lectures)
+      .where(and(eq(lectures.status, "published"), isNull(lectures.deletedAt))),
+    db
       .select({ total: sum(articles.viewCount).mapWith(Number) })
+      .from(articles)
+      .where(and(eq(articles.status, "published"), isNull(articles.deletedAt))),
+    db
+      .select({ total: sum(articles.likeCount).mapWith(Number) })
       .from(articles)
       .where(and(eq(articles.status, "published"), isNull(articles.deletedAt))),
     db
@@ -111,7 +119,9 @@ export async function getPlatformTotals() {
   ]);
   return {
     lectureViews: lv[0]?.total ?? 0,
+    lectureLikes: ll[0]?.total ?? 0,
     articleViews: av[0]?.total ?? 0,
+    articleLikes: al[0]?.total ?? 0,
     bookDownloads: bv[0]?.total ?? 0,
     publishedLectures: pl[0]?.count ?? 0,
     publishedArticles: pa[0]?.count ?? 0,
