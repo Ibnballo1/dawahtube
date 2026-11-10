@@ -69,16 +69,24 @@ export default async function PendingRecordingsPage() {
                 ReturnType<typeof getPendingRecordings>
               >[number],
             ) => {
-              const scholarName = recording.scholar
-                ? [recording.scholar.honorifics, recording.scholar.name]
-                    .filter(Boolean)
-                    .join(" ")
+              const scholar = recording.scholar as {
+                honorifics: string | null;
+                name: string | null;
+              } | null;
+              const recordedBy = recording.recordedBy as {
+                name: string | null;
+              } | null;
+              const scholarName = scholar
+                ? [scholar.honorifics, scholar.name].filter(Boolean).join(" ")
                 : null;
               const duration =
                 recording.durationSecs ??
-                recording.audioAsset?.durationSecs ??
+                (recording.audioAsset as { durationSecs: number | null } | null)
+                  ?.durationSecs ??
                 null;
-              const fileSize = recording.audioAsset?.sizeBytes ?? null;
+              const fileSize =
+                (recording.audioAsset as { sizeBytes: number | null } | null)
+                  ?.sizeBytes ?? null;
 
               return (
                 <div
@@ -108,12 +116,12 @@ export default async function PendingRecordingsPage() {
                         </p>
                         <p className="text-xs text-ink-muted">
                           Submitted {formatRelativeDate(recording.createdAt)}
-                          {recording.recordedBy && (
+                          {recordedBy && (
                             <>
                               {" "}
                               by{" "}
                               <span className="text-ink-secondary">
-                                {recording.recordedBy.name}
+                                {recordedBy.name}
                               </span>
                             </>
                           )}

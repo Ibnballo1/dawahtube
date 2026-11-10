@@ -122,7 +122,10 @@ export async function approveRecording(
     scholarId: recording.scholarId ?? null,
     audioAssetId: recording.audioAssetId ?? null,
     durationSecs:
-      recording.durationSecs ?? recording.audioAsset?.durationSecs ?? null,
+      recording.durationSecs ??
+      (recording.audioAsset as { durationSecs: number | null } | null)
+        ?.durationSecs ??
+      null,
     status: "draft",
     defaultLanguage: "en",
     allowDownload: true,

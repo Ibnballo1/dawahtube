@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   pgTable,
   text,
@@ -8,6 +9,9 @@ import {
   date,
   jsonb,
 } from "drizzle-orm/pg-core";
+import { scholars } from "./scholars";
+import { user } from "./auth";
+import { mediaAssets } from "./media-assets";
 
 export const pendingRecordings = pgTable("pending_recordings", {
   id: text("id").primaryKey(),
@@ -40,3 +44,21 @@ export const pendingRecordings = pgTable("pending_recordings", {
     .notNull()
     .defaultNow(),
 });
+
+export const pendingRecordingsRelations = relations(
+  pendingRecordings,
+  ({ one }) => ({
+    scholar: one(scholars, {
+      fields: [pendingRecordings.scholarId],
+      references: [scholars.id],
+    }),
+    recordedBy: one(user, {
+      fields: [pendingRecordings.recordedBy],
+      references: [user.id],
+    }),
+    audioAsset: one(mediaAssets, {
+      fields: [pendingRecordings.audioAssetId],
+      references: [mediaAssets.id],
+    }),
+  }),
+);
