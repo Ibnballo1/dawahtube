@@ -6,6 +6,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import auth from "@core/auth/config";
+import { getUserPermissions } from "@core/auth/guard";
+import type { Permission } from "@core/auth/permissions";
 
 // ─── Standard response shapes ─────────────────────────────────────────────────
 
@@ -136,6 +138,20 @@ export async function requireAuth(
   const session = await getSessionFromRequest(req);
   if (!session) {
     return err("Authentication required", 401);
+  }
+  return session;
+}
+
+export async function requireApiPermission(
+  req: NextRequest,
+  permission: Permission,
+): Promise<{ userId: string; role: string } | NextResponse> {
+  const session = await requireAuth(req);
+  if (session instanceof NextResponse) return session;
+
+  const permissions = await getUserPermissions(session.userId);
+  if (!permissions.includes(permission)) {
+    return err("Insufficient permissions", 403);
   }
   return session;
 }

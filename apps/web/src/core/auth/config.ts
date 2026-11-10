@@ -12,12 +12,19 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const FROM_ADDRESS = `Da'wahTube ${process.env.EMAIL_FROM_DOMAIN ?? "dawahtube.com"}`;
+const EMAIL_DOMAIN = process.env.EMAIL_FROM_DOMAIN ?? "dawahtube.com";
+const FROM_ADDRESS = `Da'wahTube <noreply@${EMAIL_DOMAIN}>`;
 const APP_NAME = "Da'wahTube";
 const APP_URL =
   process.env.BETTER_AUTH_URL ??
   process.env.NEXT_PUBLIC_APP_URL ??
   "http://localhost:3000";
+
+// Never sign sessions with a known fallback secret in production
+const AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
+if (!AUTH_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("BETTER_AUTH_SECRET must be set in production");
+}
 
 // ─── Email sender ──────────────────────────────────────────────────────────────
 async function sendEmail({
@@ -166,7 +173,13 @@ const auth = betterAuth({
   //     },
   //   },
   // },
-  trustedOrigins: ["dawahtube://", "dawahtube://*"],
+  // Deep-link schemes for the listener app and the recorder app
+  trustedOrigins: [
+    "dawahtube://",
+    "dawahtube://*",
+    "dawahtube-recorder://",
+    "dawahtube-recorder://*",
+  ],
 
   plugins: [
     expo(),

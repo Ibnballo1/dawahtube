@@ -21,6 +21,8 @@ import {
   X,
   Home,
   LogOut,
+  MicIcon,
+  UploadIcon,
 } from "lucide-react";
 import { authClient } from "@core/auth/client";
 import { cn } from "@shared/lib/utils";
@@ -93,6 +95,21 @@ const NAV_ITEMS: NavItem[] = [
     href: "/admin/categories/library",
     permission: PERMISSIONS.BOOK_EDIT,
     icon: BookSearch,
+  },
+  // Pending Recordings
+  {
+    label: "Pending Recordings",
+    href: "/admin/pending-recordings",
+    permission: PERMISSIONS.LECTURE_CREATE,
+    icon: MicIcon,
+  },
+
+  // Bulk Upload
+  {
+    label: "Bulk Upload",
+    href: "/admin/bulk-upload",
+    permission: PERMISSIONS.LECTURE_CREATE,
+    icon: UploadIcon,
   },
   {
     label: "Reminders",

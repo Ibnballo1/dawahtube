@@ -49,5 +49,8 @@ export * from "./bookmark";
 // likes — depends on users, lectures, articles, books, reminders
 export * from "./likes";
 
+// 10. Recorder — depends on users, media_assets
+export * from "./pending-recordings";
+
 // timestamp-bookmarks
 export * from "./timestamp-bookmarks";

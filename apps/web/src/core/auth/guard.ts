@@ -1,6 +1,6 @@
 // src/core/auth/guard.ts — use in Server Actions and Route Handlers
-"use server";
-
+// "use server";
+import "server-only";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import auth from "./config";

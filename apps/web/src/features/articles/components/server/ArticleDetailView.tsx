@@ -94,7 +94,7 @@ export async function ArticleDetailView({ article }: ArticleDetailViewProps) {
         <ContentStats
           entityType="article"
           entityId={article.id}
-          viewCount={article.viewCount ?? 0}
+          // viewCount={article.viewCount ?? 0}
         />
         {article.isFeatured && (
           <Badge variant="gold" size="md">

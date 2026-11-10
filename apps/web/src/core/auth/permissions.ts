@@ -32,6 +32,12 @@ export const PERMISSIONS = {
   REMINDER_EDIT: "reminder:edit",
   REMINDER_DELETE: "reminder:delete",
 
+  // Recordings (recorder app -> admin review queue)
+  RECORDING_SUBMIT: "recording:submit", //     upload + submit own recordings
+  RECORDING_VIEW_OWN: "recording:view_own", // see status of own submissions
+  RECORDING_REVIEW: "recording:review", //     open the pending-recordings queue
+  RECORDING_APPROVE: "recording:approve", //   approve / reject -> creates draft lecture
+
   // Admin
   USER_MANAGE: "user:manage",
   ROLE_MANAGE: "role:manage",
@@ -41,6 +47,13 @@ export const PERMISSIONS = {
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+
+const READER_PERMISSIONS: Permission[] = [
+  PERMISSIONS.LECTURE_VIEW,
+  PERMISSIONS.ARTICLE_VIEW,
+  PERMISSIONS.BOOK_VIEW,
+  PERMISSIONS.SCHOLAR_VIEW,
+];
 
 // Default role configurations (seeded to DB)
 export const DEFAULT_ROLES: Record<
@@ -72,6 +85,11 @@ export const DEFAULT_ROLES: Record<
       PERMISSIONS.REMINDER_EDIT,
       PERMISSIONS.FEATURED_MANAGE,
       PERMISSIONS.ANALYTICS_VIEW,
+      // Recordings: admins can review/approve, and submit (handy for testing)
+      PERMISSIONS.RECORDING_SUBMIT,
+      PERMISSIONS.RECORDING_VIEW_OWN,
+      PERMISSIONS.RECORDING_REVIEW,
+      PERMISSIONS.RECORDING_APPROVE,
     ],
   },
   editor: {
@@ -85,6 +103,17 @@ export const DEFAULT_ROLES: Record<
       PERMISSIONS.BOOK_EDIT,
       PERMISSIONS.REMINDER_CREATE,
       PERMISSIONS.REMINDER_EDIT,
+    ],
+  },
+  // Approved recorder-app users. Deliberately has NO lecture:* permission:
+  // a recorder can only submit into the review queue, never create or publish
+  // content directly, and cannot enter the admin dashboard.
+  recorder: {
+    label: "Recorder",
+    permissions: [
+      ...READER_PERMISSIONS, // a recorder is also a normal listener
+      PERMISSIONS.RECORDING_SUBMIT,
+      PERMISSIONS.RECORDING_VIEW_OWN,
     ],
   },
   reader: {
