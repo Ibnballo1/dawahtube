@@ -179,8 +179,11 @@ export async function confirmUpload(
     };
   }
 
-  // 6. Only the public media bucket gets a public URL
-  const publicUrl = bucket === "media" ? getPublicUrl(key, bucket) : null;
+  // 6. Public URL for images (media) and lecture audio (uploads), which the lecture page plays.
+  const publicUrl =
+    bucket === "media" || bucket === "uploads"
+      ? getPublicUrl(key, bucket)
+      : null;
 
   const id = `ast_${nanoid(16)}`;
 

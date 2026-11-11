@@ -13,6 +13,7 @@ import { AudioPlayer } from "../client/AudioPlayer";
 import type { LectureDetail } from "../../types/lecture.types";
 import { BookmarkButton } from "@/features/account/components/BookmarkButton";
 import { ContentStats } from "@/features/likes/components/Contentstats";
+import { createPresignedRead } from "@core/storage/presign";
 
 interface LectureDetailViewProps {
   lecture: LectureDetail;
@@ -20,7 +21,7 @@ interface LectureDetailViewProps {
   isAuthenticated: boolean;
 }
 
-export function LectureDetailView({
+export async function LectureDetailView({
   lecture,
   initialBookmarked,
   isAuthenticated,
@@ -38,7 +39,7 @@ export function LectureDetailView({
     lecture.thumbnailAsset?.publicUrl?.trim() || `/images/lecture-default.png`;
   const scholarAvatarUrl =
     lecture.scholar?.avatarAsset?.publicUrl?.trim() || null;
-  const audioUrl = lecture.audioAsset?.publicUrl?.trim() || null;
+  const audioUrl = await resolveAudioUrl(lecture.audioAsset);
 
   return (
     <article aria-labelledby="lecture-title" className="flex flex-col gap-6">
@@ -327,4 +328,19 @@ function EyeIcon() {
       <circle cx="12" cy="12" r="3" />
     </svg>
   );
+}
+
+const AUDIO_URL_TTL_SECS = 6 * 60 * 60; // outlasts a long lecture with pauses
+
+async function resolveAudioUrl(
+  asset: { key: string; publicUrl: string | null } | null | undefined,
+): Promise<string | null> {
+  if (!asset) return null;
+  const publicUrl = asset.publicUrl?.trim();
+  if (publicUrl) return publicUrl;
+  try {
+    return await createPresignedRead("uploads", asset.key, AUDIO_URL_TTL_SECS);
+  } catch {
+    return null;
+  }
 }
